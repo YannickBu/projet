@@ -1,0 +1,46 @@
+package donnee;
+
+import java.util.ArrayList;
+
+public class Salle {
+	
+	protected ArrayList<Reservation> listeReservation;
+	protected int prixPlage1h;
+	protected int prixPlage2h;
+	
+	public Salle() {
+		this.listeReservation = new ArrayList<Reservation>();
+	}
+	
+	public void ajouterReservation (Reservation r) {
+		this.listeReservation.add(r);
+	}
+	
+	public void supprimerReservation (Reservation r) {
+		this.listeReservation.remove(r);
+	}
+	
+	public boolean estLibre() {
+		if (!estConfirme())
+			return true;
+		else 
+			return false;
+	}
+	
+	public boolean estConfirme() {
+		if (!estLibre())
+			return true;
+		else 
+			return false;
+	}
+
+	public int getPrixPlage1h() {
+		return prixPlage1h;
+	}
+
+	public int getPrixPlage2h() {
+		return prixPlage2h;
+	}
+
+	
+}

@@ -1,0 +1,9 @@
+package donnee;
+
+public class PetiteSalle extends Salle {
+	
+	public PetiteSalle () {
+		prixPlage1h = 7;
+		prixPlage2h = 10;
+	}
+}

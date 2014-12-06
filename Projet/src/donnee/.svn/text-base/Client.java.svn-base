@@ -1,0 +1,64 @@
+package donnee;
+
+import java.util.ArrayList;
+
+public class Client {
+
+	private String nom;
+	private String prenom;
+	private int numTel;
+	private int pointsFidelite;
+	private ArrayList<Forfait> listForfait;
+	private ArrayList<Reservation> listReservation;
+	
+	public Client (String n, String p,int num) {
+		this.nom = n;
+		this.prenom = p;
+		this.numTel = num;
+		this.pointsFidelite = 0;
+		this.listForfait = new ArrayList<Forfait>();
+		this.listReservation = new ArrayList<Reservation>();
+	}
+
+	public String getNom() {
+		return nom;
+	}
+
+	public String getPrenom() {
+		return prenom;
+	}
+
+	public int getNumTel() {
+		return numTel;
+	}
+
+	public void setNumTel(int numTel) {
+		this.numTel = numTel;
+	}
+
+	public int getPointsFidelite() {
+		return pointsFidelite;
+	}
+
+	public void ajoutPointFidelite (int h) {
+		this.pointsFidelite = this.pointsFidelite + (5*h);
+	}
+	
+	public void ajoutForfait (Forfait f) {
+		this.listForfait.add(f);
+	}
+	
+	public void supprimerForfait (Forfait f){
+		this.listForfait.remove(f);
+	}
+	
+	public void ajoutReservation (Reservation r) {
+		this.listReservation.add(r);
+	}
+	
+	public void supprimerReservation (Reservation r){
+		this.listReservation.remove(r);
+	}
+	
+	
+}

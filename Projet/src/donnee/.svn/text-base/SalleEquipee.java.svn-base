@@ -1,0 +1,10 @@
+package donnee;
+
+public class SalleEquipee extends Salle {
+	
+	public SalleEquipee () {
+		prixPlage1h = 20;
+		prixPlage2h = 30;
+	}
+
+}
