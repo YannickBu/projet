@@ -32,7 +32,7 @@ public class FabReservation {
 	}
 	
 	/**
-	 * Crée une nouvelle réservation
+	 * CrŽe une nouvelle rŽservation
 	 * @param idClient
 	 * @param idSalle
 	 * @param dateDebut
@@ -40,6 +40,7 @@ public class FabReservation {
 	 * @param dateCreation
 	 * @param estPayee
 	 * @throws ObjetExistantException
+	 * @return reservation
 	 */
 	public Reservation creer(int idClient, int idSalle, Date dateDebut, int plage, Date dateCreation, boolean estPayee ) {
 		PreparedStatement pst = null;
@@ -84,10 +85,11 @@ public class FabReservation {
 	
 
 	/**
-	 * Récupère une réservation à partir de son idReservation
+	 * RŽcupere une reservation ˆ partir de son idReservation
 	 * @param id
 	 * @return
 	 * @throws ObjetInconnuException
+	 * @return reservation
 	 */
 	public Reservation rechercher(int id) throws ObjetInconnuException{
 		Reservation res = null;
@@ -122,10 +124,10 @@ public class FabReservation {
 	}
 
 	
-	/**
+	/** Recherche de reservation par date et type de salle
 	 * @param date
 	 * @param typeSalle
-	 * @return
+	 * @return liste de reservation
 	 */
 	public List<Reservation> rechercherParDateEtTypeSalle(String date, String typeSalle){
 		List<Reservation> listeReservation = new ArrayList<Reservation>();
@@ -178,7 +180,7 @@ public class FabReservation {
 	}
 	
 	/**
-	 * Supprime une reservation à partir de son idReservation
+	 * Supprime une reservation ˆ partir de son idReservation
 	 * @param id
 	 */
 	public void supprimer(int id){
@@ -196,8 +198,8 @@ public class FabReservation {
 	}
 
 	/**
-	 * Récupère l'ensemble des réservations
-	 * @return
+	 * RŽcupere l'ensemble des reservations
+	 * @return liste de reservation
 	 */
 	public List<Reservation> lister() {
 		Connection connection = FabConnexion.getConnexion();

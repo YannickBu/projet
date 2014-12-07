@@ -18,12 +18,6 @@ public class CreerReservation {
 		if (client != null){
 			res = fabReservation.creer(idClient,idSalle,dateDebut,plage,dateCreation,estPayee);
 			
-			//TODO A supprimer
-			/*if (res != null) {
-				client.getListReservation().add(res);
-				fabReservation.rechercher(res.getIdReserv()).setClient(client);
-			}*/
-			
 		}
 		
 		return res;	

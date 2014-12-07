@@ -25,11 +25,11 @@ public class FabClient {
 	}
 	
 	/**
-	 * Crée un client
+	 * CrŽe un client
 	 * @param nom
 	 * @param prenom
 	 * @param tel
-	 * @return
+	 * @return client
 	 * @throws ObjetExistantException
 	 */
 	public Client creer(String nom, String prenom , String tel) throws ObjetExistantException {
@@ -67,9 +67,9 @@ public class FabClient {
 	}
 
 	/**
-	 * Recherche un client à partir de son id
+	 * Recherche un client ˆ partir de son id
 	 * @param id
-	 * @return
+	 * @return client
 	 * @throws ObjetInconnuException
 	 */
 	public Client rechercher(int id) throws ObjetInconnuException{
@@ -124,8 +124,8 @@ public class FabClient {
 	}
 
 	/**
-	 * Récupère l'ensemble des clients
-	 * @return
+	 * RŽcupere l'ensemble des clients
+	 * @return la liste des clients
 	 */
 	public List<Client> lister() {
 		Connection connection = FabConnexion.getConnexion();
