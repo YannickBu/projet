@@ -101,6 +101,44 @@ public class FabClient {
 		}
 		return client;
 	}
+	
+	/**
+	 * Recherche un client ˆ partir de son nom et son numero de telephone
+	 * @param nom le nom du client a rechercher
+	 * @param num le numero de telephone du client a rechercher
+	 * @return client
+	 * @throws ObjetInconnuException
+	 */
+	public Client rechercher(String nom, String num) throws ObjetInconnuException{
+		Client client = null;
+		PreparedStatement pst = null;
+		Connection connection = FabConnexion.getConnexion();
+		String query = "SELECT nom, prenom, tel, fidelite FROM Client WHERE nom = ? and tel = ?";
+		try {
+			pst = connection.prepareStatement(query);
+			pst.clearParameters();
+			
+			pst.setString(1, nom);
+			pst.setString(2, num);
+			
+			ResultSet rs = pst.executeQuery();
+			
+			if(!rs.next()) {
+				throw new ObjetInconnuException(Client.class.toString(), "Aucun client a ete trouve pour le nom "+nom+" et le tel: "+num);
+			}
+
+			client = new Client();
+			client.setId(rs.getInt("id"));
+			client.setNom(nom);
+			client.setPrenom(rs.getString("prenom"));
+			client.setNumTel(num);
+			client.setPointsFidelite(rs.getInt("fidelite"));
+
+		} catch (SQLException e) {
+			System.out.println("Echec de la recuperation du client du nom "+nom+" dans la recherche de FabClient");
+		}
+		return client;
+	}
 
 	/**
 	 * Supprime un client par son id
