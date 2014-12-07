@@ -3,9 +3,15 @@ package presentation;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.swing.JFrame;
 
+import metier.CreerReservation;
+import fabrique.FabReservation;
 
 public class Application {
 
@@ -43,6 +49,12 @@ public class Application {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}*/
+		
+		/*
+		CreerReservation metier = new CreerReservation();
+		metier.rechercheCreneauLibre("03-12-2014", 1, "matin", "petite");
+		System.out.println("m");
+		*/
 	}
 
 }
