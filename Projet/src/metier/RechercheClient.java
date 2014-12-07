@@ -8,15 +8,13 @@ import fabrique.FabClient;
 public class RechercheClient {
 	
 	
-	public Client rechercheClient(Integer idClient, String nom , String prenom ,String tel ) {
+	public Client rechercheClient(String nom , String tel ) {
 		FabClient client = FabClient.getInstance();
 		
-		if(client.rechercher(idClient) != null) {
-			Client c = client.rechercher(idClient);
-			if (c.getNom().equals(nom) && c.getPrenom().equals(prenom) && c.getNumTel().equals(tel)) {
-				return c;
+		if(client.rechercher(nom,tel) != null) {
+			Client c = client.rechercher(nom,tel);
+			return c;
 			}
-		}
 		
 		return null;	
 		
