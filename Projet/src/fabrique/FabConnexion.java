@@ -28,18 +28,9 @@ public class FabConnexion {
 		return fabConnexion.c;
 	}
 	
-	public static void commit() throws SQLException{
+	public static void close() throws SQLException{
 		if(fabConnexion != null){
-			fabConnexion.c.commit();
 			fabConnexion.c.close();
-			try {
-				Class.forName("org.hsqldb.jdbcDriver");
-				fabConnexion.c = DriverManager.getConnection("jdbc:hsqldb:file:projet;shutdown=true","sa","");
-			} catch (SQLException e) {
-				System.out.println("Erreur connexion " + e.getMessage());
-			} catch (ClassNotFoundException e){
-				
-			}
 		}
 	}
 }
