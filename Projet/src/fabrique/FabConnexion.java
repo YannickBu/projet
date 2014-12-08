@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class FabConnexion {
 
 
-	private static FabConnexion FabConnexion;
+	private static FabConnexion fabConnexion;
 	private Connection c;
 	
 	private FabConnexion(){
@@ -15,23 +15,31 @@ public class FabConnexion {
 			Class.forName("org.hsqldb.jdbcDriver");
 			c = DriverManager.getConnection("jdbc:hsqldb:file:projet;shutdown=true","sa","");
 		} catch (SQLException e) {
-			System.out.println(" ca n'a pas fonctionnee");
+			System.out.println("Erreur connexion " + e.getMessage());
 		} catch (ClassNotFoundException e){
 			
 		}
 	}
 	
 	public static Connection getConnexion(){
-		if(FabConnexion == null){
-			FabConnexion = new FabConnexion();
+		if(fabConnexion == null){
+			fabConnexion = new FabConnexion();
 		}
-		return FabConnexion.c;
+		return fabConnexion.c;
 	}
 	
-	public static void closeConnexion() throws SQLException{
-		if(FabConnexion != null){
-			FabConnexion.c.close();
-			FabConnexion = null;
+	public static void commit() throws SQLException{
+		if(fabConnexion != null){
+			fabConnexion.c.commit();
+			fabConnexion.c.close();
+			try {
+				Class.forName("org.hsqldb.jdbcDriver");
+				fabConnexion.c = DriverManager.getConnection("jdbc:hsqldb:file:projet;shutdown=true","sa","");
+			} catch (SQLException e) {
+				System.out.println("Erreur connexion " + e.getMessage());
+			} catch (ClassNotFoundException e){
+				
+			}
 		}
 	}
 }

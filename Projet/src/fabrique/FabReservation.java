@@ -75,9 +75,9 @@ public class FabReservation {
 			System.out.println("Echec de la creation de la reservation dans la creation de FabReservation");
 		} finally {
 			try {
-				connection.close();
+				FabConnexion.commit();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				System.out.println("Erreur lors du commit " + e.getMessage());
 			}
 		}
 		return reserv;

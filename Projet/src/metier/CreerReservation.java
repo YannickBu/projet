@@ -1,6 +1,7 @@
 package metier;
 
 import java.util.Date;
+import java.util.List;
 
 import donnee.Client;
 import donnee.Reservation;
@@ -22,5 +23,14 @@ public class CreerReservation {
 		
 		return res;	
 		
+	}
+	
+	public void creerReservation(List<Reservation> listeReservations, String nomClt, String telClt){
+		CreerClient metierCreerClt = new CreerClient();
+		Client clt = metierCreerClt.creerClientSiInexistant(nomClt, telClt);
+		
+		for(Reservation res : listeReservations){
+			FabReservation.getInstance().creer(clt.getId(), res.getSalle().getIdSalle(), res.getDate(), res.getPlage(), res.getDateCreation(), res.getEstPaye());
+		}
 	}
 }

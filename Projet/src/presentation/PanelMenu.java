@@ -25,8 +25,8 @@ public class PanelMenu extends JPanel implements ActionListener {
 		c.setLayout(new GridLayout(3, 1));
 		this.add(c);
 		
-		bVisu = new JButton("Visualier une rŽservation");
-		bReserv = new JButton("RŽserver");
+		bVisu = new JButton("Visualiser une réservation");
+		bReserv = new JButton("Réservation automatique");
 		bEdit = new JButton("Editer infos client");
 		
 		bVisu.addActionListener(this);
