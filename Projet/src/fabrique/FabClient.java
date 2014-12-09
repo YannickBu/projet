@@ -113,7 +113,7 @@ public class FabClient {
 		Client client = null;
 		PreparedStatement pst = null;
 		Connection connection = FabConnexion.getConnexion();
-		String query = "SELECT nom, prenom, tel, fidelite FROM Client WHERE nom = ? and tel = ?";
+		String query = "SELECT idclient, nom, prenom, tel, fidelite FROM Client WHERE nom = ? and tel = ?";
 		try {
 			pst = connection.prepareStatement(query);
 			pst.clearParameters();
@@ -128,7 +128,7 @@ public class FabClient {
 			}
 
 			client = new Client();
-			client.setId(rs.getInt("id"));
+			client.setId(rs.getInt("idclient"));
 			client.setNom(nom);
 			client.setPrenom(rs.getString("prenom"));
 			client.setNumTel(num);

@@ -11,7 +11,7 @@ public class FabConnexion {
 	private Connection c;
 	
 	/**
-	 * Constructeur de la fabrique construction
+	 * Constructeur de FabConnexion
 	 */
 	private FabConnexion(){
 		try {
@@ -25,7 +25,7 @@ public class FabConnexion {
 	}
 	
 	/**
-	 * Methode qui nous permet d'avoir une connexion
+	 * Methode qui permet de creer la connexion
 	 * @return connexion
 	 */
 	public static Connection getConnexion(){
@@ -36,7 +36,7 @@ public class FabConnexion {
 	}
 	
 	/**
-	 * Methode qui nous permet d'arreter la connexion
+	 * Methode qui permet d'arreter une connexion
 	 * @throws SQLException
 	 */
 	public static void closeConnexion() throws SQLException{

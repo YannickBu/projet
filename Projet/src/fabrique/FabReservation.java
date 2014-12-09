@@ -52,8 +52,8 @@ public class FabReservation {
 			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 			pst.clearParameters();
 			
-			pst.setInt(1, idClient);
-			pst.setInt(2, idSalle);
+			pst.setInt(1, idSalle);
+			pst.setInt(2, idClient);
 			pst.setTimestamp(3, new Timestamp(dateDebut.getTime()));
 			pst.setInt(4,plage);
 			pst.setTimestamp(5, new Timestamp(dateCreation.getTime()));
@@ -73,12 +73,6 @@ public class FabReservation {
 			}
 		} catch (SQLException se) {
 			System.out.println("Echec de la creation de la reservation dans la creation de FabReservation");
-		} finally {
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
 		return reserv;
 	}
@@ -143,6 +137,7 @@ public class FabReservation {
 		java.util.Date dateFin;
 		
 		try {
+			salle = FabSalle.getInstance().rechercher(typeSalle);
 			dateDebut = formatter.parse(date);
 			calendar.setTime(dateDebut); // on passe dateFin à la journee qui suit dateDebut à 1h du matin
 			calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -150,15 +145,12 @@ public class FabReservation {
 			dateFin = calendar.getTime();
 			st = FabConnexion.getConnexion()
 					.prepareStatement("select idreservation, idsalle, idclient, datedebut, plage, datecreation, estpayee from reservation " +
-							" where datedebut between ? and ? order by datedebut");
+							" where (datedebut between ? and ?) and idsalle = ? order by datedebut");
 				st.setDate(1, new java.sql.Date(dateDebut.getTime()));
 				st.setDate(2, new java.sql.Date(dateFin.getTime()));
+				st.setInt(3, salle.getIdSalle());
 			rs = st.executeQuery();
 			while(rs.next()){
-				salle = FabSalle.getInstance().rechercher(rs.getInt(2));
-				if(!salle.getTypeSalle().equals(typeSalle)){
-					break;
-				}
 				client = FabClient.getInstance().rechercher(rs.getInt(3));
 				res = new Reservation();
 				res.setIdReserv(rs.getInt(1));
