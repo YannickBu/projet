@@ -10,6 +10,9 @@ public class FabConnexion {
 	private static FabConnexion FabConnexion;
 	private Connection c;
 	
+	/**
+	 * Constructeur de la fabrique construction
+	 */
 	private FabConnexion(){
 		try {
 			Class.forName("org.hsqldb.jdbcDriver");
@@ -21,6 +24,10 @@ public class FabConnexion {
 		}
 	}
 	
+	/**
+	 * Methode qui nous permet d'avoir une connexion
+	 * @return connexion
+	 */
 	public static Connection getConnexion(){
 		if(FabConnexion == null){
 			FabConnexion = new FabConnexion();
@@ -28,6 +35,10 @@ public class FabConnexion {
 		return FabConnexion.c;
 	}
 	
+	/**
+	 * Methode qui nous permet d'arreter la connexion
+	 * @throws SQLException
+	 */
 	public static void closeConnexion() throws SQLException{
 		if(FabConnexion != null){
 			FabConnexion.c.close();

@@ -17,6 +17,10 @@ public class PanelMenu extends JPanel implements ActionListener {
 	JButton bReserv;
 	JButton bEdit;
 	
+	/**
+	 * Methode qui permet d'afficher le menu 
+	 * @param frame
+	 */
 	public PanelMenu(JFrame frame) {
 		
 		this.frame = frame;

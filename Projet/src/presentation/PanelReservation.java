@@ -46,6 +46,10 @@ public class PanelReservation extends JPanel implements ActionListener {
 	private JButton bRechercher;
 	private JButton bRetour;
 	
+	/**
+	 * Methode qui permet d'afficher les reservations 
+	 * @param frame
+	 */
 	public PanelReservation(JFrame frame) {
 		Container containerNORTH = new Container();
 		Container containerCENTER = new Container();

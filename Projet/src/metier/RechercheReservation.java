@@ -17,6 +17,13 @@ public class RechercheReservation {
 	
 	private int DELAIS_DE_PAIEMENT_EN_JOURS = 7;
 
+	/**
+	 * Methode qui permet de rechercher une reservation
+	 * @param idres
+	 * @param date
+	 * @param s
+	 * @return reservation si trouvee , null sinon
+	 */
 	public Reservation rechercheReservation(Integer idres, Date date , Salle s) {
 		FabReservation reservation = FabReservation.getInstance();
 		
@@ -31,6 +38,12 @@ public class RechercheReservation {
 		
 	}
 	
+	/**
+	 * Methode qui permet de rechercher une reservation par date et type de salle
+	 * @param date
+	 * @param typeSalle
+	 * @return reservation
+	 */
 	public List<Reservation> rechercheReservationParDateEtTypeSalle(String date, String typeSalle){
 		return FabReservation.getInstance().rechercherParDateEtTypeSalle(date, typeSalle);
 	}
@@ -41,7 +54,7 @@ public class RechercheReservation {
 	 * @param duree
 	 * @param tranche
 	 * @param typeSalle
-	 * @return
+	 * @return liste reservation
 	 */
 	public List<Reservation> rechercheCreneauLibre(String date, int duree, String tranche, String typeSalle){
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
@@ -81,6 +94,11 @@ public class RechercheReservation {
 		return plage1hEnPlage2hEt1h(leCreneauAvecPlage1h);
 	}
 	
+	/**
+	 * Methode qui permet retourner une liste de reservation en plage 1h et 2h
+	 * @param liste1h
+	 * @return liste reservation
+	 */
 	private List<Reservation> plage1hEnPlage2hEt1h(List<Reservation> liste1h){
 		List<Reservation> liste2h = new ArrayList<Reservation>();
 		Reservation reservationCourante = null;
@@ -108,7 +126,7 @@ public class RechercheReservation {
 	 * pour la date donnee
 	 * @param date
 	 * @param typeSalle
-	 * @return
+	 * @return etat de la salle
 	 */
 	public String[] etatsSalle(String date, String typeSalle){
 		GregorianCalendar calendarDebut = new GregorianCalendar();

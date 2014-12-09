@@ -18,9 +18,6 @@ public class FabForfait {
 		return instance;
 	}
 	
-	public FabForfait() {
-		
-	}
 	
 	/**
 	 * Récupère un forfait à partir du type de forfait (12h, 24h...)

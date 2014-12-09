@@ -8,6 +8,11 @@ import fabrique.FabReservation;
 
 public class SupprimerReservation {
 	
+	/**
+	 * Methode qui permet de supprimer une reservation
+	 * @param idres
+	 * @param idClient
+	 */
 	public void supprimerResrevation (Integer idres, Integer idClient) {
 		FabClient fabClient = FabClient.getInstance();
 		FabReservation reservation = FabReservation.getInstance();

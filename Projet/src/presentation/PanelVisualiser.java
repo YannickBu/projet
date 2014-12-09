@@ -45,6 +45,10 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	private Container containerCENTER;
 	private Container containerSOUTH;
 	
+	/**
+	 * Methode qui permet de visualiser 
+	 * @param frame
+	 */
 	public PanelVisualiser(JFrame frame) {
 		containerNORTH = new Container();
 		containerCENTER = new Container();
@@ -119,7 +123,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * Met à jour l'état des réservations pour une date et un type de salle donnés
+	 * Met ˆ jour l'état des réservations pour une date et un type de salle donnés
 	 * @param c
 	 */
 	public void alimenterContainerCENTER(){

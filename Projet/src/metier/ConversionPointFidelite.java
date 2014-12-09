@@ -5,6 +5,10 @@ import fabrique.FabClient;
 
 public class ConversionPointFidelite {
 
+	/**
+	 * Methode qui permet de convertir les points de fidelite d'un client
+	 * @param idClient
+	 */
 	public void conversionPointFidelite (Integer idClient){
 		FabClient client = FabClient.getInstance();
 		
