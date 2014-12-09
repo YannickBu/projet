@@ -10,6 +10,7 @@ public class Salle {
 	private int prixPlage1h;
 	private int prixPlage2h;
 	
+	public Salle() {}
 	
 	public String getTypeSalle() {
 		return typeSalle;

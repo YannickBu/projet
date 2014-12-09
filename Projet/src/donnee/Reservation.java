@@ -12,6 +12,7 @@ public class Reservation {
 	private int plage;
 	private boolean estPaye;
 	
+	public Reservation() {}
 
 	public int getIdReserv() {
 		return idReserv;
