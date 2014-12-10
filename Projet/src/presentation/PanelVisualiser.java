@@ -112,6 +112,9 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		this.add(containerSOUTH, BorderLayout.SOUTH);
 	}
 
+	/**
+	 * @param c
+	 */
 	public void alimenterContainerCENTER(Container c){
 		JLabel horaire;
 		for(int i=9; i<24; i++){
