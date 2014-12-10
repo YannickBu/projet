@@ -84,7 +84,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		bgChoixTypeSalle = new ButtonGroup();
 		rb1 = new JRadioButton("Petite salle");
 		rb2 = new JRadioButton("Grande salle");
-		rb3 = new JRadioButton("Salle �quip�e");
+		rb3 = new JRadioButton("Salle equipee");
 		rb1.setSelected(true);
 		bgChoixTypeSalle.add(rb1);
 		bgChoixTypeSalle.add(rb2);
@@ -125,7 +125,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * Met � jour l'�tat des r�servations pour une date et un type de salle donn�s
+	 * Met a jour l'etat des reservations pour une date et un type de salle donnes
 	 * @param c
 	 */
 	public void alimenterContainerCENTER(){
@@ -139,7 +139,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		containerCENTER.removeAll();
 		containerCENTER.setLayout(new GridLayout(15, 2));
 		
-		//Affichage des diff�rents cr�neaux et de l'�tat de leur r�servation (libre, confirm�e, non confirm�e ou hors d�lais)
+		//Affichage des differents creneaux et de l'etat de leur reservation (libre, confirmee, non confirmee ou hors delais)
 		for(int i=9; i<24; i++){
 			
 			lHoraire = new JLabel(i+"h - "+(i+1)+"h  ");
