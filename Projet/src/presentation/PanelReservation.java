@@ -95,13 +95,13 @@ public class PanelReservation extends JPanel implements ActionListener {
 		lSalle = new JLabel("Type de salle ");
 		lDate = new JLabel("Date ");
 		lTranche = new JLabel("Tranche ");
-		lDuree = new JLabel("Durée ");
+		lDuree = new JLabel("Duree ");
 		
 		bRechercher = new JButton("Rechercher");
 		bRetourMenu = new JButton("Retour");
 		bRetourRecherche = new JButton("Retour");
 		bAccepter = new JButton("Accepter");
-		bEnregistrer = new JButton("Enregistrer la réservation");
+		bEnregistrer = new JButton("Enregistrer la reservation");
 		
 		tfDateJour = new JTextField();
 		tfDateMois = new JTextField();
@@ -120,7 +120,7 @@ public class PanelReservation extends JPanel implements ActionListener {
 		choixSalle = new ButtonGroup();
 		rbPetiteSalle = new JRadioButton("Petite salle");
 		rbGrandeSalle = new JRadioButton("Grande salle");
-		rbSalleEquipee = new JRadioButton("Salle équipée");
+		rbSalleEquipee = new JRadioButton("Salle equipee");
 		rbPetiteSalle.setSelected(true);
 		choixSalle.add(rbPetiteSalle);
 		choixSalle.add(rbGrandeSalle);
@@ -203,11 +203,11 @@ public class PanelReservation extends JPanel implements ActionListener {
 			duree = creneauPropose.get(creneauPropose.size()-1).getPlage();
 			containerCENTERInterneResultat.add(new JLabel("Proposition : " 
 					+ formatterDeb.format(dateReservationDebut) 
-					+ "à " + (Integer.parseInt(formatterFin.format(dateReservationFin))+duree) + "h " ));
+					+ "a " + (Integer.parseInt(formatterFin.format(dateReservationFin))+duree) + "h " ));
 			containerCENTERInterneResultat.add(bAccepter);
 			bRechercher.setAlignmentX(Component.CENTER_ALIGNMENT);
 		} else {
-			containerCENTERInterneResultat.add(new JLabel("Aucun créneau libre à cette date"));
+			containerCENTERInterneResultat.add(new JLabel("Aucun creneau libre a cette date"));
 		}
 		
 		this.validate();
