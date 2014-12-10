@@ -1,1 +1,10 @@
+<<<<<<< HEAD
 /.gitignore
+=======
+/donnee/
+/exception/
+/fabrique/
+/lib/
+/metier/
+/presentation/
+>>>>>>> refs/remotes/origin/master

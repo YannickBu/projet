@@ -8,10 +8,14 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -21,6 +25,9 @@ import javax.swing.SwingConstants;
 
 import metier.RechercheReservation;
 
+import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JDateChooser;
+
 
 public class PanelVisualiser extends JPanel implements ActionListener {
 	
@@ -29,14 +36,14 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	private JLabel lSalle;
 	private JLabel lDate;
 	
-	private ButtonGroup choixSalle;
+	private ButtonGroup bgChoixTypeSalle;
 	private JRadioButton rb1;
 	private JRadioButton rb2;
 	private JRadioButton rb3;
 	
-	private JTextField tfDateJour;
-	private JTextField tfDateMois;
-	private JTextField tfDateAnnee;
+	private JComboBox cbChoixNumSalle;
+	
+	private JDateChooser dateChooser;
 	
 	private JButton bRechercher;
 	private JButton bRetour;
@@ -67,39 +74,31 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		lDate = new JLabel("Date ");
 		bRechercher = new JButton("Rechercher");
 		bRetour = new JButton("Retour");
-		tfDateJour = new JTextField();
-		tfDateMois = new JTextField();
-		tfDateAnnee = new JTextField();
 		
-		tfDateJour.setMinimumSize(new Dimension(23, 20));
-		tfDateJour.setPreferredSize(new Dimension(23, 20));
+		//tfDateMois.setMinimumSize(new Dimension(23, 20));
+		//tfDateMois.setPreferredSize(new Dimension(23, 20));
 		
-		tfDateMois.setMinimumSize(new Dimension(23, 20));
-		tfDateMois.setPreferredSize(new Dimension(23, 20));
+		//tfDateAnnee.setMinimumSize(new Dimension(45, 20));
+		//tfDateAnnee.setPreferredSize(new Dimension(45, 20));
 		
-		tfDateAnnee.setMinimumSize(new Dimension(45, 20));
-		tfDateAnnee.setPreferredSize(new Dimension(45, 20));
-		
-		choixSalle = new ButtonGroup();
+		bgChoixTypeSalle = new ButtonGroup();
 		rb1 = new JRadioButton("Petite salle");
 		rb2 = new JRadioButton("Grande salle");
-		rb3 = new JRadioButton("Salle équipée");
+		rb3 = new JRadioButton("Salle equipee");
 		rb1.setSelected(true);
-		choixSalle.add(rb1);
-		choixSalle.add(rb2);
-		choixSalle.add(rb3);
+		bgChoixTypeSalle.add(rb1);
+		bgChoixTypeSalle.add(rb2);
+		bgChoixTypeSalle.add(rb3);
 		containerRadio.add(rb1);
 		containerRadio.add(rb2);
 		containerRadio.add(rb3);
 		
+		dateChooser = new JDateChooser();
+		
 		containerNORTH.add(lSalle);
 		containerNORTH.add(containerRadio);
 		containerNORTH.add(lDate);
-		containerNORTH.add(tfDateJour);
-		containerNORTH.add(new JLabel("/"));
-		containerNORTH.add(tfDateMois);
-		containerNORTH.add(new JLabel("/"));
-		containerNORTH.add(tfDateAnnee);
+		containerNORTH.add(dateChooser);
 		containerNORTH.add(bRechercher);
 		alimenterContainerCENTER(containerCENTER);
 		containerSOUTH.add(bRetour);
@@ -112,6 +111,9 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		this.add(containerSOUTH, BorderLayout.SOUTH);
 	}
 
+	/**
+	 * @param c
+	 */
 	public void alimenterContainerCENTER(Container c){
 		JLabel horaire;
 		for(int i=9; i<24; i++){
@@ -123,12 +125,13 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * Met ˆ jour l'état des réservations pour une date et un type de salle donnés
+	 * Met a jour l'etat des reservations pour une date et un type de salle donnes
 	 * @param c
 	 */
 	public void alimenterContainerCENTER(){
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		RechercheReservation metierPlanning = new RechercheReservation();
-		String[] etatsSalle = metierPlanning.etatsSalle(tfDateJour.getText()+"-"+tfDateMois.getText()+"-"+tfDateAnnee.getText(), rb1.isSelected()?"petite":(rb2.isSelected()?"grande":"equipee"));
+		String[] etatsSalle = metierPlanning.etatsSalle(formatter.format(dateChooser.getDate()), rb1.isSelected()?"petite":(rb2.isSelected()?"grande":"equipee"));
 		
 		JLabel lHoraire = null;
 		JLabel lEtat = null;
@@ -136,7 +139,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		containerCENTER.removeAll();
 		containerCENTER.setLayout(new GridLayout(15, 2));
 		
-		//Affichage des différents créneaux et de l'état de leur réservation (libre, confirmée, non confirmée ou hors délais)
+		//Affichage des differents creneaux et de l'etat de leur reservation (libre, confirmee, non confirmee ou hors delais)
 		for(int i=9; i<24; i++){
 			
 			lHoraire = new JLabel(i+"h - "+(i+1)+"h  ");
@@ -146,16 +149,16 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 			lEtat = new JLabel(etatsSalle[i-9]);
 			if(etatsSalle[i-9].equals("Libre")){
 				lEtat.setForeground(Color.GREEN);
-			} else if(etatsSalle[i-9].equals("Confirmée")){
+			} else if(etatsSalle[i-9].equals("Confirmee")){
 				lEtat.setForeground(Color.CYAN);
-			} else if(etatsSalle[i-9].equals("Non confirmée")){
+			} else if(etatsSalle[i-9].equals("Non confirmee")){
 				lEtat.setForeground(Color.ORANGE);
 			} else {
 				lEtat.setForeground(Color.RED);
 			}
 			containerCENTER.add(lEtat);
 		}
-		containerCENTER.revalidate();
+		containerCENTER.validate();
 	}
 	
 	public void actionPerformed(ActionEvent e) {
