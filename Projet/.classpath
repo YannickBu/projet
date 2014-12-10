@@ -3,5 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="src/lib/hsqldb.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/m1miage/buchart/Documents/COO/workspace/Projet/src/lib/jcalendar-1.4.jar"/>
+	<classpathentry kind="lib" path="/home/m1miage/buchart/Documents/COO/workspace/Projet/src/lib/jgoodies-common-1.2.0.jar"/>
+	<classpathentry kind="lib" path="/home/m1miage/buchart/Documents/COO/workspace/Projet/src/lib/jgoodies-looks-2.4.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
