@@ -83,7 +83,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		choixSalle = new ButtonGroup();
 		rb1 = new JRadioButton("Petite salle");
 		rb2 = new JRadioButton("Grande salle");
-		rb3 = new JRadioButton("Salle équipée");
+		rb3 = new JRadioButton("Salle ï¿½quipï¿½e");
 		rb1.setSelected(true);
 		choixSalle.add(rb1);
 		choixSalle.add(rb2);
@@ -123,7 +123,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * Met ˆ jour l'état des réservations pour une date et un type de salle donnés
+	 * Met ï¿½ jour l'ï¿½tat des rï¿½servations pour une date et un type de salle donnï¿½s
 	 * @param c
 	 */
 	public void alimenterContainerCENTER(){
@@ -136,7 +136,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		containerCENTER.removeAll();
 		containerCENTER.setLayout(new GridLayout(15, 2));
 		
-		//Affichage des différents créneaux et de l'état de leur réservation (libre, confirmée, non confirmée ou hors délais)
+		//Affichage des diffï¿½rents crï¿½neaux et de l'ï¿½tat de leur rï¿½servation (libre, confirmï¿½e, non confirmï¿½e ou hors dï¿½lais)
 		for(int i=9; i<24; i++){
 			
 			lHoraire = new JLabel(i+"h - "+(i+1)+"h  ");
@@ -146,16 +146,16 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 			lEtat = new JLabel(etatsSalle[i-9]);
 			if(etatsSalle[i-9].equals("Libre")){
 				lEtat.setForeground(Color.GREEN);
-			} else if(etatsSalle[i-9].equals("Confirmée")){
+			} else if(etatsSalle[i-9].equals("Confirmï¿½e")){
 				lEtat.setForeground(Color.CYAN);
-			} else if(etatsSalle[i-9].equals("Non confirmée")){
+			} else if(etatsSalle[i-9].equals("Non confirmï¿½e")){
 				lEtat.setForeground(Color.ORANGE);
 			} else {
 				lEtat.setForeground(Color.RED);
 			}
 			containerCENTER.add(lEtat);
 		}
-		containerCENTER.revalidate();
+		containerCENTER.validate();
 	}
 	
 	public void actionPerformed(ActionEvent e) {
