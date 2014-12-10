@@ -83,7 +83,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		choixSalle = new ButtonGroup();
 		rb1 = new JRadioButton("Petite salle");
 		rb2 = new JRadioButton("Grande salle");
-		rb3 = new JRadioButton("Salle �quip�e");
+		rb3 = new JRadioButton("Salle equipee");
 		rb1.setSelected(true);
 		choixSalle.add(rb1);
 		choixSalle.add(rb2);
@@ -126,7 +126,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * Met � jour l'�tat des r�servations pour une date et un type de salle donn�s
+	 * Met a jour l'etat des reservations pour une date et un type de salle donnes
 	 * @param c
 	 */
 	public void alimenterContainerCENTER(){
@@ -139,7 +139,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		containerCENTER.removeAll();
 		containerCENTER.setLayout(new GridLayout(15, 2));
 		
-		//Affichage des diff�rents cr�neaux et de l'�tat de leur r�servation (libre, confirm�e, non confirm�e ou hors d�lais)
+		//Affichage des differents creneaux et de l'etat de leur reservation (libre, confirmee, non confirmee ou hors delais)
 		for(int i=9; i<24; i++){
 			
 			lHoraire = new JLabel(i+"h - "+(i+1)+"h  ");
@@ -149,9 +149,9 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 			lEtat = new JLabel(etatsSalle[i-9]);
 			if(etatsSalle[i-9].equals("Libre")){
 				lEtat.setForeground(Color.GREEN);
-			} else if(etatsSalle[i-9].equals("Confirm�e")){
+			} else if(etatsSalle[i-9].equals("Confirmee")){
 				lEtat.setForeground(Color.CYAN);
-			} else if(etatsSalle[i-9].equals("Non confirm�e")){
+			} else if(etatsSalle[i-9].equals("Non confirmee")){
 				lEtat.setForeground(Color.ORANGE);
 			} else {
 				lEtat.setForeground(Color.RED);
