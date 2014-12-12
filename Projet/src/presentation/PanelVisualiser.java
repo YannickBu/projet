@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import javax.swing.BoxLayout;
@@ -28,6 +29,8 @@ import metier.RechercheReservation;
 import com.toedter.calendar.JCalendar;
 import com.toedter.calendar.JDateChooser;
 
+import donnee.Salle;
+
 
 public class PanelVisualiser extends JPanel implements ActionListener {
 	
@@ -37,13 +40,13 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	private JLabel lDate;
 	
 	private ButtonGroup bgChoixTypeSalle;
-	private JRadioButton rb1;
-	private JRadioButton rb2;
-	private JRadioButton rb3;
+	private JRadioButton rbPetiteSalle;
+	private JRadioButton rbGrandeSalle;
+	private JRadioButton rbSalleEquipee;
 	
 	private JComboBox cbChoixNumSalle;
 	
-	private JDateChooser dateChooser;
+	private JDateChooser jdDateChooser;
 	
 	private JButton bRechercher;
 	private JButton bRetour;
@@ -51,6 +54,11 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	private Container containerNORTH;
 	private Container containerCENTER;
 	private Container containerSOUTH;
+	
+
+	private List<Salle> listeSallesPourUnType;
+	private int[] tabIdSalle;
+	
 	
 	/**
 	 * Methode qui permet de visualiser 
@@ -82,33 +90,54 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		//tfDateAnnee.setPreferredSize(new Dimension(45, 20));
 		
 		bgChoixTypeSalle = new ButtonGroup();
-		rb1 = new JRadioButton("Petite salle");
-		rb2 = new JRadioButton("Grande salle");
-		rb3 = new JRadioButton("Salle equipee");
-		rb1.setSelected(true);
-		bgChoixTypeSalle.add(rb1);
-		bgChoixTypeSalle.add(rb2);
-		bgChoixTypeSalle.add(rb3);
-		containerRadio.add(rb1);
-		containerRadio.add(rb2);
-		containerRadio.add(rb3);
+		rbPetiteSalle = new JRadioButton("Petite salle");
+		rbGrandeSalle = new JRadioButton("Grande salle");
+		rbSalleEquipee = new JRadioButton("Salle equipee");
+		rbPetiteSalle.setSelected(true);
+		bgChoixTypeSalle.add(rbPetiteSalle);
+		bgChoixTypeSalle.add(rbGrandeSalle);
+		bgChoixTypeSalle.add(rbSalleEquipee);
+		containerRadio.add(rbPetiteSalle);
+		containerRadio.add(rbGrandeSalle);
+		containerRadio.add(rbSalleEquipee);
+
+		//ComboBox choixSalle
+		cbChoixNumSalle = new JComboBox();
+		alimenterChoixSalle();
 		
-		dateChooser = new JDateChooser();
+		jdDateChooser = new JDateChooser();
 		
 		containerNORTH.add(lSalle);
 		containerNORTH.add(containerRadio);
+		containerNORTH.add(cbChoixNumSalle);
 		containerNORTH.add(lDate);
-		containerNORTH.add(dateChooser);
+		containerNORTH.add(jdDateChooser);
 		containerNORTH.add(bRechercher);
 		alimenterContainerCENTER(containerCENTER);
 		containerSOUTH.add(bRetour);
 
 		bRetour.addActionListener(this);
 		bRechercher.addActionListener(this);
+		rbPetiteSalle.addActionListener(this);
+		rbGrandeSalle.addActionListener(this);
+		rbSalleEquipee.addActionListener(this);
 		
 		this.add(containerNORTH, BorderLayout.NORTH);
 		this.add(containerCENTER, BorderLayout.CENTER);
 		this.add(containerSOUTH, BorderLayout.SOUTH);
+	}
+	
+	public void alimenterChoixSalle(){
+		RechercheReservation metier = new RechercheReservation();
+		listeSallesPourUnType = metier.rechercherSallesParType(rbPetiteSalle.isSelected()?"petite":(rbGrandeSalle.isSelected()?"grande":"equipee"));
+
+		cbChoixNumSalle.removeAllItems();
+		
+		tabIdSalle = new int[listeSallesPourUnType.size()];
+		for(int i=1; i<=listeSallesPourUnType.size();i++){
+			cbChoixNumSalle.addItem("Salle "+ i);
+			tabIdSalle[i-1] = listeSallesPourUnType.get(i-1).getIdSalle();
+		}
 	}
 
 	/**
@@ -131,7 +160,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	public void alimenterContainerCENTER(){
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		RechercheReservation metierPlanning = new RechercheReservation();
-		String[] etatsSalle = metierPlanning.etatsSalle(formatter.format(dateChooser.getDate()), rb1.isSelected()?"petite":(rb2.isSelected()?"grande":"equipee"));
+		String[] etatsSalle = metierPlanning.etatsSalle(formatter.format(jdDateChooser.getDate()), tabIdSalle[cbChoixNumSalle.getSelectedIndex()]);
 		
 		JLabel lHoraire = null;
 		JLabel lEtat = null;
@@ -169,6 +198,8 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 			frame.validate();
 		} else if(o.equals(bRechercher)) {
 			alimenterContainerCENTER();
+		} else if(o.equals(rbPetiteSalle) || o.equals(rbGrandeSalle) || o.equals(rbSalleEquipee)){
+			alimenterChoixSalle();
 		}
 	}
 

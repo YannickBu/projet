@@ -26,14 +26,18 @@ import javax.swing.SwingConstants;
 import metier.CreerReservation;
 import metier.RechercheReservation;
 import donnee.Reservation;
+import donnee.Salle;
 
 public class PanelReservation extends JPanel implements ActionListener {
 
-	private int DUREE_MAX_MATIN = 15;
-	private int DUREE_MAX_APRES_MIDI = 11;
-	private int DUREE_MAX_SOIR = 4;
+	private static final String TRANCHE_SOIR = "20h - 00h";
+	private static final String TRANCHE_APRES_MIDI = "13h - 20h";
+	private static final String TRANCHE_MATIN = "9h - 13h";
+	private static final int DUREE_MAX_MATIN = 15;
+	private static final int DUREE_MAX_APRES_MIDI = 11;
+	private static final int DUREE_MAX_SOIR = 4;
 	
-	private List<Reservation> creneauPropose = null;
+	private List<Reservation> creneauPropose;
 	
 	private JFrame frame;
 	
@@ -42,7 +46,7 @@ public class PanelReservation extends JPanel implements ActionListener {
 	private JLabel lTranche;
 	private JLabel lDuree;
 	
-	private ButtonGroup choixSalle;
+	private ButtonGroup bgChoixSalle;
 	private JRadioButton rbPetiteSalle;
 	private JRadioButton rbGrandeSalle;
 	private JRadioButton rbSalleEquipee;
@@ -117,23 +121,24 @@ public class PanelReservation extends JPanel implements ActionListener {
 		tfDateAnnee.setPreferredSize(new Dimension(45, 20));
 		
 		//Radio Button salles
-		choixSalle = new ButtonGroup();
+		bgChoixSalle = new ButtonGroup();
 		rbPetiteSalle = new JRadioButton("Petite salle");
 		rbGrandeSalle = new JRadioButton("Grande salle");
 		rbSalleEquipee = new JRadioButton("Salle equipee");
 		rbPetiteSalle.setSelected(true);
-		choixSalle.add(rbPetiteSalle);
-		choixSalle.add(rbGrandeSalle);
-		choixSalle.add(rbSalleEquipee);
+		bgChoixSalle.add(rbPetiteSalle);
+		bgChoixSalle.add(rbGrandeSalle);
+		bgChoixSalle.add(rbSalleEquipee);
 		containerRadioSalle.add(rbPetiteSalle);
 		containerRadioSalle.add(rbGrandeSalle);
 		containerRadioSalle.add(rbSalleEquipee);
 		
+		
 		//Radio Button tranches
 		choixTranche = new ButtonGroup();
-		rbMatin = new JRadioButton("9h - 13h");
-		rbApresMidi = new JRadioButton("13h - 20h");
-		rbSoir = new JRadioButton("20h - 00h");
+		rbMatin = new JRadioButton(TRANCHE_MATIN);
+		rbApresMidi = new JRadioButton(TRANCHE_APRES_MIDI);
+		rbSoir = new JRadioButton(TRANCHE_SOIR);
 		rbMatin.setSelected(true);
 		choixTranche.add(rbMatin);
 		choixTranche.add(rbApresMidi);

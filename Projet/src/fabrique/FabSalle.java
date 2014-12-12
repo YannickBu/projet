@@ -100,11 +100,18 @@ public class FabSalle {
 		return salle;
 	}
 
-	public Salle rechercher(String typeSalle) throws ObjetInconnuException{
+	/**
+	 * Recupere lensemble des salles selon le type de la salle
+	 * @param typeSalle
+	 * @return
+	 * @throws ObjetInconnuException
+	 */
+	public List<Salle> rechercher(String typeSalle) throws ObjetInconnuException{
+		List<Salle> listeSalles = new ArrayList<Salle>();
 		Salle salle = null;
 		PreparedStatement pst = null;
 		Connection connection = FabConnexion.getConnexion();
-		String query = "SELECT idsalle, prix1h, prix2h FROM salle WHERE typeSalle = ?  ";
+		String query = "SELECT idsalle, prix1h, prix2h FROM salle WHERE typeSalle = ? order by idsalle";
 		try {
 			pst = connection.prepareStatement(query);
 			pst.clearParameters();
@@ -113,21 +120,20 @@ public class FabSalle {
 			
 			ResultSet rs = pst.executeQuery();
 			
-			if(!rs.next()) {
-				throw new ObjetInconnuException(Salle.class.toString(), "Aucune Salle a etait trouve pour le type de salle "+typeSalle);
-			}
-
-			salle = new Salle();
-			salle.setTypeSalle(typeSalle);
-			salle.setIdSalle(rs.getInt("idsalle"));
-			salle.setPrixPlage1h(rs.getInt("prix1h"));
-			salle.setPrixPlage2h(rs.getInt("prix2h"));
 			
+			while(rs.next()){
+				salle = new Salle();
+				salle.setTypeSalle(typeSalle);
+				salle.setIdSalle(rs.getInt("idsalle"));
+				salle.setPrixPlage1h(rs.getInt("prix1h"));
+				salle.setPrixPlage2h(rs.getInt("prix2h"));
+				listeSalles.add(salle);
+			}
 
 		} catch (SQLException e) {
 			System.out.println("echec de la recuperation de la salle pour le type "+typeSalle+" dans la recherche de FabSalle");
 		}
-		return salle;
+		return listeSalles;
 	}
 	
 	/**

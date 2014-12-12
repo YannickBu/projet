@@ -123,7 +123,7 @@ public class FabReservation {
 	 * @param typeSalle
 	 * @return liste de reservation
 	 */
-	public List<Reservation> rechercherParDateEtTypeSalle(String date, String typeSalle){
+	public List<Reservation> rechercherParDateEtTypeSalle(String date, int idSalle){
 		List<Reservation> listeReservation = new ArrayList<Reservation>();
 		PreparedStatement st = null;
 		ResultSet rs = null;
@@ -137,7 +137,7 @@ public class FabReservation {
 		java.util.Date dateFin;
 		
 		try {
-			salle = FabSalle.getInstance().rechercher(typeSalle);
+			salle = FabSalle.getInstance().rechercher(idSalle);
 			dateDebut = formatter.parse(date);
 			calendar.setTime(dateDebut); // on passe dateFin à la journee qui suit dateDebut à 1h du matin
 			calendar.add(Calendar.DAY_OF_MONTH, 1);
