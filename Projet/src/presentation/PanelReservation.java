@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -67,7 +68,6 @@ public class PanelReservation extends JPanel implements ActionListener {
 	private JButton bRetourMenu;
 	private JButton bRetourRecherche;
 	private JButton bAccepter;
-	private JButton bEnregistrer;
 	
 	private Container containerNORTH = new Container();
 	private Container containerCENTER = new Container();
@@ -102,7 +102,6 @@ public class PanelReservation extends JPanel implements ActionListener {
 		bRetourMenu = new JButton("Retour");
 		bRetourRecherche = new JButton("Retour");
 		bAccepter = new JButton("Accepter");
-		bEnregistrer = new JButton("Enregistrer la reservation");
 		
 		jdDateChooser = new JDateChooser();
 		jdDateChooser.setPreferredSize(new Dimension(120, 25));
@@ -164,7 +163,6 @@ public class PanelReservation extends JPanel implements ActionListener {
 		bRechercher.addActionListener(this);
 		bAccepter.addActionListener(this);
 		bRetourRecherche.addActionListener(this);
-		bEnregistrer.addActionListener(this);
 		
 	}
 	
@@ -176,6 +174,11 @@ public class PanelReservation extends JPanel implements ActionListener {
 		Date dateReservationDebut = null;
 		Date dateReservationFin = null;
 		int duree;
+		
+		if(jdDateChooser.getDate()==null){
+			JOptionPane.showMessageDialog(this, "Date non valide !");
+			return;
+		}
 		
 		creneauPropose = metier.rechercheCreneauLibre(
 				formatterDateSaisie.format(jdDateChooser.getDate()), 
@@ -201,10 +204,10 @@ public class PanelReservation extends JPanel implements ActionListener {
 	}
 	
 	public void afficherSaisieClient(){
-		/*frame.getContentPane().removeAll();
+		frame.getContentPane().removeAll();
 		frame.getContentPane().add(new PanelSaisieClient(frame, creneauPropose));
-		frame.validate();*/
-		JPanel panel = new JPanel();
+		frame.validate();
+	/*	JPanel panel = new JPanel();
 		Container containerSOUTH = new Container();
 		Container containerCENTER = new Container();
 		Container containerCENTERInterne = new Container();
@@ -250,16 +253,7 @@ public class PanelReservation extends JPanel implements ActionListener {
 		panel.add(containerCENTER, BorderLayout.CENTER);
 		
 		frame.getContentPane().add(panel);
-		frame.validate();
-	}
-	
-	public void enregistrerReservation(){
-		CreerReservation metier = new CreerReservation();
-		metier.creerReservation(creneauPropose, tfNom.getText(), tfTel.getText());
-		
-		frame.getContentPane().removeAll();
-		frame.getContentPane().add(new PanelReservation(frame));
-		frame.validate();
+		frame.validate();*/
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -291,8 +285,6 @@ public class PanelReservation extends JPanel implements ActionListener {
 			frame.getContentPane().removeAll();
 			frame.getContentPane().add(new PanelReservation(frame));
 			frame.validate();
-		} else if(o.equals(bEnregistrer)){
-			enregistrerReservation();
 		}
 	}
 

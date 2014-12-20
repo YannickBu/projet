@@ -109,17 +109,18 @@ public class FabClient {
 	 * @return client
 	 * @throws ObjetInconnuException
 	 */
-	public Client rechercher(String nom, String num) throws ObjetInconnuException{
+	public Client rechercher(String nom, String prenom, String num) throws ObjetInconnuException{
 		Client client = null;
 		PreparedStatement pst = null;
 		Connection connection = FabConnexion.getConnexion();
-		String query = "SELECT idclient, nom, prenom, tel, fidelite FROM Client WHERE nom = ? and tel = ?";
+		String query = "SELECT idclient, nom, prenom, tel, fidelite FROM Client WHERE nom = ? and prenom = ? and tel = ?";
 		try {
 			pst = connection.prepareStatement(query);
 			pst.clearParameters();
 			
 			pst.setString(1, nom);
-			pst.setString(2, num);
+			pst.setString(2, prenom);
+			pst.setString(3, num);
 			
 			ResultSet rs = pst.executeQuery();
 			
@@ -130,7 +131,7 @@ public class FabClient {
 			client = new Client();
 			client.setId(rs.getInt("idclient"));
 			client.setNom(nom);
-			client.setPrenom(rs.getString("prenom"));
+			client.setPrenom(prenom);
 			client.setNumTel(num);
 			client.setPointsFidelite(rs.getInt("fidelite"));
 

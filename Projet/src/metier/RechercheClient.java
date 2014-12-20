@@ -15,8 +15,8 @@ public class RechercheClient {
 	 * @param tel
 	 * @return client si le client trouve, null sinon
 	 */
-	public Client rechercheClient(String nom , String tel ) {
-		return FabClient.getInstance().rechercher(nom,tel);
+	public Client rechercheClient(String nom , String prenom, String tel ) {
+		return FabClient.getInstance().rechercher(nom,prenom,tel);
 	}
 	
 	public List<Client> listerClients(){

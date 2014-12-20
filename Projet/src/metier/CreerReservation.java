@@ -5,6 +5,7 @@ import java.util.List;
 
 import donnee.Client;
 import donnee.Reservation;
+import exception.ObjetInconnuException;
 import fabrique.FabClient;
 import fabrique.FabReservation;
 
@@ -35,9 +36,9 @@ public class CreerReservation {
 		
 	}
 	
-	public void creerReservation(List<Reservation> listeReservations, String nomClt, String telClt){
-		CreerClient metierCreerClt = new CreerClient();
-		Client clt = metierCreerClt.creerClientSiInexistant(nomClt, telClt);
+	public void creerReservation(List<Reservation> listeReservations, String nomClt, String prenomClt, String telClt) throws ObjetInconnuException{
+		RechercheClient metierRechClt = new RechercheClient();
+		Client clt = metierRechClt.rechercheClient(nomClt, prenomClt, telClt);
 		
 		for(Reservation res : listeReservations){
 			FabReservation.getInstance().creer(clt.getId(), res.getSalle().getIdSalle(), res.getDate(), res.getPlage(), res.getDateCreation(), res.getEstPaye());
