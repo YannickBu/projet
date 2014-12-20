@@ -167,7 +167,7 @@ public class FabClient {
 	 */
 	public List<Client> lister() {
 		Connection connection = FabConnexion.getConnexion();
-		String query = "SELECT nom,prenom,tel,fidelite FROM Client";
+		String query = "SELECT nom,prenom,tel,fidelite FROM Client order by nom";
 		Statement st = null;
 		ResultSet rs = null;
 		List<Client> listClient = new ArrayList<Client>();

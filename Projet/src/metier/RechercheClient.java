@@ -1,6 +1,8 @@
 package metier;
 
 
+import java.util.List;
+
 import donnee.Client;
 import fabrique.FabClient;
 
@@ -15,6 +17,10 @@ public class RechercheClient {
 	 */
 	public Client rechercheClient(String nom , String tel ) {
 		return FabClient.getInstance().rechercher(nom,tel);
+	}
+	
+	public List<Client> listerClients(){
+		return FabClient.getInstance().lister();
 	}
 
 }

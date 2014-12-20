@@ -23,6 +23,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+import com.toedter.calendar.JDateChooser;
+
 import metier.CreerReservation;
 import metier.RechercheReservation;
 import donnee.Reservation;
@@ -41,8 +43,8 @@ public class PanelReservation extends JPanel implements ActionListener {
 	
 	private JFrame frame;
 	
-	private JLabel lSalle;
-	private JLabel lDate;
+	private JDateChooser jdDateChooser;
+	
 	private JLabel lTranche;
 	private JLabel lDuree;
 	
@@ -56,9 +58,6 @@ public class PanelReservation extends JPanel implements ActionListener {
 	private JRadioButton rbApresMidi;
 	private JRadioButton rbSoir;
 	
-	private JTextField tfDateJour;
-	private JTextField tfDateMois;
-	private JTextField tfDateAnnee;
 	private JTextField tfNom = new JTextField();
 	private JTextField tfTel = new JTextField();
 	
@@ -96,8 +95,6 @@ public class PanelReservation extends JPanel implements ActionListener {
 		containerRadioSalle.setLayout(new BoxLayout(containerRadioSalle, 3));
 		containerRadioTranche.setLayout(new BoxLayout(containerRadioTranche, 3));
 		
-		lSalle = new JLabel("Type de salle ");
-		lDate = new JLabel("Date ");
 		lTranche = new JLabel("Tranche ");
 		lDuree = new JLabel("Duree ");
 		
@@ -107,18 +104,8 @@ public class PanelReservation extends JPanel implements ActionListener {
 		bAccepter = new JButton("Accepter");
 		bEnregistrer = new JButton("Enregistrer la reservation");
 		
-		tfDateJour = new JTextField();
-		tfDateMois = new JTextField();
-		tfDateAnnee = new JTextField();
-		
-		tfDateJour.setMinimumSize(new Dimension(23, 20));
-		tfDateJour.setPreferredSize(new Dimension(23, 20));
-		
-		tfDateMois.setMinimumSize(new Dimension(23, 20));
-		tfDateMois.setPreferredSize(new Dimension(23, 20));
-		
-		tfDateAnnee.setMinimumSize(new Dimension(45, 20));
-		tfDateAnnee.setPreferredSize(new Dimension(45, 20));
+		jdDateChooser = new JDateChooser();
+		jdDateChooser.setPreferredSize(new Dimension(120, 25));
 		
 		//Radio Button salles
 		bgChoixSalle = new ButtonGroup();
@@ -151,17 +138,11 @@ public class PanelReservation extends JPanel implements ActionListener {
 		cbDuree = new JComboBox();
 		cbDuree.removeAllItems();
 		for(int i=1; i<=DUREE_MAX_MATIN; i++){
-			cbDuree.addItem(i);
+			cbDuree.addItem(i+"h");
 		}
 
-		containerNORTH.add(lSalle);
 		containerNORTH.add(containerRadioSalle);
-		containerNORTH.add(lDate);
-		containerNORTH.add(tfDateJour);
-		containerNORTH.add(new JLabel("/"));
-		containerNORTH.add(tfDateMois);
-		containerNORTH.add(new JLabel("/"));
-		containerNORTH.add(tfDateAnnee);
+		containerNORTH.add(jdDateChooser);
 		containerNORTH.add(lTranche);
 		containerNORTH.add(containerRadioTranche);
 		containerNORTH.add(lDuree);
@@ -188,6 +169,7 @@ public class PanelReservation extends JPanel implements ActionListener {
 	}
 	
 	public void afficherUneProposition(){
+		SimpleDateFormat formatterDateSaisie = new SimpleDateFormat("dd-MM-yyyy");
 		SimpleDateFormat formatterDeb = new SimpleDateFormat("'Le 'dd/MM/yyyy' de 'HH'h '");
 		SimpleDateFormat formatterFin = new SimpleDateFormat("HH");
 		RechercheReservation metier = new RechercheReservation();
@@ -196,8 +178,8 @@ public class PanelReservation extends JPanel implements ActionListener {
 		int duree;
 		
 		creneauPropose = metier.rechercheCreneauLibre(
-				tfDateJour.getText()+"-"+tfDateMois.getText()+"-"+tfDateAnnee.getText(), 
-				(Integer)cbDuree.getSelectedItem(), 
+				formatterDateSaisie.format(jdDateChooser.getDate()), 
+				Integer.parseInt(((String)cbDuree.getSelectedItem()).substring(0, 1)), 
 				rbMatin.isSelected()?"matin":(rbApresMidi.isSelected()?"apres-midi":"soir"), 
 				rbPetiteSalle.isSelected()?"petite":(rbGrandeSalle.isSelected()?"grande":"equipee"));
 		containerCENTERInterneResultat.removeAll();
@@ -219,6 +201,9 @@ public class PanelReservation extends JPanel implements ActionListener {
 	}
 	
 	public void afficherSaisieClient(){
+		/*frame.getContentPane().removeAll();
+		frame.getContentPane().add(new PanelSaisieClient(frame, creneauPropose));
+		frame.validate();*/
 		JPanel panel = new JPanel();
 		Container containerSOUTH = new Container();
 		Container containerCENTER = new Container();
