@@ -23,7 +23,8 @@ public class Application {
 			}
 		});
 		
-		frame.setBounds(450, 250, 600, 400);
+		frame.setSize(600, 400);
+		frame.setLocationRelativeTo(null);
 		
 		frame.getContentPane().add(menu, BorderLayout.CENTER);
 		
