@@ -8,11 +8,18 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -22,9 +29,11 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 import metier.RechercheReservation;
+import metier.SupprimerReservation;
 
 import com.toedter.calendar.JDateChooser;
 
+import donnee.Reservation;
 import donnee.Salle;
 
 
@@ -33,7 +42,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	private JFrame frame;
 	
 	private JLabel[] tabEtat;
-	private JLabel lEtat9h = new JLabel("Libre",JLabel.CENTER);
+	/*private JLabel lEtat9h = new JLabel("Libre",JLabel.CENTER);
 	private JLabel lEtat10h = new JLabel("Libre",JLabel.CENTER);
 	private JLabel lEtat11h = new JLabel("Libre",JLabel.CENTER);
 	private JLabel lEtat12h = new JLabel("Libre",JLabel.CENTER);
@@ -47,7 +56,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	private JLabel lEtat20h = new JLabel("Libre",JLabel.CENTER);
 	private JLabel lEtat21h = new JLabel("Libre",JLabel.CENTER);
 	private JLabel lEtat22h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat23h = new JLabel("Libre",JLabel.CENTER);
+	private JLabel lEtat23h = new JLabel("Libre",JLabel.CENTER);*/
 	
 	private ButtonGroup bgChoixTypeSalle;
 	private JRadioButton rbPetiteSalle;
@@ -57,15 +66,15 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	private JComboBox cbChoixNumSalle;
 	
 	private JDateChooser jdDateChooser;
-	
+
+	private Map<JButton, Date> mapBoutonSuppr;
 	private JButton bRechercher;
 	private JButton bRetour;
 
-	private Container containerNORTH;
-	private Container containerCENTER;
-	private Container containerSOUTH;
+	private JPanel panelNORTH;
+	private JPanel panelCENTER;
+	private JPanel panelSOUTH;
 	
-
 	private List<Salle> listeSallesPourUnType;
 	private int[] tabIdSalle;
 	
@@ -75,19 +84,21 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	 * @param frame
 	 */
 	public PanelVisualiser(JFrame frame) {
-		containerNORTH = new Container();
-		containerCENTER = new Container();
-		containerSOUTH = new Container();
-		Container containerRadio = new Container();
+		panelNORTH = new JPanel();
+		panelCENTER = new JPanel();
+		panelSOUTH = new JPanel();
+		JPanel panelRadio = new JPanel();
 		
 		this.frame = frame;
 
 		this.setLayout(new BorderLayout());
-		containerNORTH.setLayout(new FlowLayout());
-		containerCENTER.setLayout(new GridLayout(6, 5));
-		containerSOUTH.setLayout(new FlowLayout());
-		containerRadio.setLayout(new BoxLayout(containerRadio, 3));
+		panelNORTH.setLayout(new FlowLayout());
+		panelCENTER.setLayout(new GridLayout(6, 5));
+		panelSOUTH.setLayout(new FlowLayout());
+		panelRadio.setLayout(new BoxLayout(panelRadio, 3));
+		panelCENTER.setBorder(BorderFactory.createLoweredBevelBorder());
 		
+		mapBoutonSuppr = new HashMap<JButton, Date>();
 		bRechercher = new JButton("Rechercher");
 		bRechercher.setBackground(Color.WHITE);
 		bRetour = new JButton("Retour");
@@ -107,9 +118,9 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		bgChoixTypeSalle.add(rbPetiteSalle);
 		bgChoixTypeSalle.add(rbGrandeSalle);
 		bgChoixTypeSalle.add(rbSalleEquipee);
-		containerRadio.add(rbPetiteSalle);
-		containerRadio.add(rbGrandeSalle);
-		containerRadio.add(rbSalleEquipee);
+		panelRadio.add(rbPetiteSalle);
+		panelRadio.add(rbGrandeSalle);
+		panelRadio.add(rbSalleEquipee);
 
 		//ComboBox choixSalle
 		cbChoixNumSalle = new JComboBox();
@@ -118,12 +129,12 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		jdDateChooser = new JDateChooser();
 		jdDateChooser.setPreferredSize(new Dimension(120, 25));
 		
-		containerNORTH.add(containerRadio);
-		containerNORTH.add(cbChoixNumSalle);
-		containerNORTH.add(jdDateChooser);
-		containerNORTH.add(bRechercher);
+		panelNORTH.add(panelRadio);
+		panelNORTH.add(cbChoixNumSalle);
+		panelNORTH.add(jdDateChooser);
+		panelNORTH.add(bRechercher);
 		initialiserContainerCENTER();
-		containerSOUTH.add(bRetour);
+		panelSOUTH.add(bRetour);
 
 		bRetour.addActionListener(this);
 		bRechercher.addActionListener(this);
@@ -131,9 +142,9 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		rbGrandeSalle.addActionListener(this);
 		rbSalleEquipee.addActionListener(this);
 		
-		this.add(containerNORTH, BorderLayout.NORTH);
-		this.add(containerCENTER, BorderLayout.CENTER);
-		this.add(containerSOUTH, BorderLayout.SOUTH);
+		this.add(panelNORTH, BorderLayout.NORTH);
+		this.add(panelCENTER, BorderLayout.CENTER);
+		this.add(panelSOUTH, BorderLayout.SOUTH);
 	}
 	
 	public void alimenterChoixSalle(){
@@ -156,21 +167,24 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		JLabel horaire;
 		int horaireCourant=9;
 		int etatCourant=0;
-		tabEtat = new JLabel[]{lEtat9h,lEtat10h,lEtat11h,lEtat12h,lEtat13h,lEtat14h,lEtat15h,lEtat16h,lEtat17h,
-				lEtat18h,lEtat19h,lEtat20h,lEtat21h,lEtat22h,lEtat23h};
-
+		/*tabEtat = new JLabel[]{lEtat9h,lEtat10h,lEtat11h,lEtat12h,lEtat13h,lEtat14h,lEtat15h,lEtat16h,lEtat17h,
+				lEtat18h,lEtat19h,lEtat20h,lEtat21h,lEtat22h,lEtat23h};*/
+		tabEtat=new JLabel[15];
+		for(int i=0; i<15; i++){
+			tabEtat[i]=new JLabel("Libre",JLabel.CENTER);
+		}
 		for(int i=0; i<3; i++){
 			for(int j=0; j<5; j++){
 				horaire = new JLabel(horaireCourant+"h - "+(horaireCourant+1)+"h  ", JLabel.CENTER);
-				containerCENTER.add(horaire);
+				panelCENTER.add(horaire);
 				horaireCourant++;
 			}
 			for(int j=0; j<5; j++){
-				containerCENTER.add(tabEtat[etatCourant]);
+				panelCENTER.add(tabEtat[etatCourant]);
 				etatCourant++;
 			}
 		}
-		containerCENTER.setVisible(false);
+		panelCENTER.setVisible(false);
 	}
 	
 	/**
@@ -179,36 +193,64 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	 */
 	public void alimenterContainerCENTER(){
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		RechercheReservation metierPlanning = new RechercheReservation();
+		JPanel panelHorsDelais;
+		Icon iCroix = new ImageIcon("src/img/redcross.png");
+		JButton bCroix;
+		JLabel horaire;
+		int horaireCourant=9;
+		int etatCourant=0;
 		if(jdDateChooser.getDate()==null){
 			JOptionPane.showMessageDialog(this, "Date non valide !");
 			return;
 		}
 		String[] etatsSalle = metierPlanning.etatsSalle(formatter.format(jdDateChooser.getDate()), tabIdSalle[cbChoixNumSalle.getSelectedIndex()]);
 		
-		JLabel lHoraire = null;
-		JLabel lEtat = null;
-		
-		//Affichage des differents creneaux et de l'etat de leur reservation (libre, confirmee, non confirmee ou hors delais)
-		for(int i=0; i<15; i++){
-			
-			lEtat = new JLabel(etatsSalle[i]);
-			if(etatsSalle[i].equals("Libre")){
-				tabEtat[i].setForeground(Color.GREEN);
-				tabEtat[i].setText("Libre");
-			} else if(etatsSalle[i].equals("Confirmee")){
-				tabEtat[i].setForeground(Color.CYAN);
-				tabEtat[i].setText("Confirmee");
-			} else if(etatsSalle[i].equals("Non confirmee")){
-				tabEtat[i].setForeground(Color.ORANGE);
-				tabEtat[i].setText("Non confirmee");
-			} else {
-				tabEtat[i].setForeground(Color.RED);
-				tabEtat[i].setText("Hors delais");
+		panelCENTER.removeAll();
+		panelCENTER.setLayout(new GridLayout(6, 5));
+		for(int i=0; i<3; i++){
+			for(int j=0; j<5; j++){
+				horaire = new JLabel(horaireCourant+"h - "+(horaireCourant+1)+"h  ", JLabel.CENTER);
+				panelCENTER.add(horaire);
+				horaireCourant++;
+			}getClass().getResource("src/img/redcross.png");
+			for(int j=0; j<5; j++){
+				if(etatsSalle[etatCourant].equals("Libre")){
+					panelCENTER.add(tabEtat[etatCourant]);
+					tabEtat[etatCourant].setForeground(Color.GREEN);
+					tabEtat[etatCourant].setText("Libre");
+				} else if(etatsSalle[etatCourant].equals("Confirmee")){
+					panelCENTER.add(tabEtat[etatCourant]);
+					tabEtat[etatCourant].setForeground(Color.CYAN);
+					tabEtat[etatCourant].setText("Confirmee");
+				} else if(etatsSalle[etatCourant].equals("Non confirmee")){
+					panelCENTER.add(tabEtat[etatCourant]);
+					tabEtat[etatCourant].setForeground(Color.ORANGE);
+					tabEtat[etatCourant].setText("Non confirmee");
+				} else {
+					bCroix = new JButton(iCroix);
+					bCroix.setMaximumSize(new Dimension(18,18));
+					bCroix.setMinimumSize(new Dimension(18,18));
+					bCroix.setPreferredSize(new Dimension(18,18));
+					bCroix.addActionListener(this);
+					try {
+						mapBoutonSuppr.put(bCroix, formatter2.parse(formatter.format(jdDateChooser.getDate())+(etatCourant+9<10?" 0":" ")+(etatCourant+9)+":00:00"));
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+					panelHorsDelais = new JPanel();
+					panelHorsDelais.setLayout(new FlowLayout());
+					panelHorsDelais.add(tabEtat[etatCourant]);
+					panelHorsDelais.add(bCroix);
+					panelCENTER.add(panelHorsDelais);
+					tabEtat[etatCourant].setForeground(Color.RED);
+					tabEtat[etatCourant].setText("Hors delais");
+				}
+				etatCourant++;
 			}
-			
 		}
-		containerCENTER.setVisible(true);
+		panelCENTER.setVisible(true);
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -221,6 +263,18 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 			alimenterContainerCENTER();
 		} else if(o.equals(rbPetiteSalle) || o.equals(rbGrandeSalle) || o.equals(rbSalleEquipee)){
 			alimenterChoixSalle();
+		} else if(mapBoutonSuppr.containsKey(o)){
+			int rep = JOptionPane.showConfirmDialog(
+					frame,
+					"Supprimer cette reservation?",
+				    "Suppression",
+				    JOptionPane.YES_NO_OPTION);
+			if(!(rep==JOptionPane.OK_OPTION)){
+				return;
+			}
+			SupprimerReservation metierSupprRes = new SupprimerReservation();
+			metierSupprRes.supprimerReservation(mapBoutonSuppr.get(o), tabIdSalle[cbChoixNumSalle.getSelectedIndex()]);
+			alimenterContainerCENTER();
 		}
 	}
 

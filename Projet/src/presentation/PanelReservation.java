@@ -69,13 +69,13 @@ public class PanelReservation extends JPanel implements ActionListener {
 	private JButton bRetourRecherche;
 	private JButton bAccepter;
 	
-	private Container containerNORTH = new Container();
-	private Container containerCENTER = new Container();
-	private Container containerSOUTH = new Container();
-	private Container containerCENTERInterne = new Container();
-	private Container containerCENTERInterneResultat = new Container();
-	private Container containerRadioSalle = new Container();
-	private Container containerRadioTranche = new Container();
+	private JPanel panelNORTH = new JPanel();
+	private JPanel panelCENTER = new JPanel();
+	private JPanel panelSOUTH = new JPanel();
+	private JPanel panelCENTERInterne = new JPanel();
+	private JPanel panelCENTERInterneResultat = new JPanel();
+	private JPanel panelRadioSalle = new JPanel();
+	private JPanel panelRadioTranche = new JPanel();
 	
 	/**
 	 * Methode qui permet d'afficher les reservations 
@@ -87,13 +87,13 @@ public class PanelReservation extends JPanel implements ActionListener {
 		this.frame = frame;
 
 		this.setLayout(new BorderLayout());
-		containerNORTH.setLayout(new FlowLayout());
-		containerCENTER.setLayout(new FlowLayout());
-		containerSOUTH.setLayout(new FlowLayout());
-		containerCENTERInterne.setLayout(new BoxLayout(containerCENTERInterne, BoxLayout.Y_AXIS));
-		containerCENTERInterneResultat.setLayout(new FlowLayout());
-		containerRadioSalle.setLayout(new BoxLayout(containerRadioSalle, 3));
-		containerRadioTranche.setLayout(new BoxLayout(containerRadioTranche, 3));
+		panelNORTH.setLayout(new FlowLayout());
+		panelCENTER.setLayout(new FlowLayout());
+		panelSOUTH.setLayout(new FlowLayout());
+		panelCENTERInterne.setLayout(new BoxLayout(panelCENTERInterne, BoxLayout.Y_AXIS));
+		panelCENTERInterneResultat.setLayout(new FlowLayout());
+		panelRadioSalle.setLayout(new BoxLayout(panelRadioSalle, 3));
+		panelRadioTranche.setLayout(new BoxLayout(panelRadioTranche, 3));
 		
 		lTranche = new JLabel("Tranche ");
 		lDuree = new JLabel("Duree ");
@@ -115,9 +115,9 @@ public class PanelReservation extends JPanel implements ActionListener {
 		bgChoixSalle.add(rbPetiteSalle);
 		bgChoixSalle.add(rbGrandeSalle);
 		bgChoixSalle.add(rbSalleEquipee);
-		containerRadioSalle.add(rbPetiteSalle);
-		containerRadioSalle.add(rbGrandeSalle);
-		containerRadioSalle.add(rbSalleEquipee);
+		panelRadioSalle.add(rbPetiteSalle);
+		panelRadioSalle.add(rbGrandeSalle);
+		panelRadioSalle.add(rbSalleEquipee);
 		
 		
 		//Radio Button tranches
@@ -129,9 +129,9 @@ public class PanelReservation extends JPanel implements ActionListener {
 		choixTranche.add(rbMatin);
 		choixTranche.add(rbApresMidi);
 		choixTranche.add(rbSoir);
-		containerRadioTranche.add(rbMatin);
-		containerRadioTranche.add(rbApresMidi);
-		containerRadioTranche.add(rbSoir);
+		panelRadioTranche.add(rbMatin);
+		panelRadioTranche.add(rbApresMidi);
+		panelRadioTranche.add(rbSoir);
 		
 		//Combo Box duree
 		cbDuree = new JComboBox();
@@ -140,21 +140,21 @@ public class PanelReservation extends JPanel implements ActionListener {
 			cbDuree.addItem(i+"h");
 		}
 
-		containerNORTH.add(containerRadioSalle);
-		containerNORTH.add(jdDateChooser);
-		containerNORTH.add(lTranche);
-		containerNORTH.add(containerRadioTranche);
-		containerNORTH.add(lDuree);
-		containerNORTH.add(cbDuree);
-		containerCENTER.add(containerCENTERInterne);
-		containerCENTERInterne.add(bRechercher);
-		containerCENTERInterne.add(new JLabel(" "));
-		containerCENTERInterne.add(containerCENTERInterneResultat);
-		containerSOUTH.add(bRetourMenu);
+		panelNORTH.add(panelRadioSalle);
+		panelNORTH.add(jdDateChooser);
+		panelNORTH.add(lTranche);
+		panelNORTH.add(panelRadioTranche);
+		panelNORTH.add(lDuree);
+		panelNORTH.add(cbDuree);
+		panelCENTER.add(panelCENTERInterne);
+		panelCENTERInterne.add(bRechercher);
+		panelCENTERInterne.add(new JLabel(" "));
+		panelCENTERInterne.add(panelCENTERInterneResultat);
+		panelSOUTH.add(bRetourMenu);
 		
-		this.add(containerNORTH, BorderLayout.NORTH);
-		this.add(containerCENTER, BorderLayout.CENTER);
-		this.add(containerSOUTH, BorderLayout.SOUTH);
+		this.add(panelNORTH, BorderLayout.NORTH);
+		this.add(panelCENTER, BorderLayout.CENTER);
+		this.add(panelSOUTH, BorderLayout.SOUTH);
 		
 		rbMatin.addActionListener(this);
 		rbApresMidi.addActionListener(this);
@@ -185,19 +185,19 @@ public class PanelReservation extends JPanel implements ActionListener {
 				Integer.parseInt(((String)cbDuree.getSelectedItem()).substring(0, 1)), 
 				rbMatin.isSelected()?"matin":(rbApresMidi.isSelected()?"apres-midi":"soir"), 
 				rbPetiteSalle.isSelected()?"petite":(rbGrandeSalle.isSelected()?"grande":"equipee"));
-		containerCENTERInterneResultat.removeAll();
+		panelCENTERInterneResultat.removeAll();
 		
 		if(creneauPropose!=null && creneauPropose.size()>0){
 			dateReservationDebut = creneauPropose.get(0).getDate();
 			dateReservationFin = creneauPropose.get(creneauPropose.size()-1).getDate();
 			duree = creneauPropose.get(creneauPropose.size()-1).getPlage();
-			containerCENTERInterneResultat.add(new JLabel("Proposition : " 
+			panelCENTERInterneResultat.add(new JLabel("Proposition : " 
 					+ formatterDeb.format(dateReservationDebut) 
 					+ "a " + (Integer.parseInt(formatterFin.format(dateReservationFin))+duree) + "h " ));
-			containerCENTERInterneResultat.add(bAccepter);
+			panelCENTERInterneResultat.add(bAccepter);
 			bRechercher.setAlignmentX(Component.CENTER_ALIGNMENT);
 		} else {
-			containerCENTERInterneResultat.add(new JLabel("Aucun creneau libre a cette date"));
+			panelCENTERInterneResultat.add(new JLabel("Aucun creneau libre a cette date"));
 		}
 		
 		this.validate();

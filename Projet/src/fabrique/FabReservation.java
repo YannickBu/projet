@@ -188,7 +188,26 @@ public class FabReservation {
 			System.out.println("Echec de la suppression de la reservation pour l'id "+id+" dans la suppression de FabReservation");
 		}
 	}
-
+	
+	/**
+	 * Supprime une reservation ˆ partir de lid de la salle et de la date
+	 * @param idSalle
+	 */
+	public void supprimer(Date date, int idSalle){
+		PreparedStatement pst = null;
+		Connection connection = FabConnexion.getConnexion();
+		String query = "DELETE FROM reservation WHERE idsalle = ? and datedebut = ?";
+		try {
+			pst = connection.prepareStatement(query);
+			pst.clearParameters();
+			pst.setInt(1, idSalle);
+			pst.setDate(2, new java.sql.Date(date.getTime()));
+			pst.execute();
+		} catch (SQLException e) {
+			System.out.println("Echec de la suppression de la reservation pour l'id "+idSalle+" dans la suppression de FabReservation");
+		}
+	}
+	
 	/**
 	 * RŽcupere l'ensemble des reservations
 	 * @return liste de reservation

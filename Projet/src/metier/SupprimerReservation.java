@@ -1,9 +1,8 @@
 package metier;
 
 
-import donnee.Client;
-import donnee.Reservation;
-import fabrique.FabClient;
+import java.util.Date;
+
 import fabrique.FabReservation;
 
 public class SupprimerReservation {
@@ -13,15 +12,13 @@ public class SupprimerReservation {
 	 * @param idres
 	 * @param idClient
 	 */
-	public void supprimerResrevation (Integer idres, Integer idClient) {
-		FabClient fabClient = FabClient.getInstance();
-		FabReservation reservation = FabReservation.getInstance();
-		Reservation res = reservation.rechercher(idres);
-		Client client = fabClient.rechercher(idClient);
-		
-		if (client != null && res != null){
-			reservation.supprimer(idres);	
-		}
+	public void supprimerReservation (Integer idres) {
+		FabReservation.getInstance().supprimer(idres);	
+	}
+	
+	
+	public void supprimerReservation (Date date, Integer idSalle){
+		FabReservation.getInstance().supprimer(date, idSalle);
 	}
 
 }
