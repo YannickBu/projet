@@ -36,29 +36,29 @@ import exception.ObjetInconnuException;
 
 public class PanelSaisieClient extends JPanel implements ActionListener {
 
-	JFrame frame;
-	List<Reservation> listeReservation;
-	List<Client> listeClient;
+	private JFrame frame;
+	private List<Reservation> listeReservation;
+	private List<Client> listeClient;
 	
-	JList<Client> jlClient;
-	DefaultListModel<Client> model;
+	private JList<Client> jlClient;
+	private DefaultListModel<Client> model;
 	
-	JPanel panelCENTER;
-	JPanel panelCenterRight;
+	private JPanel panelCENTER;
+	private JPanel panelCenterRight;
 	
-	Container cNom;
-	Container cPrenom;
-	Container cNumTel;
-	Container cResume;
-	Container cSOUTH;
+	private Container cNom;
+	private Container cPrenom;
+	private Container cNumTel;
+	private Container cResume;
+	private Container cSOUTH;
 	
-	JButton bSendInfos;
-	JButton bEnregistrer;
-	JButton bRetour;
+	private JButton bSendInfos;
+	private JButton bEnregistrer;
+	private JButton bRetour;
 	
-	JTextField tfNom;
-	JTextField tfPrenom;
-	JTextField tfNumTel;
+	private JTextField tfNom;
+	private JTextField tfPrenom;
+	private JTextField tfNumTel;
 	
 	public PanelSaisieClient(JFrame frame, List<Reservation> listeReservation) {
 		SimpleDateFormat formatterDeb = new SimpleDateFormat("'Le 'dd/MM/yyyy' de 'HH'h '");
@@ -264,7 +264,7 @@ public class PanelSaisieClient extends JPanel implements ActionListener {
 			enregistrerReservation();
 		} else if(o.equals(bRetour)){
 			frame.getContentPane().removeAll();
-			frame.getContentPane().add(new PanelReservation(frame));
+			frame.getContentPane().add(new PanelMenu(frame));
 			frame.validate();
 		}
 	}

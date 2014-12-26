@@ -237,4 +237,31 @@ public class FabReservation {
 		}
 		return listReservation;
 	}
+	
+	public List<Reservation> listerParClient(int id){
+		Connection connection = FabConnexion.getConnexion();
+		String query = "SELECT idreservation, idsalle, datedebut, plage, datecreation, estpayee FROM Reservation where idclient = ? order by idsalle, datedebut";
+		PreparedStatement st = null;
+		List<Reservation> listReservation = new ArrayList<Reservation>();
+		try{
+			st = connection.prepareStatement(query);
+			st.setInt(1, id);
+			ResultSet rs = st.executeQuery();
+
+			while(rs.next()){
+				Reservation res = new Reservation();
+				res.setIdReserv(rs.getInt("idreservation"));
+				res.setClient(FabClient.getInstance().rechercher(id));
+				res.setSalle(FabSalle.getInstance().rechercher(rs.getInt("idsalle")));
+				res.setDate(rs.getTimestamp("datedebut"));
+				res.setPlage(rs.getInt("plage"));
+				res.setDateCreation(rs.getTimestamp("datecreation"));
+				res.setEstPaye(rs.getBoolean("estpayee"));
+				listReservation.add(res);
+			}
+		}catch(SQLException e){
+			System.out.println("Erreur d'acces aux listes des reservations en base de donnees");
+		}
+		return listReservation;
+	}
 }

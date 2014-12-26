@@ -200,4 +200,31 @@ public class RechercheReservation {
 		return etatsSalle;
 	}
 
+	public List<List<Reservation>> listerReservationsPourUnClient(int idClt){
+		List<List<Reservation>> listeReservations = new ArrayList<List<Reservation>>();
+		List<Reservation> toutesLesReservations = FabReservation.getInstance().listerParClient(idClt);
+		List<Reservation> reservationEnCours = new ArrayList<Reservation>();
+		Reservation creneauEnCours = null;
+		
+		for(int i=0; i<toutesLesReservations.size(); i++){
+			creneauEnCours = toutesLesReservations.get(i);
+			//Si on ajoute une nouvelle reservation ou si le creneau en cours est
+			//adjacent au precedent
+			if(reservationEnCours.isEmpty()
+					|| (reservationEnCours.get(reservationEnCours.size()-1).getDate().getTime()+reservationEnCours.get(reservationEnCours.size()-1).getPlage()*3600000 == creneauEnCours.getDate().getTime()
+						&& reservationEnCours.get(reservationEnCours.size()-1).getSalle().getIdSalle() == creneauEnCours.getSalle().getIdSalle())
+					){
+				reservationEnCours.add(creneauEnCours);
+			} else {
+				listeReservations.add(reservationEnCours);
+				reservationEnCours = new ArrayList<Reservation>();
+				reservationEnCours.add(creneauEnCours);
+			}
+			if(i==toutesLesReservations.size()-1){
+				listeReservations.add(reservationEnCours);
+			}
+		}
+		
+		return listeReservations;
+	}
 }

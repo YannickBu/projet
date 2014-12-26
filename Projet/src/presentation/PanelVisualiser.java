@@ -95,7 +95,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		panelNORTH.setLayout(new FlowLayout());
 		panelCENTER.setLayout(new GridLayout(6, 5));
 		panelSOUTH.setLayout(new FlowLayout());
-		panelRadio.setLayout(new BoxLayout(panelRadio, 3));
+		panelRadio.setLayout(new BoxLayout(panelRadio, BoxLayout.Y_AXIS));
 		panelCENTER.setBorder(BorderFactory.createLoweredBevelBorder());
 		
 		mapBoutonSuppr = new HashMap<JButton, Date>();
