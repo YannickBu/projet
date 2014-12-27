@@ -67,7 +67,7 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 		jListeReservations = new JList<List<Reservation>>(modelRes);
 		jListeForfaits = new JList<ForfaitClient>(modelFor);
 		jListeReservations.setCellRenderer(new RendererJListReservation());
-		listeReservations = metierRechercheReservation.listerReservationsPourUnClient(2);//TODO client.getId());
+		listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId());//TODO client.getId());
 		for(List<Reservation> res : listeReservations){
 			modelRes.addElement(res);
 		}

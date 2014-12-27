@@ -86,7 +86,7 @@ public class PanelMenu extends JPanel implements ActionListener {
 			frame.validate();
 		} else if (o.equals(bEdit)){
 			frame.getContentPane().removeAll();
-			frame.getContentPane().add(new PanelEditionClient(frame, null));//TODO
+			frame.getContentPane().add(new PanelSaisieClient(frame));
 			frame.validate();
 		}
 	}
