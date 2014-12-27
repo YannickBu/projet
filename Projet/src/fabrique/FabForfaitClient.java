@@ -1,8 +1,10 @@
 package fabrique;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import donnee.Client;
 import donnee.Forfait;
 import donnee.ForfaitClient;
 import donnee.Salle;
+import exception.ObjetExistantException;
 
 public class FabForfaitClient {
 
@@ -22,21 +25,51 @@ public class FabForfaitClient {
 		return instance;
 	}
 	
-	//TODO A SUPPRIMER si inutile
-	public List<Client> rechercherClientsPourUnForfait(String typeForfait){
-		List<Client> listeClient = new ArrayList<Client>();
+	/**
+	 * Creation d'un forfait client
+	 * @param idClient
+	 * @param idSalle
+	 * @param typeForfait
+	 * @return ForfaitClient
+	 * @throws ObjetExistantException
+	 */
+	public ForfaitClient creer( int idClient, int idSalle , String typeForfait) throws ObjetExistantException {
+		ForfaitClient fc = null;
+		ResultSet rs = null;
+		PreparedStatement pst = null;
+		Connection connection = FabConnexion.getConnexion();
+		String query = "INSERT INTO forfait_client (idclient,idsalle,typeforfait,tempsrestant) VALUES(?,?,?,?)";
+		try {
+			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			pst.clearParameters();
+			
+			pst.setInt(1, idClient);
+			pst.setInt(2, idSalle);
+			pst.setString(3,typeForfait);
+			if (typeForfait.equals("12h")){
+				pst.setInt(4, 5400); // 30 jours * 60h * 3mois
+			} 
+			else 
+				pst.setInt(4,10800 ); // 30jours * 60h *6 mois
 		
-		
-		
-		return listeClient;
-	}
-	
-	//TODO A SUPPRIMER si inutile
-	public List<Forfait> rechercherForfaitsPourUnClient(int idClient){
-		List<Forfait> listeForfait = new ArrayList<Forfait>();
-		
-		
-		return listeForfait;
+			
+			pst.execute();
+			
+			fc = new ForfaitClient();
+			rs = pst.getGeneratedKeys();
+			if(rs.next()){
+				fc.setIdForfaitClient(rs.getInt(1));
+				fc.setClient(FabClient.getInstance().rechercher(rs.getInt(2)));
+				fc.setSalle(FabSalle.getInstance().rechercher(rs.getInt(3)));
+				fc.setForfait(FabForfait.getInstance().rechercherForfait(rs.getString(4)));
+				fc.setTempsRestant(rs.getInt(5));
+			}
+			
+		} catch (SQLException se) {
+			System.out.println("Echec de la creation du ForfaitClient "+se.getMessage());
+		}
+
+		return fc;
 	}
 
 	/**
@@ -44,7 +77,7 @@ public class FabForfaitClient {
 	 * @param typeForfait
 	 * @param idClient
 	 * @param idSalle
-	 * @return
+	 * @return liste des forfait Client
 	 */
 	public List<ForfaitClient> rechercherForfaitClient(String typeForfait, int idClient, int idSalle){
 		List<ForfaitClient> listeForfaitClient = new ArrayList<ForfaitClient>();
