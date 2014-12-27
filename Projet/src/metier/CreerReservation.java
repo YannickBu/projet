@@ -1,8 +1,6 @@
 package metier;
 
 import java.util.Date;
-import java.util.List;
-
 import donnee.Client;
 import donnee.Reservation;
 import exception.ObjetInconnuException;
