@@ -4,6 +4,10 @@ import java.util.Date;
 
 public class Reservation {
 	
+	public final static int ETAT_HORS_DELAIS = 1;
+	public final static int ETAT_CONFIRME = 2;
+	public final static int ETAT_NON_CONFIRME = 3;
+	
 	private int idReserv;
 	private Client client;
 	private Salle salle;

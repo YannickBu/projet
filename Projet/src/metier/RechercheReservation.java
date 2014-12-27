@@ -193,10 +193,45 @@ public class RechercheReservation {
 		return etatsSalle;
 	}
 
-	public List<Reservation> listerReservationsPourUnClient(int idClt){
-		List<Reservation> toutesLesReservations = FabReservation.getInstance().listerParClient(idClt);
+	/**
+	 * @param idClt
+	 * @param etat etat de la reservation - constantes possibles dans lobjet reservation<br/>
+	 * Peut prendre la valeur null pour recuperation de tous les etats
+	 * @return
+	 */
+	public List<Reservation> listerReservationsPourUnClient(int idClt, Integer etat){
+		List<Reservation> listeRes = FabReservation.getInstance().listerParClient(idClt);
+		List<Reservation> listeResModif = new ArrayList<Reservation>();
 		
+		if(etat != null){
+			switch(etat){
+			case Reservation.ETAT_HORS_DELAIS :
+				for(Reservation res : listeRes){
+					if(res.getDate().getTime() - res.getDateCreation().getTime() >= 7*24*60*60*1000){
+						listeResModif.add(res);
+					}
+				}
+				break;
+			case Reservation.ETAT_CONFIRME :
+				for(Reservation res : listeRes){
+					if(res.getEstPaye()){
+						listeResModif.add(res);
+					}
+				}
+				break;
+			case Reservation.ETAT_NON_CONFIRME :
+				for(Reservation res : listeRes){
+					if(!res.getEstPaye() 
+							&& res.getDate().getTime() - res.getDateCreation().getTime() < 7*24*60*60*1000
+							){
+						listeResModif.add(res);
+					}
+				}
+				break;
+			}
+			return listeResModif;
+		}
 		
-		return toutesLesReservations;
+		return listeRes;
 	}
 }
