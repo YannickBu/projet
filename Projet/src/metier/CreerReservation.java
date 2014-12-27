@@ -36,12 +36,10 @@ public class CreerReservation {
 		
 	}
 	
-	public void creerReservation(List<Reservation> listeReservations, String nomClt, String prenomClt, String telClt) throws ObjetInconnuException{
+	public void creerReservation(Reservation res, String nomClt, String prenomClt, String telClt) throws ObjetInconnuException{
 		RechercheClient metierRechClt = new RechercheClient();
 		Client clt = metierRechClt.rechercheClient(nomClt, prenomClt, telClt);
 		
-		for(Reservation res : listeReservations){
-			FabReservation.getInstance().creer(clt.getId(), res.getSalle().getIdSalle(), res.getDate(), res.getPlage(), res.getDateCreation(), res.getEstPaye());
-		}
+		FabReservation.getInstance().creer(clt.getId(), res.getSalle().getIdSalle(), res.getDate(), res.getPlage(), res.getDateCreation(), res.getEstPaye());
 	}
 }

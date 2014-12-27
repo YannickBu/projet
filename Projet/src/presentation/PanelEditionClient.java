@@ -42,11 +42,11 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 	private JButton bActionFor;
 	private JButton bRetour;
 	
-	private JList<List<Reservation>> jListeReservations;
+	private JList<Reservation> jListeReservations;
 	private JList<ForfaitClient> jListeForfaits;
-	private DefaultListModel<List<Reservation>> modelRes;
+	private DefaultListModel<Reservation> modelRes;
 	private DefaultListModel<ForfaitClient> modelFor;
-	private List<List<Reservation>> listeReservations;
+	private List<Reservation> listeReservations;
 	
 	public PanelEditionClient(JFrame frame, Client client) {
 		RechercheReservation metierRechercheReservation = new RechercheReservation();
@@ -62,13 +62,13 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 		bActionFor.setBackground(Color.WHITE);
 		bRetour.setBackground(Color.WHITE);
 		
-		modelRes = new DefaultListModel<List<Reservation>>();
+		modelRes = new DefaultListModel<Reservation>();
 		modelFor = new DefaultListModel<ForfaitClient>();
-		jListeReservations = new JList<List<Reservation>>(modelRes);
+		jListeReservations = new JList<Reservation>(modelRes);
 		jListeForfaits = new JList<ForfaitClient>(modelFor);
 		jListeReservations.setCellRenderer(new RendererJListReservation());
 		listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId());//TODO client.getId());
-		for(List<Reservation> res : listeReservations){
+		for(Reservation res : listeReservations){
 			modelRes.addElement(res);
 		}
 		
@@ -163,35 +163,33 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 		Object o = e.getSource();
 		if(o.equals(bRetour)){
 			frame.getContentPane().removeAll();
-			frame.getContentPane().add(new PanelMenu(frame));
+			frame.getContentPane().add(new PanelSaisieClient(frame));
 			frame.validate();
 		}
 	}
 	
 	
 	
-	private class RendererJListReservation implements ListCellRenderer<List<Reservation>> {
+	private class RendererJListReservation implements ListCellRenderer<Reservation> {
 		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 		
 		public RendererJListReservation() {
 			
 		}
-		public Component getListCellRendererComponent(JList<? extends List<Reservation>> jlist, List<Reservation> reservations,
+		public Component getListCellRendererComponent(JList<? extends Reservation> jlist, Reservation reservations,
 				int index, boolean isSelected, boolean cellHasFocus) {
 			JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(jlist, reservations, index, isSelected, cellHasFocus);
 			SimpleDateFormat formatterDeb = new SimpleDateFormat("' Le 'dd/MM/yyyy' de 'HH'h '");
 			SimpleDateFormat formatterFin = new SimpleDateFormat("HH");
-			Date dateReservationDebut = null;
-			Date dateReservationFin = null;
+			Date dateReservation = null;
 			int duree;
 			
-			dateReservationDebut = reservations.get(0).getDate();
-			dateReservationFin = reservations.get(reservations.size()-1).getDate();
-			duree = reservations.get(reservations.size()-1).getPlage();
+			dateReservation = reservations.getDate();
+			duree = reservations.getPlage();
 			
-			String newText=(reservations.get(0).getSalle().getTypeSalle().equals("petite")?"Petite salle":(reservations.get(0).getSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee"))
-					+ (formatterDeb.format(dateReservationDebut) 
-							+ "a " + (Integer.parseInt(formatterFin.format(dateReservationFin))+duree) + "h ");
+			String newText=(reservations.getSalle().getTypeSalle().equals("petite")?"Petite salle":(reservations.getSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee"))
+					+ (formatterDeb.format(dateReservation) 
+							+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h ");
 			
 			renderer.setText(newText);
 		    renderer.setBackground(isSelected ? Color.LIGHT_GRAY : Color.WHITE);

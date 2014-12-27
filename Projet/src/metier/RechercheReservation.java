@@ -58,13 +58,12 @@ public class RechercheReservation {
 	 * @param duree
 	 * @param tranche
 	 * @param typeSalle
-	 * @return liste reservation
+	 * @return reservation
 	 */
-	public List<Reservation> rechercheCreneauLibre(String date, int duree, String tranche, String typeSalle){
+	public Reservation rechercheCreneauLibre(String date, int duree, String tranche, String typeSalle){
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
 		Reservation reservationCourante = null;
 		List<Reservation> leCreneauAvecPlage1h = new ArrayList<Reservation>();
-		int[] t = new int[2];
 		List<Salle> listeSalle = FabSalle.getInstance().rechercher(typeSalle);
 		List<List<Reservation>> reservationsPossibles = new ArrayList<List<Reservation>> ();
 		
@@ -80,7 +79,7 @@ public class RechercheReservation {
 			etatsSalle = etatsSalle(date, salleCourante.getIdSalle());
 			
 			//On parcourt les creneaux
-			//On stoppe lorsque lon a genere une liste des reservations
+			//On stoppe lorsque lon a genere une liste de creneaux libres
 			//ou que tous les creneaux sont parcourus
 			while(leCreneauAvecPlage1h.isEmpty() 
 					&& creneauCourant < creaneauFin 
@@ -99,7 +98,7 @@ public class RechercheReservation {
 						}
 						reservationCourante.setDateCreation(new Date());
 						reservationCourante.setEstPaye(false);
-						reservationCourante.setPlage(1);//par defaut a 1, utiliser ensuite plage1hEnPlage2hEt1h sur la liste
+						reservationCourante.setPlage(1);
 						leCreneauAvecPlage1h.add(reservationCourante);
 					} else {
 						//on vide des quun creneau nest PAS libre
@@ -111,8 +110,8 @@ public class RechercheReservation {
 				creneauCourant++;
 			}
 			
-			//Si la liste des reservations nest pas vide, inutile de continuer a parcourir les salles
-			//On a notre trouve notre reservation
+			//Si la liste des creneaux nest pas vide
+			//On a trouve une reservation possible
 			if(leCreneauAvecPlage1h != null && !leCreneauAvecPlage1h.isEmpty()){
 				reservationsPossibles.add(leCreneauAvecPlage1h);
 				leCreneauAvecPlage1h = new ArrayList<Reservation>();
@@ -134,34 +133,28 @@ public class RechercheReservation {
 			}
 		}
 		
-		return plage1hEnPlage2hEt1h(leCreneauAvecPlage1h);
+		return plage1hEnReservation(leCreneauAvecPlage1h);
 	}
 	
 	/**
-	 * Methode qui permet retourner une liste de reservation en plage 1h et 2h
+	 * Methode qui permet retourner une liste de reservation en plage de plusieurs heures
 	 * @param liste1h
-	 * @return liste reservation
+	 * @return reservation
 	 */
-	private List<Reservation> plage1hEnPlage2hEt1h(List<Reservation> liste1h){
-		List<Reservation> liste2h = new ArrayList<Reservation>();
-		Reservation reservationCourante = null;
-		int nbPlage2h;
+	private Reservation plage1hEnReservation(List<Reservation> liste1h){
+		Reservation res = null;
 		
-		if(!liste1h.isEmpty()){
-			nbPlage2h = liste1h.size() / 2;
-			if(nbPlage2h > 0){
-				for(int i=0; i<nbPlage2h; i++){
-					reservationCourante = liste1h.get(2*i);
-					reservationCourante.setPlage(2);
-					liste2h.add(reservationCourante);
-				}
-			}
-			if(liste1h.size() % 2 != 0){
-				liste2h.add(liste1h.get(liste1h.size()-1));
-			}
+		if(liste1h!=null && !liste1h.isEmpty()){
+			res = new Reservation();
+			res.setClient(liste1h.get(0).getClient());
+			res.setDate(liste1h.get(0).getDate());
+			res.setDateCreation(liste1h.get(0).getDateCreation());
+			res.setEstPaye(liste1h.get(0).getEstPaye());
+			res.setPlage(liste1h.size());
+			res.setSalle(liste1h.get(0).getSalle());
 		}
 		
-		return liste2h;
+		return res;
 	}
 	
 	/**
@@ -200,31 +193,10 @@ public class RechercheReservation {
 		return etatsSalle;
 	}
 
-	public List<List<Reservation>> listerReservationsPourUnClient(int idClt){
-		List<List<Reservation>> listeReservations = new ArrayList<List<Reservation>>();
+	public List<Reservation> listerReservationsPourUnClient(int idClt){
 		List<Reservation> toutesLesReservations = FabReservation.getInstance().listerParClient(idClt);
-		List<Reservation> reservationEnCours = new ArrayList<Reservation>();
-		Reservation creneauEnCours = null;
 		
-		for(int i=0; i<toutesLesReservations.size(); i++){
-			creneauEnCours = toutesLesReservations.get(i);
-			//Si on ajoute une nouvelle reservation ou si le creneau en cours est
-			//adjacent au precedent
-			if(reservationEnCours.isEmpty()
-					|| (reservationEnCours.get(reservationEnCours.size()-1).getDate().getTime()+reservationEnCours.get(reservationEnCours.size()-1).getPlage()*3600000 == creneauEnCours.getDate().getTime()
-						&& reservationEnCours.get(reservationEnCours.size()-1).getSalle().getIdSalle() == creneauEnCours.getSalle().getIdSalle())
-					){
-				reservationEnCours.add(creneauEnCours);
-			} else {
-				listeReservations.add(reservationEnCours);
-				reservationEnCours = new ArrayList<Reservation>();
-				reservationEnCours.add(creneauEnCours);
-			}
-			if(i==toutesLesReservations.size()-1){
-				listeReservations.add(reservationEnCours);
-			}
-		}
 		
-		return listeReservations;
+		return toutesLesReservations;
 	}
 }

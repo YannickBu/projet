@@ -40,7 +40,7 @@ import exception.ObjetInconnuException;
 public class PanelValidationReservation extends JPanel implements ActionListener {
 
 	private JFrame frame;
-	private List<Reservation> listeReservation;
+	private Reservation reservation;
 	private List<Client> listeClient;
 	
 	private JList<Client> jlClient;
@@ -63,11 +63,10 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 	private JTextField tfPrenom;
 	private JTextField tfNumTel;
 	
-	public PanelValidationReservation(JFrame frame, List<Reservation> listeReservation) {
+	public PanelValidationReservation(JFrame frame, Reservation reservation) {
 		SimpleDateFormat formatterDeb = new SimpleDateFormat("'Le 'dd/MM/yyyy' de 'HH'h '");
 		SimpleDateFormat formatterFin = new SimpleDateFormat("HH");
-		Date dateReservationDebut = null;
-		Date dateReservationFin = null;
+		Date dateReservation = null;
 		int duree;
 		
 		JScrollPane scrollpane;
@@ -76,7 +75,7 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 		JLabel lNumTel = new JLabel("Tel");
 		
 		this.frame = frame;
-		this.listeReservation = listeReservation;
+		this.reservation = reservation;
 
 		panelCENTER = new JPanel();
 		panelCENTER.setLayout(new BoxLayout(panelCENTER, BoxLayout.X_AXIS));
@@ -134,15 +133,14 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 		lNumTel.setMaximumSize(new Dimension(150, 20));
 		lNumTel.setPreferredSize(new Dimension(150, 20));
 		
-		dateReservationDebut = listeReservation.get(0).getDate();
-		dateReservationFin = listeReservation.get(listeReservation.size()-1).getDate();
-		duree = listeReservation.get(listeReservation.size()-1).getPlage();
+		dateReservation = reservation.getDate();
+		duree = reservation.getPlage();
 
 		
 		cResume.add(new JLabel("<html>Resume de la reservation <br/><br/>"
-				+ "Type : " + (listeReservation.get(0).getSalle().getTypeSalle().equals("petite")?"Petite salle":(listeReservation.get(0).getSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee")) + "<br/>"
-				+ (formatterDeb.format(dateReservationDebut) 
-						+ "a " + (Integer.parseInt(formatterFin.format(dateReservationFin))+duree) + "h ")
+				+ "Type : " + (reservation.getSalle().getTypeSalle().equals("petite")?"Petite salle":(reservation.getSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee")) + "<br/>"
+				+ (formatterDeb.format(dateReservation) 
+						+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h ")
 				+ "</html>"));
 		cResume.add(new JLabel());
 		cResume.add(new JLabel( ));
@@ -228,7 +226,7 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 			if(!(rep==JOptionPane.OK_OPTION)){
 				return;
 			}
-			metierCreerReservation.creerReservation(listeReservation, tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
+			metierCreerReservation.creerReservation(reservation, tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
 		} catch(ObjetInconnuException e){
 			//le client nexiste pas, on demande son enregistrement
 			rep = JOptionPane.showConfirmDialog(
@@ -254,7 +252,7 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 				}
 				return;
 			}
-			metierCreerReservation.creerReservation(listeReservation, tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
+			metierCreerReservation.creerReservation(reservation, tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
 		}
 		
 		JOptionPane.showMessageDialog(this, "Reservation enregistree");

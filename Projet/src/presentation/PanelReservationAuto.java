@@ -39,7 +39,7 @@ public class PanelReservationAuto extends JPanel implements ActionListener {
 	private static final int DUREE_MAX_APRES_MIDI = 11;
 	private static final int DUREE_MAX_SOIR = 4;
 	
-	private List<Reservation> creneauPropose;
+	private Reservation creneauPropose;
 	
 	private JFrame frame;
 	
@@ -170,8 +170,7 @@ public class PanelReservationAuto extends JPanel implements ActionListener {
 		SimpleDateFormat formatterDeb = new SimpleDateFormat("'Le 'dd/MM/yyyy' de 'HH'h '");
 		SimpleDateFormat formatterFin = new SimpleDateFormat("HH");
 		RechercheReservation metier = new RechercheReservation();
-		Date dateReservationDebut = null;
-		Date dateReservationFin = null;
+		Date dateReservation = null;
 		int duree;
 		
 		if(jdDateChooser.getDate()==null){
@@ -188,13 +187,12 @@ public class PanelReservationAuto extends JPanel implements ActionListener {
 		panelCENTERInterneResultat.removeAll();
 		
 		//sil existe une proposition repondant aux criteres
-		if(creneauPropose!=null && creneauPropose.size()>0){
-			dateReservationDebut = creneauPropose.get(0).getDate();
-			dateReservationFin = creneauPropose.get(creneauPropose.size()-1).getDate();
-			duree = creneauPropose.get(creneauPropose.size()-1).getPlage();
+		if(creneauPropose!=null){
+			dateReservation = creneauPropose.getDate();
+			duree = creneauPropose.getPlage();
 			panelCENTERInterneResultat.add(new JLabel("Proposition : " 
-					+ formatterDeb.format(dateReservationDebut) 
-					+ "a " + (Integer.parseInt(formatterFin.format(dateReservationFin))+duree) + "h " ));
+					+ formatterDeb.format(dateReservation) 
+					+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h " ));
 			panelCENTERInterneResultat.add(bAccepter);
 			bRechercher.setAlignmentX(Component.CENTER_ALIGNMENT);
 		} else {
@@ -213,17 +211,17 @@ public class PanelReservationAuto extends JPanel implements ActionListener {
 		} else if(o.equals(rbMatin)){
 			cbDuree.removeAllItems();
 			for(int i=1; i<=DUREE_MAX_MATIN; i++){
-				cbDuree.addItem(i);
+				cbDuree.addItem(i+"h");
 			}
 		} else if(o.equals(rbApresMidi)){
 			cbDuree.removeAllItems();
 			for(int i=1; i<=DUREE_MAX_APRES_MIDI; i++){
-				cbDuree.addItem(i);
+				cbDuree.addItem(i+"h");
 			}
 		} else if(o.equals(rbSoir)){
 			cbDuree.removeAllItems();
 			for(int i=1; i<=DUREE_MAX_SOIR; i++){
-				cbDuree.addItem(i);
+				cbDuree.addItem(i+"h");
 			}
 		} else if(o.equals(bRechercher)){
 			afficherUneProposition();
