@@ -1,7 +1,6 @@
 package metier;
 
 import donnee.Client;
-import exception.ObjetInconnuException;
 import fabrique.FabClient;
 
 public class CreerClient {
