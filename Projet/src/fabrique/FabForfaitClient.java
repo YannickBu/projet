@@ -13,6 +13,7 @@ import donnee.Forfait;
 import donnee.ForfaitClient;
 import donnee.Salle;
 import exception.ObjetExistantException;
+import exception.ObjetInconnuException;
 
 public class FabForfaitClient {
 
@@ -69,6 +70,43 @@ public class FabForfaitClient {
 			System.out.println("Echec de la creation du ForfaitClient "+se.getMessage());
 		}
 
+		return fc;
+	}
+	
+	/**
+	 * Recherche d'un forfait client par son identifiant
+	 * @param id
+	 * @return ForfaitClient
+	 * @throws ObjetInconnuException
+	 */
+	public ForfaitClient rechercher(int id) throws ObjetInconnuException{
+		ForfaitClient fc = null;
+		PreparedStatement pst = null;
+		Connection connection = FabConnexion.getConnexion();
+		String query = "SELECT idclient, idsalle, typeforfait, tempsrestant FROM forfait_client WHERE idforfaitclient = ?";
+		try {
+			pst = connection.prepareStatement(query);
+			pst.clearParameters();
+			
+			pst.setInt(1, id);
+			
+			ResultSet rs = pst.executeQuery();
+			
+			if(!rs.next()) {
+				throw new ObjetInconnuException(Client.class.toString(), "Aucun client a ete trouve pour l'identifiant "+id);
+			}
+
+			fc = new ForfaitClient();
+			fc.setIdForfaitClient(id);
+			fc.setClient(FabClient.getInstance().rechercher(rs.getInt("idclient")));
+			fc.setSalle(FabSalle.getInstance().rechercher(rs.getInt("idsalle")));
+			fc.setForfait(FabForfait.getInstance().rechercherForfait(rs.getString("typeforfait")));
+			fc.setTempsRestant(rs.getInt("tempsrestant"));
+
+		} catch (SQLException e) {
+			System.out.println("Echec de la recuperation du forfaitClient pour l'id "+id
+					+" - "+e.getMessage());
+		}
 		return fc;
 	}
 
