@@ -1,5 +1,7 @@
 package donnee;
 
+import java.util.Date;
+
 public class ForfaitClient {
 
 	private int idForfaitClient;
@@ -7,6 +9,7 @@ public class ForfaitClient {
 	private Forfait forfait;
 	private Salle salle;
 	private int tempsRestant;
+	private Date dateCreation;
 	
 	/**
 	 * 1er constructeur de la classe ForfaitClient
@@ -20,13 +23,15 @@ public class ForfaitClient {
 	 * @param f
 	 * @param s
 	 * @param tempsRestant
+	 * @param dateCreation
 	 */
-	public ForfaitClient(int id, Client c, Forfait f, Salle s, int tempsRestant){
+	public ForfaitClient(int id, Client c, Forfait f, Salle s, int tempsRestant, Date dateCreation){
 		idForfaitClient = id;
 		client = c;
 		forfait = f;
 		salle = s;
 		this.tempsRestant = tempsRestant;
+		this.dateCreation = dateCreation;
 	}
 	
 	/**
@@ -107,6 +112,14 @@ public class ForfaitClient {
 	 */
 	public void setTempsRestant(int tempsRestant) {
 		this.tempsRestant = tempsRestant;
+	}
+
+	public Date getDateCreation() {
+		return dateCreation;
+	}
+
+	public void setDateCreation(Date dateCreation) {
+		this.dateCreation = dateCreation;
 	}
 
 	

@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import donnee.Client;
@@ -39,7 +41,9 @@ public class FabForfaitClient {
 		ResultSet rs = null;
 		PreparedStatement pst = null;
 		Connection connection = FabConnexion.getConnexion();
-		String query = "INSERT INTO forfait_client (idclient,idsalle,typeforfait,tempsrestant) VALUES(?,?,?,?)";
+		int tpsRestant;
+		Date dateCourante = new Date();
+		String query = "INSERT INTO forfait_client (idclient,idsalle,typeforfait,tempsrestant,datecreation) VALUES(?,?,?,?,?)";
 		try {
 			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 			pst.clearParameters();
@@ -47,12 +51,14 @@ public class FabForfaitClient {
 			pst.setInt(1, idClient);
 			pst.setInt(2, idSalle);
 			pst.setString(3,typeForfait);
+			pst.setTimestamp(4, new Timestamp(dateCourante.getTime()));
 			if (typeForfait.equals("12h")){
-				pst.setInt(4, 5400); // 30 jours * 60h * 3mois
+				tpsRestant = 5400;// 30 jours * 60h * 3mois
 			} 
-			else 
-				pst.setInt(4,10800 ); // 30jours * 60h *6 mois
-		
+			else {
+				tpsRestant = 10800; // 30jours * 60h *6 mois
+			}
+			pst.setInt(4, tpsRestant); 
 			
 			pst.execute();
 			
@@ -63,7 +69,8 @@ public class FabForfaitClient {
 				fc.setClient(FabClient.getInstance().rechercher(rs.getInt(2)));
 				fc.setSalle(FabSalle.getInstance().rechercher(rs.getInt(3)));
 				fc.setForfait(FabForfait.getInstance().rechercherForfait(rs.getString(4)));
-				fc.setTempsRestant(rs.getInt(5));
+				fc.setTempsRestant(tpsRestant);
+				fc.setDateCreation(dateCourante);
 			}
 			
 		} catch (SQLException se) {
@@ -83,7 +90,7 @@ public class FabForfaitClient {
 		ForfaitClient fc = null;
 		PreparedStatement pst = null;
 		Connection connection = FabConnexion.getConnexion();
-		String query = "SELECT idclient, idsalle, typeforfait, tempsrestant FROM forfait_client WHERE idforfaitclient = ?";
+		String query = "SELECT idclient, idsalle, typeforfait, tempsrestant, datecreation FROM forfait_client WHERE idforfaitclient = ?";
 		try {
 			pst = connection.prepareStatement(query);
 			pst.clearParameters();
@@ -93,7 +100,7 @@ public class FabForfaitClient {
 			ResultSet rs = pst.executeQuery();
 			
 			if(!rs.next()) {
-				throw new ObjetInconnuException(Client.class.toString(), "Aucun client a ete trouve pour l'identifiant "+id);
+				throw new ObjetInconnuException(Client.class.toString(), "Aucun forfaitClient a ete trouve pour l'identifiant "+id);
 			}
 
 			fc = new ForfaitClient();
@@ -102,6 +109,7 @@ public class FabForfaitClient {
 			fc.setSalle(FabSalle.getInstance().rechercher(rs.getInt("idsalle")));
 			fc.setForfait(FabForfait.getInstance().rechercherForfait(rs.getString("typeforfait")));
 			fc.setTempsRestant(rs.getInt("tempsrestant"));
+			fc.setDateCreation(rs.getTimestamp("datecreation"));
 
 		} catch (SQLException e) {
 			System.out.println("Echec de la recuperation du forfaitClient pour l'id "+id
@@ -127,13 +135,14 @@ public class FabForfaitClient {
 		
 		try {
 			st = FabConnexion.getConnexion()
-					.prepareStatement("select idforfaitclient, tempsrestant "
-							+ "from forfait_client where typeForfait = ? and idclient = ?");
+					.prepareStatement("select idforfaitclient, tempsrestant, datecreation "
+							+ "from forfait_client where typeForfait = ? and idclient = ? and idsalle = ?");
 		
 			st.clearParameters();
 			
 			st.setString(1, typeForfait);
 			st.setInt(2, idClient);
+			st.setInt(3, idSalle);
 			
 			rs = st.executeQuery();
 			
@@ -144,7 +153,7 @@ public class FabForfaitClient {
 			while(rs.next()){
 				listeForfaitClient.add(
 						new ForfaitClient(
-								rs.getInt("idforfaitclient"), client, forfait, salle, rs.getInt("tempsrestant")
+								rs.getInt("idforfaitclient"), client, forfait, salle, rs.getInt("tempsrestant"), rs.getTimestamp("datecreation")
 								)
 						);
 			}
