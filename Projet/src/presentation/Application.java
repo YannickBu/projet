@@ -3,10 +3,16 @@ package presentation;
 import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 
 import javax.swing.JFrame;
 
+import fabrique.FabConnexion;
 
+
+/**
+ * Classe de lancement - Cree la JFrame
+ */
 public class Application {
 
 	/**
@@ -19,6 +25,11 @@ public class Application {
 		
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
+				try {
+					FabConnexion.closeConnexion();
+				} catch (SQLException se) {
+					System.out.println("Erreur de fermeture de la connexion - "+se.getMessage());
+				}
 				System.exit(0);
 			}
 		});
@@ -30,26 +41,6 @@ public class Application {
 		
 		//frame.pack();
 		frame.setVisible(true);
-		
-		
-		
-		/*SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
-		
-		Date dateDeb;
-		Date dateFin;
-		try {
-			dateDeb = formatter.parse("2013-11-06 15-00-00");
-			dateFin = formatter.parse("2013-11-01 12-10-10");
-			FabReservation.getInstance().creer(0, 1, dateDeb, 1, dateFin, true);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}*/
-		
-		/*
-		CreerReservation metier = new CreerReservation();
-		metier.rechercheCreneauLibre("03-12-2014", 1, "matin", "petite");
-		System.out.println("m");
-		*/
 	}
 
 }

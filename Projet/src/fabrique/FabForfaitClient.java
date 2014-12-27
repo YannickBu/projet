@@ -40,7 +40,7 @@ public class FabForfaitClient {
 	}
 
 	/**
-	 * Recherche le ForfaitClient via le type du forfait, l'id du client et l'id de la salle
+	 * Recherche le ForfaitClient via le type du forfait, lid du client et lid de la salle
 	 * @param typeForfait
 	 * @param idClient
 	 * @param idSalle
@@ -55,7 +55,9 @@ public class FabForfaitClient {
 		ResultSet rs = null;
 		
 		try {
-			st = FabConnexion.getConnexion().prepareStatement("select idforfaitclient, tempsrestant from forfait_client where typeForfait = ? and idclient = ?");
+			st = FabConnexion.getConnexion()
+					.prepareStatement("select idforfaitclient, tempsrestant "
+							+ "from forfait_client where typeForfait = ? and idclient = ?");
 		
 			st.clearParameters();
 			
@@ -70,11 +72,17 @@ public class FabForfaitClient {
 			
 			while(rs.next()){
 				listeForfaitClient.add(
-						new ForfaitClient(rs.getInt("idforfaitclient"), client, forfait, salle, rs.getInt("tempsrestant"))
+						new ForfaitClient(
+								rs.getInt("idforfaitclient"), client, forfait, salle, rs.getInt("tempsrestant")
+								)
 						);
 			}
 		} catch (SQLException e) {
 			System.out.println("Erreur lors de la recuperation de forfaitclient");
+			System.out.println("Type du forfait : "+typeForfait);
+			System.out.println("IdClient : " + idClient);
+			System.out.println("IdSalle : " + idSalle);
+			System.out.println(e.getMessage());
 		}
 		
 		return listeForfaitClient;

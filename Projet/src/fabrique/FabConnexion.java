@@ -18,9 +18,9 @@ public class FabConnexion {
 			Class.forName("org.hsqldb.jdbcDriver");
 			c = DriverManager.getConnection("jdbc:hsqldb:file:projet;shutdown=true","sa","");
 		} catch (SQLException e) {
-			System.out.println(" ca n'a pas fonctionnee");
+			System.out.println("Erreur douverture de la connexion - "+e.getMessage());
 		} catch (ClassNotFoundException e){
-			
+			System.out.println("Erreur douverture de la connexion - "+e.getMessage());
 		}
 	}
 	

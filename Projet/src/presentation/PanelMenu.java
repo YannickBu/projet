@@ -13,6 +13,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+/**
+ * Panel affichant le menu principal
+ */
 public class PanelMenu extends JPanel implements ActionListener {
 
 	JFrame frame;
@@ -79,7 +82,7 @@ public class PanelMenu extends JPanel implements ActionListener {
 			frame.validate();
 		} else if (o.equals(bReserv)){
 			frame.getContentPane().removeAll();
-			frame.getContentPane().add(new PanelReservation(frame));
+			frame.getContentPane().add(new PanelReservationAuto(frame));
 			frame.validate();
 		} else if (o.equals(bEdit)){
 			frame.getContentPane().removeAll();

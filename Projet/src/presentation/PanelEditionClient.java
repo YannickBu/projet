@@ -25,6 +25,11 @@ import donnee.Client;
 import donnee.ForfaitClient;
 import donnee.Reservation;
 
+/**
+ * Panel permettant la visualisation des forfaits et reservations dun client
+ * Permet la confirmation dune reservation non confirmee
+ * ainsi que la suppression dune reservation hors delais
+ */
 public class PanelEditionClient extends JPanel implements ActionListener {
 	
 	private JFrame frame;
@@ -80,9 +85,9 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 		GBC.fill = GridBagConstraints.BOTH; 
 		GBC.anchor = GridBagConstraints.NORTH;
 		GBC.gridy = 0;
-		GBC.gridx = 4; //TODO plus grand?
+		GBC.gridx = 4;
 		GBC.gridheight = 1;
-		GBC.gridwidth = 4;//5 6 ?
+		GBC.gridwidth = 4;
 		GBC.weightx = 0.5;
 		GBC.weighty = 0.1;
 		
@@ -131,7 +136,7 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 		lFiltre.setOpaque(true);
 		lFiltre.setBackground(Color.LIGHT_GRAY);
 		this.add(lFiltre, GBC);
-		
+
 		GBC.gridy++;
 		GBC.fill = GridBagConstraints.VERTICAL; 
 		
@@ -143,7 +148,7 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 		this.add(bActionFor, GBC);
 		
 		GBC.gridy++;
-		GBC.gridx = 4; //TODO plus grand?
+		GBC.gridx = 4;
 		GBC.gridheight = 1;
 		GBC.gridwidth = 4;
 		

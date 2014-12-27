@@ -20,7 +20,7 @@ public class FabForfait {
 	
 	
 	/**
-	 * Récupère un forfait à partir du type de forfait (12h, 24h...)
+	 * Recupere un forfait a partir du type de forfait (12h, 24h...)
 	 * @param typeForfait
 	 * @return
 	 */
@@ -30,7 +30,9 @@ public class FabForfait {
 		ResultSet rs = null;
 		
 		try {
-			st = FabConnexion.getConnexion().prepareStatement("select prixpetitesalle, prixgrandesalle, validite from forfait where typeforfait = ?");
+			st = FabConnexion.getConnexion()
+					.prepareStatement("select prixpetitesalle, prixgrandesalle, validite "
+							+ "from forfait where typeforfait = ?");
 			
 			st.setString(1, typeForfait);
 			
@@ -44,7 +46,8 @@ public class FabForfait {
 				forfait.setValidite(rs.getInt("validite"));
 			}
 		} catch (SQLException e) {
-			System.out.println("Erreur lors de la récupération du forfait "+ typeForfait + " dans FabForfait");
+			System.out.println("Erreur lors de la récupération du forfait "+ typeForfait 
+					+ " - " + e.getMessage());
 		}
 		
 		return forfait;

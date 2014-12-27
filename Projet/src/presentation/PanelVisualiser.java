@@ -2,7 +2,6 @@ package presentation;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -33,10 +32,13 @@ import metier.SupprimerReservation;
 
 import com.toedter.calendar.JDateChooser;
 
-import donnee.Reservation;
 import donnee.Salle;
 
 
+/**
+ * Panel permettant la visualisation de letat dune salle a une date donnee pour
+ * les 15 creneaux de cette journee
+ */
 public class PanelVisualiser extends JPanel implements ActionListener {
 	
 	private JFrame frame;
@@ -161,7 +163,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * @param c
+	 * Initialise le tableau central des horaires et etat des salles (avec letat Libre)
 	 */
 	public void initialiserContainerCENTER(){
 		JLabel horaire;
@@ -170,9 +172,11 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		/*tabEtat = new JLabel[]{lEtat9h,lEtat10h,lEtat11h,lEtat12h,lEtat13h,lEtat14h,lEtat15h,lEtat16h,lEtat17h,
 				lEtat18h,lEtat19h,lEtat20h,lEtat21h,lEtat22h,lEtat23h};*/
 		tabEtat=new JLabel[15];
+		//on initialise le tableau detat a 'Libre'
 		for(int i=0; i<15; i++){
 			tabEtat[i]=new JLabel("Libre",JLabel.CENTER);
 		}
+		//On remplit le tableau central avec les horaires et les etats a 'Libre'
 		for(int i=0; i<3; i++){
 			for(int j=0; j<5; j++){
 				horaire = new JLabel(horaireCourant+"h - "+(horaireCourant+1)+"h  ", JLabel.CENTER);
@@ -189,7 +193,6 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	
 	/**
 	 * Met a jour l'etat des reservations pour une date et un type de salle donnes
-	 * @param c
 	 */
 	public void alimenterContainerCENTER(){
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -205,16 +208,20 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 			JOptionPane.showMessageDialog(this, "Date non valide !");
 			return;
 		}
+		//on recupere letat de la salle dur les 15 creneaux
 		String[] etatsSalle = metierPlanning.etatsSalle(formatter.format(jdDateChooser.getDate()), tabIdSalle[cbChoixNumSalle.getSelectedIndex()]);
 		
 		panelCENTER.removeAll();
 		panelCENTER.setLayout(new GridLayout(6, 5));
+		//on alimente le tableau central des horaires et etats salle
 		for(int i=0; i<3; i++){
+			//horaire
 			for(int j=0; j<5; j++){
 				horaire = new JLabel(horaireCourant+"h - "+(horaireCourant+1)+"h  ", JLabel.CENTER);
 				panelCENTER.add(horaire);
 				horaireCourant++;
-			}getClass().getResource("src/img/redcross.png");
+			}
+			//etats
 			for(int j=0; j<5; j++){
 				if(etatsSalle[etatCourant].equals("Libre")){
 					panelCENTER.add(tabEtat[etatCourant]);

@@ -34,7 +34,10 @@ import donnee.Client;
 import donnee.Reservation;
 import exception.ObjetInconnuException;
 
-public class PanelSaisieClient extends JPanel implements ActionListener {
+/**
+ * Panel permettant la saisie/selection du client pour valider une reservation
+ */
+public class PanelValidationReservation extends JPanel implements ActionListener {
 
 	private JFrame frame;
 	private List<Reservation> listeReservation;
@@ -60,7 +63,7 @@ public class PanelSaisieClient extends JPanel implements ActionListener {
 	private JTextField tfPrenom;
 	private JTextField tfNumTel;
 	
-	public PanelSaisieClient(JFrame frame, List<Reservation> listeReservation) {
+	public PanelValidationReservation(JFrame frame, List<Reservation> listeReservation) {
 		SimpleDateFormat formatterDeb = new SimpleDateFormat("'Le 'dd/MM/yyyy' de 'HH'h '");
 		SimpleDateFormat formatterFin = new SimpleDateFormat("HH");
 		Date dateReservationDebut = null;
@@ -197,6 +200,12 @@ public class PanelSaisieClient extends JPanel implements ActionListener {
 		bRetour.addActionListener(this);
 	}
 
+	/**
+	 * Enregistre la reservation pour le client saisi
+	 * Demande une validation avant lenregistrement de la reservation
+	 * Cree prealablement le client sil nexiste pas encore
+	 * Demande une validation avant lenregistrement du nouveau client
+	 */
 	public void enregistrerReservation(){
 		CreerReservation metierCreerReservation = new CreerReservation();
 		CreerClient metierCreerClient = new CreerClient();
@@ -209,6 +218,7 @@ public class PanelSaisieClient extends JPanel implements ActionListener {
 		}
 		
 		try{
+			//on recherche le client, on enregistre la reservation sil existe
 			metierRechClt.rechercheClient(tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
 			rep = JOptionPane.showConfirmDialog(
 					frame,
@@ -220,6 +230,7 @@ public class PanelSaisieClient extends JPanel implements ActionListener {
 			}
 			metierCreerReservation.creerReservation(listeReservation, tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
 		} catch(ObjetInconnuException e){
+			//le client nexiste pas, on demande son enregistrement
 			rep = JOptionPane.showConfirmDialog(
 					frame,
 					"Nouveau client : Creer?",
@@ -229,6 +240,7 @@ public class PanelSaisieClient extends JPanel implements ActionListener {
 				return;
 			}
 			metierCreerClient.creerClient(tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
+			//On demande la validation de la reservation
 			rep = JOptionPane.showConfirmDialog(
 					frame,
 					"Valider la reservation?",
@@ -248,7 +260,7 @@ public class PanelSaisieClient extends JPanel implements ActionListener {
 		JOptionPane.showMessageDialog(this, "Reservation enregistree");
 		
 		frame.getContentPane().removeAll();
-		frame.getContentPane().add(new PanelReservation(frame));
+		frame.getContentPane().add(new PanelReservationAuto(frame));
 		frame.validate();
 	}
 

@@ -2,10 +2,8 @@ package presentation;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
@@ -21,17 +19,18 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+
+import metier.RechercheReservation;
 
 import com.toedter.calendar.JDateChooser;
 
-import metier.CreerReservation;
-import metier.RechercheReservation;
 import donnee.Reservation;
-import donnee.Salle;
 
-public class PanelReservation extends JPanel implements ActionListener {
+/**
+ * Panel permettant de trouver une proposition de reservation selon le type de salle,
+ * la tranche de la journee, la date et la duree de la reservation
+ */
+public class PanelReservationAuto extends JPanel implements ActionListener {
 
 	private static final String TRANCHE_SOIR = "20h - 00h";
 	private static final String TRANCHE_APRES_MIDI = "13h - 20h";
@@ -59,9 +58,6 @@ public class PanelReservation extends JPanel implements ActionListener {
 	private JRadioButton rbApresMidi;
 	private JRadioButton rbSoir;
 	
-	private JTextField tfNom = new JTextField();
-	private JTextField tfTel = new JTextField();
-	
 	private JComboBox cbDuree;
 	
 	private JButton bRechercher;
@@ -81,7 +77,7 @@ public class PanelReservation extends JPanel implements ActionListener {
 	 * Methode qui permet d'afficher les reservations 
 	 * @param frame
 	 */
-	public PanelReservation(JFrame frame) {
+	public PanelReservationAuto(JFrame frame) {
 		
 		
 		this.frame = frame;
@@ -166,6 +162,9 @@ public class PanelReservation extends JPanel implements ActionListener {
 		
 	}
 	
+	/**
+	 * Recherche et affichage dune proposition pour les criteres renseignes
+	 */
 	public void afficherUneProposition(){
 		SimpleDateFormat formatterDateSaisie = new SimpleDateFormat("dd-MM-yyyy");
 		SimpleDateFormat formatterDeb = new SimpleDateFormat("'Le 'dd/MM/yyyy' de 'HH'h '");
@@ -180,6 +179,7 @@ public class PanelReservation extends JPanel implements ActionListener {
 			return;
 		}
 		
+		//Recherche dune proposition pour la date, duree, tranche et type de salle saisis
 		creneauPropose = metier.rechercheCreneauLibre(
 				formatterDateSaisie.format(jdDateChooser.getDate()), 
 				Integer.parseInt(((String)cbDuree.getSelectedItem()).substring(0, 1)), 
@@ -187,6 +187,7 @@ public class PanelReservation extends JPanel implements ActionListener {
 				rbPetiteSalle.isSelected()?"petite":(rbGrandeSalle.isSelected()?"grande":"equipee"));
 		panelCENTERInterneResultat.removeAll();
 		
+		//sil existe une proposition repondant aux criteres
 		if(creneauPropose!=null && creneauPropose.size()>0){
 			dateReservationDebut = creneauPropose.get(0).getDate();
 			dateReservationFin = creneauPropose.get(creneauPropose.size()-1).getDate();
@@ -201,59 +202,6 @@ public class PanelReservation extends JPanel implements ActionListener {
 		}
 		
 		this.validate();
-	}
-	
-	public void afficherSaisieClient(){
-		frame.getContentPane().removeAll();
-		frame.getContentPane().add(new PanelSaisieClient(frame, creneauPropose));
-		frame.validate();
-	/*	JPanel panel = new JPanel();
-		Container containerSOUTH = new Container();
-		Container containerCENTER = new Container();
-		Container containerCENTERInterne = new Container();
-		Container containerCENTERNom = new Container();
-		Container containerCENTERTel = new Container();
-
-		JLabel nom = new JLabel("Nom");
-		JLabel tel = new JLabel("Tel");
-		
-		nom.setHorizontalAlignment(SwingConstants.CENTER);
-		nom.setMinimumSize(new Dimension(23, 20));
-		nom.setPreferredSize(new Dimension(23, 20));
-
-		tel.setHorizontalAlignment(SwingConstants.CENTER);
-		tel.setMinimumSize(new Dimension(23, 20));
-		tel.setPreferredSize(new Dimension(23, 20));
-		
-		tfNom.setMinimumSize(new Dimension(23, 20));
-		tfNom.setPreferredSize(new Dimension(23, 20));
-		
-		tfTel.setMinimumSize(new Dimension(23, 20));
-		tfTel.setPreferredSize(new Dimension(23, 20));
-		
-		panel.setLayout(new BorderLayout());
-		containerSOUTH.setLayout(new FlowLayout());
-		containerCENTER.setLayout(new FlowLayout());
-		containerCENTERInterne.setLayout(new BoxLayout(containerCENTERInterne, BoxLayout.Y_AXIS));
-		containerCENTERNom.setLayout(new GridLayout(1,2));
-		containerCENTERTel.setLayout(new GridLayout(1,2));
-		
-		frame.getContentPane().removeAll();
-		
-		containerSOUTH.add(bRetourRecherche);
-		panel.add(containerSOUTH, BorderLayout.SOUTH);
-		containerCENTERNom.add(nom);
-		containerCENTERNom.add(tfNom);
-		containerCENTERTel.add(tel);
-		containerCENTERTel.add(tfTel);
-		containerCENTERInterne.add(containerCENTERNom);
-		containerCENTERInterne.add(containerCENTERTel);
-		containerCENTERInterne.add(bEnregistrer);
-		containerCENTER.add(containerCENTERInterne);
-		panel.add(containerCENTER, BorderLayout.CENTER);
-		
-		frame.getContentPane().add(panel);
-		frame.validate();*/
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -280,10 +228,12 @@ public class PanelReservation extends JPanel implements ActionListener {
 		} else if(o.equals(bRechercher)){
 			afficherUneProposition();
 		} else if(o.equals(bAccepter)){
-			afficherSaisieClient();
+			frame.getContentPane().removeAll();
+			frame.getContentPane().add(new PanelValidationReservation(frame, creneauPropose));
+			frame.validate();
 		} else if(o.equals(bRetourRecherche)){
 			frame.getContentPane().removeAll();
-			frame.getContentPane().add(new PanelReservation(frame));
+			frame.getContentPane().add(new PanelReservationAuto(frame));
 			frame.validate();
 		}
 	}

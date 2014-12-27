@@ -24,7 +24,7 @@ public class FabSalle {
 	}
 	
 	/**
-	 * Crée une nouvelle salle
+	 * Cree une nouvelle salle
 	 * @param id
 	 * @param typeSalle
 	 * @param prix1h
@@ -58,7 +58,7 @@ public class FabSalle {
 				salle.setPrixPlage2h(prix2h);
 			}
 		} catch (SQLException se) {
-			System.out.println("Echec de la creation de la salle dans la creation de FabSalle");
+			System.out.println("Echec de la creation de la salle - "+se.getMessage());
 		}
 	
 		return salle;
@@ -74,7 +74,7 @@ public class FabSalle {
 		Salle salle = null;
 		PreparedStatement pst = null;
 		Connection connection = FabConnexion.getConnexion();
-		String query = "SELECT typesalle, prix1h, prix2h FROM salle WHERE idsalle = ?  ";
+		String query = "SELECT typesalle, prix1h, prix2h FROM salle WHERE idsalle = ?";
 		try {
 			pst = connection.prepareStatement(query);
 			pst.clearParameters();
@@ -95,7 +95,8 @@ public class FabSalle {
 			
 
 		} catch (SQLException e) {
-			System.out.println("echec de la recuperation de la salle pour l'id "+id+" dans la recherche de FabSalle");
+			System.out.println("Echec de la recuperation de la salle pour l'id "+id
+					+" - "+e.getMessage());
 		}
 		return salle;
 	}
@@ -131,7 +132,8 @@ public class FabSalle {
 			}
 
 		} catch (SQLException e) {
-			System.out.println("echec de la recuperation de la salle pour le type "+typeSalle+" dans la recherche de FabSalle");
+			System.out.println("echec de la recuperation de la salle pour le type "+typeSalle
+					+" - "+e.getMessage());
 		}
 		return listeSalles;
 	}
@@ -153,12 +155,13 @@ public class FabSalle {
 			pst.execute();
 			
 		} catch (SQLException e) {
-			System.out.println("Echec de la suppression de la salle pour l'id "+id+" dans la suppression de FabSalle");
+			System.out.println("Echec de la suppression de la salle pour l'id "+id
+					+" - "+e.getMessage());
 		}
 	}
 
 	/**
-	 * Récupère l'ensemble des salles
+	 * Recupere lensemble des salles
 	 * @return
 	 */
 	public List<Salle> lister() {
@@ -180,7 +183,8 @@ public class FabSalle {
 				listSalle.add(salle);
 			}
 		}catch(SQLException e){
-			System.out.println("Erreur d'acces aux listes des salles en base de donnees");
+			System.out.println("Erreur d'acces aux listes des salles en base de donnees - "
+					+e.getMessage());
 		}
 		return listSalle;
 	}

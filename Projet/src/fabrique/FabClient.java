@@ -25,7 +25,7 @@ public class FabClient {
 	}
 	
 	/**
-	 * Crée un client
+	 * Cree un client
 	 * @param nom
 	 * @param prenom
 	 * @param tel
@@ -60,14 +60,14 @@ public class FabClient {
 			}
 			
 		} catch (SQLException se) {
-			System.out.println("Echec de la creation du client "+nom+" dans la creation de FabClient");
+			System.out.println("Echec de la creation du client "+nom+" - "+se.getMessage());
 		}
 
 		return client;
 	}
 
 	/**
-	 * Recherche un client à partir de son id
+	 * Recherche un client a partir de son id
 	 * @param id
 	 * @return client
 	 * @throws ObjetInconnuException
@@ -97,14 +97,16 @@ public class FabClient {
 			client.setPointsFidelite(rs.getInt("fidelite"));
 
 		} catch (SQLException e) {
-			System.out.println("Echec de la recuperation du client pour l'id "+id+" dans la recherche de FabClient");
+			System.out.println("Echec de la recuperation du client pour l'id "+id
+					+" - "+e.getMessage());
 		}
 		return client;
 	}
 	
 	/**
-	 * Recherche un client à partir de son nom et son numero de telephone
+	 * Recherche un client a partir de son nom, prenom et telephone
 	 * @param nom le nom du client a rechercher
+	 * @param prenom le prenom du client a rechercher
 	 * @param num le numero de telephone du client a rechercher
 	 * @return client
 	 * @throws ObjetInconnuException
@@ -136,7 +138,8 @@ public class FabClient {
 			client.setPointsFidelite(rs.getInt("fidelite"));
 
 		} catch (SQLException e) {
-			System.out.println("Echec de la recuperation du client du nom "+nom+" dans la recherche de FabClient");
+			System.out.println("Echec de la recuperation du client du nom "+nom
+					+" - "+e.getMessage());
 		}
 		return client;
 	}
@@ -158,12 +161,13 @@ public class FabClient {
 			pst.execute();
 			
 		} catch (SQLException e) {
-			System.out.println("Echec de la suppression du client pour l'id "+id+" dans la suppression de FabClient");
+			System.out.println("Echec de la suppression du client pour l'id "+id
+					+" - "+e.getMessage());
 		}
 	}
 
 	/**
-	 * Récupere l'ensemble des clients
+	 * Recupere l'ensemble des clients
 	 * @return la liste des clients
 	 */
 	public List<Client> lister() {
@@ -186,7 +190,8 @@ public class FabClient {
 				listClient.add(client);
 			}
 		}catch(SQLException e){
-			System.out.println("Erreur d'acces aux listes des clients en base de donnees");
+			System.out.println("Erreur d'acces aux listes des clients en base de donnees - "
+					+e.getMessage());
 		}
 		return listClient;
 	}
