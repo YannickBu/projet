@@ -288,9 +288,8 @@ public class FabReservation {
 	 */
 	public void modifierReservation(Reservation res){
 		PreparedStatement pst = null;
-		ResultSet rs = null;
 		Connection connection = FabConnexion.getConnexion();
-		Reservation reserv = null;
+		
 		String query = "update reservation set idsalle = ?, idclient = ?, "
 				+ " datedebut = ?, plage = ?, datecreation = ?, estpayee = ? "
 				+ " where idreservation = ?";
