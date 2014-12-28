@@ -280,4 +280,34 @@ public class FabReservation {
 		}
 		return listReservation;
 	}
+	
+	/**
+	 * Modifie la reservation ayant comme id celui du parametre res
+	 * et la modifie avec les donness contenus dans res
+	 * @param res
+	 */
+	public void modifierReservation(Reservation res){
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		Connection connection = FabConnexion.getConnexion();
+		Reservation reserv = null;
+		String query = "update reservation set idsalle = ?, idclient = ?, "
+				+ " datedebut = ?, plage = ?, datecreation = ?, estpayee = ? "
+				+ " where idreservation = ?";
+		try {
+			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			pst.clearParameters();
+
+			pst.setInt(1, res.getSalle().getIdSalle());
+			pst.setInt(2, res.getClient().getId());
+			pst.setTimestamp(3, new Timestamp(res.getDate().getTime()));
+			pst.setInt(4,res.getPlage());
+			pst.setTimestamp(5, new Timestamp(res.getDateCreation().getTime()));
+			pst.setBoolean(6, res.getEstPaye());
+			pst.setInt(7, res.getIdReserv());
+			pst.execute();
+		} catch (SQLException se) {
+			System.out.println("Echec de la creation de la reservation - "+se.getMessage());
+		}
+	}
 }

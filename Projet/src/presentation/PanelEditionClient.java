@@ -18,11 +18,17 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
+import metier.ModifierReservation;
 import metier.RechercheReservation;
+import metier.SupprimerReservation;
 import donnee.Client;
 import donnee.ForfaitClient;
 import donnee.Reservation;
@@ -32,7 +38,7 @@ import donnee.Reservation;
  * Permet la confirmation dune reservation non confirmee
  * ainsi que la suppression dune reservation hors delais
  */
-public class PanelEditionClient extends JPanel implements ActionListener {
+public class PanelEditionClient extends JPanel implements ActionListener, ListSelectionListener {
 	
 	private JFrame frame;
 	
@@ -86,6 +92,9 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 		for(Reservation res : listeReservations){
 			modelRes.addElement(res);
 		}
+		
+		jListeReservations.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		jListeForfaits.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		this.frame = frame;
 		this.client = client;
@@ -172,6 +181,7 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 		GBC.insets = new Insets(10, 10, 10, 10);
 		GBC.gridx = 3;
 		GBC.gridy++;
+		GBC.gridwidth = 3;
 		GBC.fill = GridBagConstraints.VERTICAL; 
 		
 		this.add(bActionRes, GBC);
@@ -188,6 +198,9 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 		
 		this.add(bRetour, GBC);
 		
+		bActionRes.setEnabled(false);
+		bActionRes.setText("Selectionner une reservation");
+		
 		bActionFor.addActionListener(this);
 		bActionRes.addActionListener(this);
 		bRetour.addActionListener(this);
@@ -195,6 +208,7 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 		bFiltreConfirme.addActionListener(this);
 		bFiltreNonConfirme.addActionListener(this);
 		bFiltreHorsDelais.addActionListener(this);
+		jListeReservations.addListSelectionListener(this);
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -244,10 +258,55 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 			bFiltreConfirme.setBorder(null);
 			bFiltreNonConfirme.setBorder(null);
 			bFiltreHorsDelais.setBorder(BorderFactory.createLoweredBevelBorder());
+		} else if(o.equals(jListeReservations)){
+			
+		} else if(o.equals(bActionRes)){
+			if(bActionRes.getText().equals("Supprimer")){
+				SupprimerReservation metierSupprRes = new SupprimerReservation();
+				metierSupprRes.supprimerReservation(jListeReservations.getSelectedValue().getIdReserv());
+				modelRes.remove(jListeReservations.getSelectedIndex());
+				JOptionPane.showMessageDialog(this, "Reservation hors delais supprimee");
+			} else {
+				ModifierReservation metierModifRes = new ModifierReservation();
+				Reservation resNewDonnees = new Reservation();
+				resNewDonnees.setClient(jListeReservations.getSelectedValue().getClient());
+				resNewDonnees.setDate(jListeReservations.getSelectedValue().getDate());
+				resNewDonnees.setDateCreation(jListeReservations.getSelectedValue().getDateCreation());
+				resNewDonnees.setEstPaye(true);
+				resNewDonnees.setIdReserv(jListeReservations.getSelectedValue().getIdReserv());
+				resNewDonnees.setPlage(jListeReservations.getSelectedValue().getPlage());
+				resNewDonnees.setSalle(jListeReservations.getSelectedValue().getSalle());
+				metierModifRes.payer(resNewDonnees);
+				modelRes.remove(jListeReservations.getSelectedIndex());
+			}
+		} else if(o.equals(bActionFor)){
+			
 		}
 	}
 	
-	
+	public void valueChanged(ListSelectionEvent e) {
+		Object o = e.getSource();
+		if(o.equals(jListeReservations)){
+			if(jListeReservations.getSelectedValue()!=null){
+				if(!jListeReservations.getSelectedValue().getEstPaye()){
+					bActionRes.setEnabled(true);
+					if(new Date().getTime() - jListeReservations.getSelectedValue().getDateCreation().getTime() >= 7*24*60*60*1000){
+						bActionRes.setText("Supprimer");
+					} else {
+						bActionRes.setText("Confirmer");
+					}
+				}else{
+					bActionRes.setEnabled(false);
+					bActionRes.setText("Selectionner une reservation");
+				}
+			}else{
+				bActionRes.setEnabled(false);
+				bActionRes.setText("Selectionner une reservation");
+			}
+		} else if(o.equals(jListeForfaits)){
+			
+		}
+	}
 	
 	private class RendererJListReservation implements ListCellRenderer<Reservation> {
 		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
@@ -273,7 +332,7 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 			renderer.setText(newText);
 			if(reservations.getEstPaye()){
 				renderer.setBackground(isSelected ?  new Color(0, 200, 200) : Color.CYAN);
-			} else if(new Date().getTime() - reservations.getDateCreation().getTime() >= 7*24*60*60*1000){
+			}else if(new Date().getTime() - reservations.getDateCreation().getTime() >= 7*24*60*60*1000){
 				renderer.setBackground(isSelected ?  new Color(200, 0, 0) : Color.RED);
 			}else{
 				renderer.setBackground(isSelected ?  Color.YELLOW : Color.ORANGE);

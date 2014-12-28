@@ -207,7 +207,7 @@ public class RechercheReservation {
 			switch(etat){
 			case Reservation.ETAT_HORS_DELAIS :
 				for(Reservation res : listeRes){
-					if(new Date().getTime() - res.getDateCreation().getTime() >= 7*24*60*60*1000){
+					if(new Date().getTime() - res.getDateCreation().getTime() >= 7*24*60*60*1000 && !res.getEstPaye()){
 						listeResModif.add(res);
 					}
 				}
