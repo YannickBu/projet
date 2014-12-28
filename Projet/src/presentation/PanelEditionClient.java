@@ -273,7 +273,7 @@ public class PanelEditionClient extends JPanel implements ActionListener {
 			renderer.setText(newText);
 			if(reservations.getEstPaye()){
 				renderer.setBackground(isSelected ?  new Color(0, 200, 200) : Color.CYAN);
-			} else if(reservations.getDate().getTime() - reservations.getDateCreation().getTime() >= 7*24*60*60*1000){
+			} else if(new Date().getTime() - reservations.getDateCreation().getTime() >= 7*24*60*60*1000){
 				renderer.setBackground(isSelected ?  new Color(200, 0, 0) : Color.RED);
 			}else{
 				renderer.setBackground(isSelected ?  Color.YELLOW : Color.ORANGE);

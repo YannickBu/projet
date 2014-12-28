@@ -181,7 +181,7 @@ public class RechercheReservation {
 				for(int i=0; i<reservationEnCours.getPlage();i++)
 					etatsSalle[calendarDebut.get(Calendar.HOUR_OF_DAY)-9+i] = "Confirmee";
 			}
-			else if(calendarDebut.getTimeInMillis() - calendarCreation.getTimeInMillis() > (DELAIS_DE_PAIEMENT_EN_JOURS*24*60*60*1000)){
+			else if(new Date().getTime() - calendarCreation.getTimeInMillis() > (DELAIS_DE_PAIEMENT_EN_JOURS*24*60*60*1000)){
 				for(int i=0; i<reservationEnCours.getPlage();i++)
 					etatsSalle[calendarDebut.get(Calendar.HOUR_OF_DAY)-9+i] = "Hors delais";
 			} else {
@@ -207,7 +207,7 @@ public class RechercheReservation {
 			switch(etat){
 			case Reservation.ETAT_HORS_DELAIS :
 				for(Reservation res : listeRes){
-					if(res.getDate().getTime() - res.getDateCreation().getTime() >= 7*24*60*60*1000){
+					if(new Date().getTime() - res.getDateCreation().getTime() >= 7*24*60*60*1000){
 						listeResModif.add(res);
 					}
 				}
@@ -222,7 +222,7 @@ public class RechercheReservation {
 			case Reservation.ETAT_NON_CONFIRME :
 				for(Reservation res : listeRes){
 					if(!res.getEstPaye() 
-							&& res.getDate().getTime() - res.getDateCreation().getTime() < 7*24*60*60*1000
+							&& new Date().getTime() - res.getDateCreation().getTime() < 7*24*60*60*1000
 							){
 						listeResModif.add(res);
 					}
