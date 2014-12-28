@@ -14,6 +14,7 @@ import donnee.Client;
 import donnee.Forfait;
 import donnee.ForfaitClient;
 import donnee.Salle;
+import donnee.TypeSalle;
 import exception.ObjetExistantException;
 import exception.ObjetInconnuException;
 
@@ -31,32 +32,32 @@ public class FabForfaitClient {
 	/**
 	 * Creation d'un forfait client
 	 * @param idClient
-	 * @param idSalle
+	 * @param idTypeSalle
 	 * @param typeForfait
 	 * @return ForfaitClient
 	 * @throws ObjetExistantException
 	 */
-	public ForfaitClient creer( int idClient, int idSalle , String typeForfait) throws ObjetExistantException {
+	public ForfaitClient creer( int idClient, int idTypeSalle , String typeForfait) throws ObjetExistantException {
 		ForfaitClient fc = null;
 		ResultSet rs = null;
 		PreparedStatement pst = null;
 		Connection connection = FabConnexion.getConnexion();
 		int tpsRestant;
 		Date dateCourante = new Date();
-		String query = "INSERT INTO forfait_client (idclient,idsalle,typeforfait,tempsrestant,datecreation) VALUES(?,?,?,?,?)";
+		String query = "INSERT INTO forfait_client (idclient,idtypesalle,typeforfait,tempsrestant,datecreation) VALUES(?,?,?,?,?)";
 		try {
 			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 			pst.clearParameters();
 			
 			pst.setInt(1, idClient);
-			pst.setInt(2, idSalle);
+			pst.setInt(2, idTypeSalle);
 			pst.setString(3,typeForfait);
 			pst.setTimestamp(4, new Timestamp(dateCourante.getTime()));
 			if (typeForfait.equals("12h")){
-				tpsRestant = 5400;// 30 jours * 60h * 3mois
+				tpsRestant = 2160;// 30 jours * 24h * 3mois
 			} 
 			else {
-				tpsRestant = 10800; // 30jours * 60h *6 mois
+				tpsRestant = 4320; // 30jours * 24h *6 mois
 			}
 			pst.setInt(4, tpsRestant); 
 			
@@ -67,7 +68,7 @@ public class FabForfaitClient {
 			if(rs.next()){
 				fc.setIdForfaitClient(rs.getInt(1));
 				fc.setClient(FabClient.getInstance().rechercher(rs.getInt(2)));
-				fc.setSalle(FabSalle.getInstance().rechercherParId(rs.getInt(3)));
+				fc.setTypeSalle(FabTypeSalle.getInstance().rechercher(rs.getInt(3)));
 				fc.setForfait(FabForfait.getInstance().rechercherForfait(rs.getString(4)));
 				fc.setTempsRestant(tpsRestant);
 				fc.setDateCreation(dateCourante);
@@ -90,7 +91,7 @@ public class FabForfaitClient {
 		ForfaitClient fc = null;
 		PreparedStatement pst = null;
 		Connection connection = FabConnexion.getConnexion();
-		String query = "SELECT idclient, idsalle, typeforfait, tempsrestant, datecreation FROM forfait_client WHERE idforfaitclient = ?";
+		String query = "SELECT idclient, idtypesalle, typeforfait, tempsrestant, datecreation FROM forfait_client WHERE idforfaitclient = ?";
 		try {
 			pst = connection.prepareStatement(query);
 			pst.clearParameters();
@@ -106,7 +107,7 @@ public class FabForfaitClient {
 			fc = new ForfaitClient();
 			fc.setIdForfaitClient(id);
 			fc.setClient(FabClient.getInstance().rechercher(rs.getInt("idclient")));
-			fc.setSalle(FabSalle.getInstance().rechercherParId(rs.getInt("idsalle")));
+			fc.setTypeSalle(FabTypeSalle.getInstance().rechercher(rs.getInt("idtypesalle")));
 			fc.setForfait(FabForfait.getInstance().rechercherForfait(rs.getString("typeforfait")));
 			fc.setTempsRestant(rs.getInt("tempsrestant"));
 			fc.setDateCreation(rs.getTimestamp("datecreation"));
@@ -119,17 +120,17 @@ public class FabForfaitClient {
 	}
 
 	/**
-	 * Recherche le ForfaitClient via le type du forfait, lid du client et lid de la salle
+	 * Recherche le ForfaitClient via le type du forfait, lid du client et lid du typesalle
 	 * @param typeForfait
 	 * @param idClient
-	 * @param idSalle
+	 * @param idTypeSalle
 	 * @return liste des forfait Client
 	 */
-	public List<ForfaitClient> rechercherForfaitClient(String typeForfait, int idClient, int idSalle){
+	public List<ForfaitClient> rechercherForfaitClient(String typeForfait, int idClient, int idTypeSalle){
 		List<ForfaitClient> listeForfaitClient = new ArrayList<ForfaitClient>();
 		Forfait forfait = null;
 		Client client = null;
-		Salle salle = null;
+		TypeSalle typeSalle = null;
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		
@@ -142,18 +143,18 @@ public class FabForfaitClient {
 			
 			st.setString(1, typeForfait);
 			st.setInt(2, idClient);
-			st.setInt(3, idSalle);
+			st.setInt(3, idTypeSalle);
 			
 			rs = st.executeQuery();
 			
 			forfait = FabForfait.getInstance().rechercherForfait(typeForfait);
 			client = FabClient.getInstance().rechercher(idClient);
-			salle = FabSalle.getInstance().rechercherParId(idSalle);
+			typeSalle = FabTypeSalle.getInstance().rechercher(idTypeSalle);
 			
 			while(rs.next()){
 				listeForfaitClient.add(
 						new ForfaitClient(
-								rs.getInt("idforfaitclient"), client, forfait, salle, rs.getInt("tempsrestant"), rs.getTimestamp("datecreation")
+								rs.getInt("idforfaitclient"), client, forfait, typeSalle, rs.getInt("tempsrestant"), rs.getTimestamp("datecreation")
 								)
 						);
 			}
@@ -161,7 +162,7 @@ public class FabForfaitClient {
 			System.out.println("Erreur lors de la recuperation de forfaitclient");
 			System.out.println("Type du forfait : "+typeForfait);
 			System.out.println("IdClient : " + idClient);
-			System.out.println("IdSalle : " + idSalle);
+			System.out.println("IdTypeSalle : " + idTypeSalle);
 			System.out.println(e.getMessage());
 		}
 		

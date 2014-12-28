@@ -7,7 +7,7 @@ public class ForfaitClient {
 	private int idForfaitClient;
 	private Client client;
 	private Forfait forfait;
-	private Salle salle;
+	private TypeSalle typeSalle;
 	private int tempsRestant;
 	private Date dateCreation;
 	
@@ -25,11 +25,11 @@ public class ForfaitClient {
 	 * @param tempsRestant
 	 * @param dateCreation
 	 */
-	public ForfaitClient(int id, Client c, Forfait f, Salle s, int tempsRestant, Date dateCreation){
+	public ForfaitClient(int id, Client c, Forfait f, TypeSalle s, int tempsRestant, Date dateCreation){
 		idForfaitClient = id;
 		client = c;
 		forfait = f;
-		salle = s;
+		typeSalle = s;
 		this.tempsRestant = tempsRestant;
 		this.dateCreation = dateCreation;
 	}
@@ -83,19 +83,19 @@ public class ForfaitClient {
 	}
 	
 	/**
-	 * Methode qui retourne la salle du forfait client
-	 * @return salle
+	 * Methode qui retourne le type de salle du forfait client
+	 * @return typeSalle
 	 */
-	public Salle getSalle() {
-		return salle;
+	public TypeSalle getTypeSalle() {
+		return typeSalle;
 	}
 	
 	/**
-	 * Methode qui modifie la salle du forfait client
-	 * @param salle
+	 * Methode qui modifie le type de salle du forfait client
+	 * @param typeSalle
 	 */
-	public void setSalle(Salle salle) {
-		this.salle = salle;
+	public void setTypeSalle(TypeSalle typeSalle) {
+		this.typeSalle = typeSalle;
 	}
 	
 	/**
@@ -114,10 +114,18 @@ public class ForfaitClient {
 		this.tempsRestant = tempsRestant;
 	}
 
+	/**
+	 * Methode qui retourne la date de creation du forfait client
+	 * @return tempsRestant
+	 */
 	public Date getDateCreation() {
 		return dateCreation;
 	}
 
+	/**
+	 * Methode qui modifie la date de creation du forfait client
+	 * @param tempsRestant
+	 */
 	public void setDateCreation(Date dateCreation) {
 		this.dateCreation = dateCreation;
 	}

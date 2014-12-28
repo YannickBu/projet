@@ -7,18 +7,18 @@ import fabrique.FabForfaitClient;
 public class VendreForfait {
 
 	/**
-	 * Vendre un forfait un client 
+	 * Vendre un forfait a un client pour un type de salle
 	 * @param idClient
-	 * @param idSalle
+	 * @param idTypeSalle
 	 * @param typeForfait
 	 */
-	public void vendreForfait(Integer idClient, Integer idSalle, String typeForfait) {
+	public void vendreForfait(Integer idClient, Integer idTypeSalle, String typeForfait) {
 		FabClient fabClient = FabClient.getInstance();
 		FabForfaitClient fabForfaitClient = FabForfaitClient.getInstance();
 		Client client = fabClient.rechercher(idClient);
 		
 		if (client != null){
-			fabForfaitClient.creer(idClient, idSalle, typeForfait);
+			fabForfaitClient.creer(idClient, idTypeSalle, typeForfait);
 		}
 		
 	}
