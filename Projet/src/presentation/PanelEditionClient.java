@@ -2,8 +2,10 @@ package presentation;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -27,6 +30,7 @@ import javax.swing.event.ListSelectionListener;
 
 import metier.ModifierReservation;
 import metier.RechercheReservation;
+import metier.RechercherForfaitClient;
 import metier.SupprimerReservation;
 import donnee.Client;
 import donnee.ForfaitClient;
@@ -43,6 +47,8 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 	
 	private Client client;
 	
+	private JPanel panelForfait;
+	
 	private JLabel lClientTitre;
 	
 	private JButton bActionRes;
@@ -58,9 +64,14 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 	private DefaultListModel<Reservation> modelRes;
 	private DefaultListModel<ForfaitClient> modelFor;
 	private List<Reservation> listeReservations;
+	private List<ForfaitClient> listeForfait;
 	
 	public PanelEditionClient(JFrame frame, Client client) {
 		RechercheReservation metierRechercheReservation = new RechercheReservation();
+		RechercherForfaitClient metierRechercherForfaitClient = new RechercherForfaitClient();
+		
+		panelForfait = new JPanel();
+		panelForfait.setLayout(new GridLayout(1,1));
 		
 		JLabel lRes = new JLabel("Vos reservations", JLabel.CENTER);
 		JLabel lFor = new JLabel("Vos forfaits", JLabel.CENTER);
@@ -87,11 +98,16 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		jListeReservations = new JList<Reservation>(modelRes);
 		jListeForfaits = new JList<ForfaitClient>(modelFor);
 		jListeReservations.setCellRenderer(new RendererJListReservation());
+		jListeForfaits.setCellRenderer(new RendererJListForfait());
 		listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), null);
+		listeForfait = metierRechercherForfaitClient.lister();
 		for(Reservation res : listeReservations){
 			modelRes.addElement(res);
 		}
-		
+		for(ForfaitClient forfaitClient : listeForfait){
+			modelFor.addElement(forfaitClient);
+		}
+			
 		jListeReservations.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jListeForfaits.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
@@ -146,7 +162,8 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		GBC.gridheight = 4;
 		GBC.gridwidth = 5;
 		
-		this.add(jListeForfaits, GBC);
+		panelForfait.add(jListeForfaits);
+		this.add(panelForfait, GBC);
 
 		GBC.gridx = 0;
 		GBC.gridy = 5;
@@ -279,7 +296,13 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 				modelRes.remove(jListeReservations.getSelectedIndex());
 			}
 		} else if(o.equals(bActionFor)){
-			
+			if(bActionFor.getText().equals("Acheter un forfait")){
+				
+				bActionFor.setText("Lister les forfaits");
+			} else {
+				
+				bActionFor.setText("Acheter un forfait");
+			}
 		}
 	}
 	
@@ -332,6 +355,23 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 			}else{
 				renderer.setBackground(isSelected ?  Color.YELLOW : Color.ORANGE);
 			}
+			return renderer;
+		}
+		
+	}
+	
+	private class RendererJListForfait implements ListCellRenderer<ForfaitClient> {
+		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+		
+		public RendererJListForfait() {
+			
+		}
+		public Component getListCellRendererComponent(JList<? extends ForfaitClient> jlist, ForfaitClient forfaitClient,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(jlist, forfaitClient, index, isSelected, cellHasFocus);
+			
+			String newText="Forfait "+forfaitClient.getTypeSalle().getTypeSalle()+" salle - "+forfaitClient.getTempsRestant()+"h restante"+(forfaitClient.getTempsRestant()>1?"s":"");
+			renderer.setText(newText);
 			return renderer;
 		}
 		
