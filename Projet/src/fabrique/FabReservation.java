@@ -66,7 +66,7 @@ public class FabReservation {
 			if(rs.next()){
 				reserv.setIdReserv(rs.getInt(1));
 				reserv.setClient(FabClient.getInstance().rechercher(idClient));
-				reserv.setSalle(FabSalle.getInstance().rechercher(idSalle));
+				reserv.setSalle(FabSalle.getInstance().rechercherParId(idSalle));
 				reserv.setDate(dateDebut);
 				reserv.setDateCreation(dateCreation);
 				reserv.setEstPaye(estPayee);
@@ -107,7 +107,7 @@ public class FabReservation {
 			res = new Reservation();
 			res.setIdReserv(id);
 			res.setClient(FabClient.getInstance().rechercher(rs.getInt("idclient")));
-			res.setSalle(FabSalle.getInstance().rechercher(rs.getInt("idsalle")));
+			res.setSalle(FabSalle.getInstance().rechercherParId(rs.getInt("idsalle")));
 			res.setDate(rs.getDate("datedebut"));
 			res.setDateCreation(rs.getDate("datecreation"));
 			res.setEstPaye(rs.getBoolean("estpayee"));
@@ -140,7 +140,7 @@ public class FabReservation {
 		java.util.Date dateFin;
 		
 		try {
-			salle = FabSalle.getInstance().rechercher(idSalle);
+			salle = FabSalle.getInstance().rechercherParId(idSalle);
 			dateDebut = formatter.parse(date);
 			calendar.setTime(dateDebut); // on passe dateFin à la journee qui suit dateDebut à 1h du matin
 			calendar.add(Calendar.DAY_OF_MONTH, 1);
@@ -232,7 +232,7 @@ public class FabReservation {
 				Reservation res = new Reservation();
 				res.setIdReserv(rs.getInt("idreservation"));
 				res.setClient(FabClient.getInstance().rechercher(rs.getInt("idclient")));
-				res.setSalle(FabSalle.getInstance().rechercher(rs.getInt("idsalle")));
+				res.setSalle(FabSalle.getInstance().rechercherParId(rs.getInt("idsalle")));
 				res.setDate(rs.getDate("datedebut"));
 				res.setPlage(rs.getInt("plage"));
 				res.setDateCreation(rs.getDate("datecreation"));
@@ -267,7 +267,7 @@ public class FabReservation {
 				Reservation res = new Reservation();
 				res.setIdReserv(rs.getInt("idreservation"));
 				res.setClient(FabClient.getInstance().rechercher(id));
-				res.setSalle(FabSalle.getInstance().rechercher(rs.getInt("idsalle")));
+				res.setSalle(FabSalle.getInstance().rechercherParId(rs.getInt("idsalle")));
 				res.setDate(rs.getTimestamp("datedebut"));
 				res.setPlage(rs.getInt("plage"));
 				res.setDateCreation(rs.getTimestamp("datecreation"));

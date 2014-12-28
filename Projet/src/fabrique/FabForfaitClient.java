@@ -67,7 +67,7 @@ public class FabForfaitClient {
 			if(rs.next()){
 				fc.setIdForfaitClient(rs.getInt(1));
 				fc.setClient(FabClient.getInstance().rechercher(rs.getInt(2)));
-				fc.setSalle(FabSalle.getInstance().rechercher(rs.getInt(3)));
+				fc.setSalle(FabSalle.getInstance().rechercherParId(rs.getInt(3)));
 				fc.setForfait(FabForfait.getInstance().rechercherForfait(rs.getString(4)));
 				fc.setTempsRestant(tpsRestant);
 				fc.setDateCreation(dateCourante);
@@ -106,7 +106,7 @@ public class FabForfaitClient {
 			fc = new ForfaitClient();
 			fc.setIdForfaitClient(id);
 			fc.setClient(FabClient.getInstance().rechercher(rs.getInt("idclient")));
-			fc.setSalle(FabSalle.getInstance().rechercher(rs.getInt("idsalle")));
+			fc.setSalle(FabSalle.getInstance().rechercherParId(rs.getInt("idsalle")));
 			fc.setForfait(FabForfait.getInstance().rechercherForfait(rs.getString("typeforfait")));
 			fc.setTempsRestant(rs.getInt("tempsrestant"));
 			fc.setDateCreation(rs.getTimestamp("datecreation"));
@@ -148,7 +148,7 @@ public class FabForfaitClient {
 			
 			forfait = FabForfait.getInstance().rechercherForfait(typeForfait);
 			client = FabClient.getInstance().rechercher(idClient);
-			salle = FabSalle.getInstance().rechercher(idSalle);
+			salle = FabSalle.getInstance().rechercherParId(idSalle);
 			
 			while(rs.next()){
 				listeForfaitClient.add(

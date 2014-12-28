@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import donnee.Salle;
+import donnee.TypeSalle;
 import exception.ObjetExistantException;
 import exception.ObjetInconnuException;
 
@@ -32,18 +33,18 @@ public class FabSalle {
 	 * @return
 	 * @throws ObjetExistantException
 	 */
-	public Salle creer(String typeSalle, int prix1h, int prix2h) throws ObjetExistantException {
+	public Salle creer(int idTypeSalle, int prix1h, int prix2h) throws ObjetExistantException {
 		Salle salle = null;
 		Connection connection = FabConnexion.getConnexion();
 		PreparedStatement pst = null;
 		ResultSet rs = null;
-		String query = "INSERT INTO salle (typesalle,prix1h,prix2h) VALUES(?,?,?)";
+		String query = "INSERT INTO salle (idtypesalle,prix1h,prix2h) VALUES(?,?,?)";
 		try{
 
 			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 			pst.clearParameters();
 		
-			pst.setString(1,typeSalle);
+			pst.setInt(1,idTypeSalle);
 			pst.setInt(2,prix1h);
 			pst.setInt(3, prix2h);
 			
@@ -53,7 +54,7 @@ public class FabSalle {
 			rs = pst.getGeneratedKeys();
 			if(rs.next()){
 				salle.setIdSalle(rs.getInt(1));
-				salle.setTypeSalle(typeSalle);
+				salle.setTypeSalle(FabTypeSalle.getInstance().rechercher(rs.getInt("idtypesalle")));
 				salle.setPrixPlage1h(prix1h);
 				salle.setPrixPlage2h(prix2h);
 			}
@@ -70,11 +71,11 @@ public class FabSalle {
 	 * @return
 	 * @throws ObjetInconnuException
 	 */
-	public Salle rechercher(int id) throws ObjetInconnuException{
+	public Salle rechercherParId(int id) throws ObjetInconnuException{
 		Salle salle = null;
 		PreparedStatement pst = null;
 		Connection connection = FabConnexion.getConnexion();
-		String query = "SELECT typesalle, prix1h, prix2h FROM salle WHERE idsalle = ?";
+		String query = "SELECT idtypesalle, prix1h, prix2h FROM salle WHERE idsalle = ?";
 		try {
 			pst = connection.prepareStatement(query);
 			pst.clearParameters();
@@ -89,7 +90,7 @@ public class FabSalle {
 
 			salle = new Salle();
 			salle.setIdSalle(id);
-			salle.setTypeSalle(rs.getString("typesalle"));
+			salle.setTypeSalle(FabTypeSalle.getInstance().rechercher(rs.getInt("idtypesalle")));
 			salle.setPrixPlage1h(rs.getInt("prix1h"));
 			salle.setPrixPlage2h(rs.getInt("prix2h"));
 			
@@ -110,21 +111,24 @@ public class FabSalle {
 	public List<Salle> rechercher(String typeSalle) throws ObjetInconnuException{
 		List<Salle> listeSalles = new ArrayList<Salle>();
 		Salle salle = null;
+		TypeSalle ts = null;
 		PreparedStatement pst = null;
 		Connection connection = FabConnexion.getConnexion();
-		String query = "SELECT idsalle, prix1h, prix2h FROM salle WHERE typeSalle = ? order by idsalle";
+		String query = "SELECT idsalle, prix1h, prix2h FROM salle WHERE idtypeSalle = ? order by idsalle";
 		try {
 			pst = connection.prepareStatement(query);
 			pst.clearParameters();
 			
-			pst.setString(1, typeSalle);
+			ts = FabTypeSalle.getInstance().rechercher(typeSalle);
+			
+			pst.setInt(1, ts.getIdTypeSalle());
 			
 			ResultSet rs = pst.executeQuery();
 			
 			
 			while(rs.next()){
 				salle = new Salle();
-				salle.setTypeSalle(typeSalle);
+				salle.setTypeSalle(ts);
 				salle.setIdSalle(rs.getInt("idsalle"));
 				salle.setPrixPlage1h(rs.getInt("prix1h"));
 				salle.setPrixPlage2h(rs.getInt("prix2h"));
@@ -132,7 +136,7 @@ public class FabSalle {
 			}
 
 		} catch (SQLException e) {
-			System.out.println("echec de la recuperation de la salle pour le type "+typeSalle
+			System.out.println("echec de la recuperation de la salle pour le type "+ts.getIdTypeSalle()
 					+" - "+e.getMessage());
 		}
 		return listeSalles;
@@ -166,7 +170,7 @@ public class FabSalle {
 	 */
 	public List<Salle> lister() {
 		Connection connection = FabConnexion.getConnexion();
-		String query = "SELECT idsalle,typesalle,prix1h,prix2h FROM salle";
+		String query = "SELECT idsalle,idtypesalle,prix1h,prix2h FROM salle";
 		Statement st = null;
 		ResultSet rs = null;
 		List<Salle> listSalle = new ArrayList<Salle>();
@@ -177,7 +181,7 @@ public class FabSalle {
 			while(rs.next()){
 				Salle salle = new Salle();
 				salle.setIdSalle(rs.getInt("idsalle"));
-				salle.setTypeSalle(rs.getString("typesalle"));
+				salle.setTypeSalle(FabTypeSalle.getInstance().rechercher(rs.getInt("idtypesalle")));
 				salle.setPrixPlage1h(rs.getInt("prix1h"));
 				salle.setPrixPlage2h(rs.getInt("prix2h"));
 				listSalle.add(salle);

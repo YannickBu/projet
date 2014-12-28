@@ -22,7 +22,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
-import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -179,9 +178,9 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		this.add(bFiltreHorsDelais, GBC);
 
 		GBC.insets = new Insets(10, 10, 10, 10);
-		GBC.gridx = 3;
+		GBC.gridx = 0;
 		GBC.gridy++;
-		GBC.gridwidth = 3;
+		GBC.gridwidth = 7;
 		GBC.fill = GridBagConstraints.VERTICAL; 
 		
 		this.add(bActionRes, GBC);
@@ -287,18 +286,14 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 	public void valueChanged(ListSelectionEvent e) {
 		Object o = e.getSource();
 		if(o.equals(jListeReservations)){
-			if(jListeReservations.getSelectedValue()!=null){
-				if(!jListeReservations.getSelectedValue().getEstPaye()){
+			if(jListeReservations.getSelectedValue()!=null 
+					&& !jListeReservations.getSelectedValue().getEstPaye()){
 					bActionRes.setEnabled(true);
 					if(new Date().getTime() - jListeReservations.getSelectedValue().getDateCreation().getTime() >= 7*24*60*60*1000){
 						bActionRes.setText("Supprimer");
 					} else {
 						bActionRes.setText("Confirmer");
 					}
-				}else{
-					bActionRes.setEnabled(false);
-					bActionRes.setText("Selectionner une reservation");
-				}
 			}else{
 				bActionRes.setEnabled(false);
 				bActionRes.setText("Selectionner une reservation");
@@ -325,7 +320,7 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 			dateReservation = reservations.getDate();
 			duree = reservations.getPlage();
 			
-			String newText=(reservations.getSalle().getTypeSalle().equals("petite")?"Petite salle":(reservations.getSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee"))
+			String newText=(reservations.getSalle().getTypeSalle().getTypeSalle().equals("petite")?"Petite salle":(reservations.getSalle().getTypeSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee"))
 					+ (formatterDeb.format(dateReservation) 
 							+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h ");
 			

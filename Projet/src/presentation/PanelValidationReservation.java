@@ -138,7 +138,7 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 
 		
 		cResume.add(new JLabel("<html>Resume de la reservation <br/><br/>"
-				+ "Type : " + (reservation.getSalle().getTypeSalle().equals("petite")?"Petite salle":(reservation.getSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee")) + "<br/>"
+				+ "Type : " + (reservation.getSalle().getTypeSalle().getTypeSalle().equals("petite")?"Petite salle":(reservation.getSalle().getTypeSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee")) + "<br/>"
 				+ (formatterDeb.format(dateReservation) 
 						+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h ")
 				+ "</html>"));

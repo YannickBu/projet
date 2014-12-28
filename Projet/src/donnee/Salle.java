@@ -6,7 +6,7 @@ public class Salle {
 	
 	private ArrayList<Reservation> listeReservation;
 	private int idSalle;
-	private String typeSalle;
+	private TypeSalle typeSalle;
 	private int prixPlage1h;
 	private int prixPlage2h;
 	
@@ -19,7 +19,7 @@ public class Salle {
 	 * Methode qui retourne le type de la salle
 	 * @return typeSalle
 	 */
-	public String getTypeSalle() {
+	public TypeSalle getTypeSalle() {
 		return typeSalle;
 	}
 
@@ -27,7 +27,7 @@ public class Salle {
 	 * Mathode qui modifie le type de la salle
 	 * @param typeSalle
 	 */
-	public void setTypeSalle(String typeSalle) {
+	public void setTypeSalle(TypeSalle typeSalle) {
 		this.typeSalle = typeSalle;
 	}
 
