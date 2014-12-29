@@ -101,6 +101,43 @@ public class FabSalle {
 		}
 		return salle;
 	}
+	
+	/**
+	 * recherche d'une salle par son type
+	 * @param typeSalle
+	 * @return une salle 
+	 * @throws ObjetInconnuException
+	 */
+	public Salle rechercherParType(String typeSalle) throws ObjetInconnuException{
+		Salle salle = null;
+		PreparedStatement pst = null;
+		Connection connection = FabConnexion.getConnexion();
+		String query = "SELECT idtypesalle, prix1h, prix2h FROM salle WHERE typesalle = ?";
+		try {
+			pst = connection.prepareStatement(query);
+			pst.clearParameters();
+			
+			pst.setString(1, typeSalle);
+			
+			ResultSet rs = pst.executeQuery();
+			
+			if(!rs.next()) {
+				throw new ObjetInconnuException(Salle.class.toString(), "Aucune Salle a etait trouve pour le type "+typeSalle);
+			}
+
+			salle = new Salle();
+			salle.setIdSalle(rs.getInt("idsalle"));
+			salle.setTypeSalle(FabTypeSalle.getInstance().rechercher(rs.getString("typeSalle")));
+			salle.setPrixPlage1h(rs.getInt("prix1h"));
+			salle.setPrixPlage2h(rs.getInt("prix2h"));
+			
+
+		} catch (SQLException e) {
+			System.out.println("Echec de la recuperation de la salle pour le type "+typeSalle
+					+" - "+e.getMessage());
+		}
+		return salle;
+	}
 
 	/**
 	 * Recupere lensemble des salles selon le type de la salle
