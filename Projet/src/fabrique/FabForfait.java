@@ -3,8 +3,12 @@ package fabrique;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import donnee.Forfait;
+import donnee.ForfaitClient;
 
 
 public class FabForfait {
@@ -53,4 +57,32 @@ public class FabForfait {
 		return forfait;
 	}
 
+	/**
+	 * Liste tous les forfaits
+	 * @return
+	 */
+	public List<Forfait> lister(){
+		List<Forfait> listeForfait = new ArrayList<Forfait>();
+		Forfait fc = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		
+		try {
+			st = FabConnexion.getConnexion().prepareStatement("SELECT typeforfait, prixpetitesalle, prixgrandesalle, validite FROM forfait");
+			rs=st.executeQuery();
+			
+			while(rs.next()){
+				fc = new Forfait();
+				fc.setTypeForfait(rs.getString("typeforfait"));
+				fc.setPrixPetitesSalles(rs.getInt("prixpetitesalle"));
+				fc.setPrixGrandesSalles(rs.getInt("prixgrandesalle"));
+				fc.setValidite(rs.getInt("validite"));
+				listeForfait.add(fc);
+			}
+		} catch (SQLException e) {
+			System.out.println("Erreur lors de la recuperation des forfaits" + e.getMessage());
+		}
+		
+		return listeForfait;
+	}
 }

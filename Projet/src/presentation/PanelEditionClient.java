@@ -2,7 +2,6 @@ package presentation;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -14,10 +13,10 @@ import java.util.Date;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -27,12 +26,16 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import metier.ModifierReservation;
 import metier.RechercheReservation;
+import metier.RechercherForfait;
 import metier.RechercherForfaitClient;
 import metier.SupprimerReservation;
+import metier.VendreForfait;
 import donnee.Client;
+import donnee.Forfait;
 import donnee.ForfaitClient;
 import donnee.Reservation;
 
@@ -50,6 +53,8 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 	private JPanel panelForfait;
 	
 	private JLabel lClientTitre;
+	JLabel lRes;
+	JLabel lFor;
 	
 	private JButton bActionRes;
 	private JButton bActionFor;
@@ -58,24 +63,36 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 	private JButton bFiltreNonConfirme;
 	private JButton bFiltreConfirme;
 	private JButton bFiltreHorsDelais;
+	private JButton bAcheterForfait;
+	
+	private JComboBox<Forfait> cbForfait;
+	private JComboBox<String> cbTypeSalle;
 	
 	private JList<Reservation> jListeReservations;
-	private JList<ForfaitClient> jListeForfaits;
-	private DefaultListModel<Reservation> modelRes;
-	private DefaultListModel<ForfaitClient> modelFor;
+	private JList<ForfaitClient> jListeForfaitClient;
+	private JList<Forfait> jListeForfait;
+	private DefaultListModel<Reservation> modelReservation;
+	private DefaultListModel<ForfaitClient> modelForfaitClient;
+	private DefaultListModel<Forfait> modelForfait;
 	private List<Reservation> listeReservations;
-	private List<ForfaitClient> listeForfait;
+	private List<ForfaitClient> listeForfaitClient;
+	private List<Forfait> listeForfait;
 	
 	public PanelEditionClient(JFrame frame, Client client) {
-		RechercheReservation metierRechercheReservation = new RechercheReservation();
-		RechercherForfaitClient metierRechercherForfaitClient = new RechercherForfaitClient();
 		
 		panelForfait = new JPanel();
 		panelForfait.setLayout(new GridLayout(1,1));
 		
-		JLabel lRes = new JLabel("Vos reservations", JLabel.CENTER);
-		JLabel lFor = new JLabel("Vos forfaits", JLabel.CENTER);
+		lRes = new JLabel("Vos reservations", JLabel.CENTER);
+		lFor = new JLabel("Vos forfaits", JLabel.CENTER);
 		JLabel lFiltre = new JLabel("Filtre", JLabel.CENTER);
+		
+		cbForfait = new JComboBox<Forfait>();
+		cbForfait.setRenderer(new RendererCBForfait());
+		
+		cbTypeSalle = new JComboBox<String>();
+		cbTypeSalle.addItem("Petite salle");
+		cbTypeSalle.addItem("Grande salle");
 		
 		bActionRes = new JButton("Valider");
 		bActionFor = new JButton("Acheter un forfait");
@@ -84,6 +101,7 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		bFiltreConfirme = new JButton("C");
 		bFiltreNonConfirme = new JButton("NC");
 		bFiltreHorsDelais = new JButton("HD");
+		bAcheterForfait = new JButton("Acheter");
 		bActionRes.setBackground(Color.WHITE);
 		bActionFor.setBackground(Color.WHITE);
 		bRetour.setBackground(Color.WHITE);
@@ -92,24 +110,34 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		bFiltreNonConfirme.setBackground(Color.ORANGE);
 		bFiltreHorsDelais.setBackground(Color.RED);
 		bFiltreTous.setBorder(BorderFactory.createLoweredBevelBorder());
+		bAcheterForfait.setBackground(Color.WHITE);
 		
-		modelRes = new DefaultListModel<Reservation>();
-		modelFor = new DefaultListModel<ForfaitClient>();
-		jListeReservations = new JList<Reservation>(modelRes);
-		jListeForfaits = new JList<ForfaitClient>(modelFor);
+		modelReservation = new DefaultListModel<Reservation>();
+		modelForfaitClient = new DefaultListModel<ForfaitClient>();
+		modelForfait = new DefaultListModel<Forfait>();
+		jListeReservations = new JList<Reservation>(modelReservation);
+		jListeForfaitClient = new JList<ForfaitClient>(modelForfaitClient);
+		jListeForfait = new JList<Forfait>(modelForfait);
 		jListeReservations.setCellRenderer(new RendererJListReservation());
-		jListeForfaits.setCellRenderer(new RendererJListForfait());
-		listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), null);
-		listeForfait = metierRechercherForfaitClient.lister();
+		jListeForfaitClient.setCellRenderer(new RendererJListForfaitClient());
+		jListeForfait.setCellRenderer(new RendererJListForfait());
+		listeReservations = new RechercheReservation().listerReservationsPourUnClient(client.getId(), null);
+		listeForfaitClient = new RechercherForfaitClient().listerPourUnClient(client.getId());
+		listeForfait = new RechercherForfait().lister();
+		
 		for(Reservation res : listeReservations){
-			modelRes.addElement(res);
+			modelReservation.addElement(res);
 		}
-		for(ForfaitClient forfaitClient : listeForfait){
-			modelFor.addElement(forfaitClient);
+		for(ForfaitClient forfaitClient : listeForfaitClient){
+			modelForfaitClient.addElement(forfaitClient);
+		}
+		for(Forfait forfait : listeForfait){
+			modelForfait.addElement(forfait);
+			cbForfait.addItem(forfait);
 		}
 			
 		jListeReservations.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		jListeForfaits.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		jListeForfaitClient.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		this.frame = frame;
 		this.client = client;
@@ -118,7 +146,7 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		GridBagConstraints GBC = null;
 		this.setLayout(GBL);
 		
-		lClientTitre = new JLabel("Client (xx points)", JLabel.CENTER);//TODO pt fid
+		lClientTitre = new JLabel(client.getNom()+" "+client.getPrenom()+" ("+client.getPointsFidelite()+" point"+(client.getPointsFidelite()>1?"s":"")+")", JLabel.CENTER);//TODO pt fid
 		
 		GBC = new GridBagConstraints();
 		GBC.fill = GridBagConstraints.BOTH; 
@@ -139,14 +167,14 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		GBC.insets = new Insets(2, 2, 2, 2);
 
 		lRes.setOpaque(true);
-		lRes.setBackground(Color.LIGHT_GRAY);
+		lRes.setBackground(Color.GRAY);
 		this.add(lRes, GBC);
 		
 		GBC.gridx = 7;
 		GBC.gridwidth = 5;
 
 		lFor.setOpaque(true);
-		lFor.setBackground(Color.LIGHT_GRAY);
+		lFor.setBackground(Color.GRAY);
 		this.add(lFor, GBC);
 		
 		GBC.gridy++;
@@ -162,7 +190,7 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		GBC.gridheight = 4;
 		GBC.gridwidth = 5;
 		
-		panelForfait.add(jListeForfaits);
+		panelForfait.add(jListeForfaitClient);
 		this.add(panelForfait, GBC);
 
 		GBC.gridx = 0;
@@ -224,9 +252,102 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		bFiltreConfirme.addActionListener(this);
 		bFiltreNonConfirme.addActionListener(this);
 		bFiltreHorsDelais.addActionListener(this);
+		bAcheterForfait.addActionListener(this);
 		jListeReservations.addListSelectionListener(this);
+		cbForfait.addActionListener(this);
 	}
 
+	/**
+	 * Genere le panel dachat des forfaits
+	 */
+	private void genererPanelAchatForfaits() {
+		GridBagConstraints GBC = null;
+		JLabel label = null;
+		panelForfait.removeAll();
+		panelForfait.setLayout(new GridBagLayout());
+		
+		GBC = new GridBagConstraints();
+		GBC.fill = GridBagConstraints.BOTH; 
+		GBC.anchor = GridBagConstraints.CENTER;
+		GBC.gridy = 0;
+		GBC.gridx = 0;
+		GBC.gridheight = 1;
+		GBC.gridwidth = 1;
+		GBC.weightx = 1;
+		GBC.weighty = 1;
+		GBC.insets = new Insets(0, 2, 0, 0);
+		label = new JLabel("Forfait", JLabel.CENTER);
+		label.setOpaque(true);
+		label.setBackground(Color.LIGHT_GRAY);
+		panelForfait.add(label, GBC);
+		GBC.insets = new Insets(0, 0, 0, 0);
+		GBC.gridx++;
+		label = new JLabel("Validite", JLabel.CENTER);
+		label.setOpaque(true);
+		label.setBackground(Color.LIGHT_GRAY);
+		panelForfait.add(label, GBC);
+		GBC.gridx++;
+		label = new JLabel("Petites salles", JLabel.CENTER);
+		label.setOpaque(true);
+		label.setBackground(Color.LIGHT_GRAY);
+		panelForfait.add(label, GBC);
+		GBC.gridx++;
+		GBC.insets = new Insets(0, 0, 0, 2);
+		label = new JLabel("Grandes salles", JLabel.CENTER);
+		label.setOpaque(true);
+		label.setBackground(Color.LIGHT_GRAY);
+		panelForfait.add(label, GBC);
+		
+		GBC.insets = new Insets(2, 2, 2, 2);
+		
+		for(Forfait forfait : listeForfait){
+			GBC.gridy++;
+			GBC.gridx = 0;
+			label = new JLabel(forfait.getTypeForfait(), JLabel.CENTER);
+			label.setOpaque(true);
+			label.setBackground(Color.WHITE);
+			panelForfait.add(label, GBC);
+			GBC.gridx++;
+			label = new JLabel(Integer.toString(forfait.getValidite())+" mois", JLabel.CENTER);
+			label.setOpaque(true);
+			label.setBackground(Color.WHITE);
+			panelForfait.add(label, GBC);
+			GBC.gridx++;
+			label = new JLabel(Integer.toString(forfait.getPrixPetitesSalles())+" euros", JLabel.CENTER);
+			label.setOpaque(true);
+			label.setBackground(Color.WHITE);
+			panelForfait.add(label, GBC);
+			GBC.gridx++;
+			label = new JLabel(Integer.toString(forfait.getPrixGrandesSalles())+" euros", JLabel.CENTER);
+			label.setOpaque(true);
+			label.setBackground(Color.WHITE);
+			panelForfait.add(label, GBC);
+		}
+		
+		GBC.gridy++;
+		GBC.gridx=0;
+		GBC.gridwidth=2;
+		GBC.weightx = 0.1;
+		GBC.weighty = 0.1;
+		GBC.fill=GridBagConstraints.VERTICAL;
+		GBC.anchor = GridBagConstraints.EAST;
+		
+		panelForfait.add(cbForfait, GBC);
+		
+		GBC.gridx=2;
+		GBC.gridwidth=1;
+		
+		panelForfait.add(cbTypeSalle, GBC);
+
+		GBC.gridx=3;
+		
+		panelForfait.add(bAcheterForfait, GBC);
+		
+		lFor.setText("Forfaits disponibles");
+		bActionFor.setText("Lister les forfaits");
+		panelForfait.validate();
+	}
+	
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
 		RechercheReservation metierRechercheReservation = new RechercheReservation();
@@ -236,9 +357,9 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 			frame.validate();
 		} else if(o.equals(bFiltreTous)){
 			listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), null);
-			modelRes.removeAllElements();
+			modelReservation.removeAllElements();
 			for(Reservation res : listeReservations){
-				modelRes.addElement(res);
+				modelReservation.addElement(res);
 			}
 			bFiltreTous.setBorder(BorderFactory.createLoweredBevelBorder());
 			bFiltreConfirme.setBorder(null);
@@ -246,9 +367,9 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 			bFiltreHorsDelais.setBorder(null);
 		} else if(o.equals(bFiltreConfirme)){
 			listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), Reservation.ETAT_CONFIRME);
-			modelRes.removeAllElements();
+			modelReservation.removeAllElements();
 			for(Reservation res : listeReservations){
-				modelRes.addElement(res);
+				modelReservation.addElement(res);
 			}
 			bFiltreTous.setBorder(null);
 			bFiltreConfirme.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -256,9 +377,9 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 			bFiltreHorsDelais.setBorder(null);
 		} else if(o.equals(bFiltreNonConfirme)){
 			listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), Reservation.ETAT_NON_CONFIRME);
-			modelRes.removeAllElements();
+			modelReservation.removeAllElements();
 			for(Reservation res : listeReservations){
-				modelRes.addElement(res);
+				modelReservation.addElement(res);
 			}
 			bFiltreTous.setBorder(null);
 			bFiltreConfirme.setBorder(null);
@@ -266,21 +387,19 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 			bFiltreHorsDelais.setBorder(null);
 		} else if(o.equals(bFiltreHorsDelais)){
 			listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), Reservation.ETAT_HORS_DELAIS);
-			modelRes.removeAllElements();
+			modelReservation.removeAllElements();
 			for(Reservation res : listeReservations){
-				modelRes.addElement(res);
+				modelReservation.addElement(res);
 			}
 			bFiltreTous.setBorder(null);
 			bFiltreConfirme.setBorder(null);
 			bFiltreNonConfirme.setBorder(null);
 			bFiltreHorsDelais.setBorder(BorderFactory.createLoweredBevelBorder());
-		} else if(o.equals(jListeReservations)){
-			
 		} else if(o.equals(bActionRes)){
 			if(bActionRes.getText().equals("Supprimer")){
 				SupprimerReservation metierSupprRes = new SupprimerReservation();
 				metierSupprRes.supprimerReservation(jListeReservations.getSelectedValue().getIdReserv());
-				modelRes.remove(jListeReservations.getSelectedIndex());
+				modelReservation.remove(jListeReservations.getSelectedIndex());
 				JOptionPane.showMessageDialog(this, "Reservation hors delais supprimee");
 			} else {
 				ModifierReservation metierModifRes = new ModifierReservation();
@@ -293,18 +412,39 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 				resNewDonnees.setPlage(jListeReservations.getSelectedValue().getPlage());
 				resNewDonnees.setSalle(jListeReservations.getSelectedValue().getSalle());
 				metierModifRes.payer(resNewDonnees);
-				modelRes.remove(jListeReservations.getSelectedIndex());
+				modelReservation.remove(jListeReservations.getSelectedIndex());
 			}
 		} else if(o.equals(bActionFor)){
 			if(bActionFor.getText().equals("Acheter un forfait")){
-				
-				bActionFor.setText("Lister les forfaits");
+				genererPanelAchatForfaits();
 			} else {
-				
+				panelForfait.removeAll();
+				panelForfait.setLayout(new GridLayout(1,1));
+				panelForfait.add(jListeForfaitClient);
+				lFor.setText("Vos forfaits");
 				bActionFor.setText("Acheter un forfait");
+			}
+		} else if(o.equals(bAcheterForfait)){
+			int rep = JOptionPane.showConfirmDialog(
+					this,
+					"Achat forfait "+((Forfait)cbForfait.getSelectedItem()).getTypeForfait()
+						+" - "+cbTypeSalle.getSelectedItem()+" : "
+						+("Petite salle".equals(cbTypeSalle.getSelectedItem())
+								?((Forfait)cbForfait.getSelectedItem()).getPrixPetitesSalles():((Forfait)cbForfait.getSelectedItem()).getPrixGrandesSalles())+" euros",
+				    "Valider achat",
+				    JOptionPane.YES_NO_OPTION);
+			if(!(rep==JOptionPane.OK_OPTION)){
+				return;
+			}
+			new VendreForfait().vendreForfait(client.getId(), ("Petite salle".equals(cbTypeSalle.getSelectedItem())?0:1), ((Forfait)cbForfait.getSelectedItem()).getTypeForfait());
+			JOptionPane.showMessageDialog(this, "Achat valide");
+			listeForfaitClient = new RechercherForfaitClient().listerPourUnClient(client.getId());
+			for(ForfaitClient forfaitClient : listeForfaitClient){
+				modelForfaitClient.addElement(forfaitClient);
 			}
 		}
 	}
+
 	
 	public void valueChanged(ListSelectionEvent e) {
 		Object o = e.getSource();
@@ -321,7 +461,7 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 				bActionRes.setEnabled(false);
 				bActionRes.setText("Selectionner une reservation");
 			}
-		} else if(o.equals(jListeForfaits)){
+		} else if(o.equals(jListeForfaitClient)){
 			
 		}
 	}
@@ -337,17 +477,15 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 			JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(jlist, reservations, index, isSelected, cellHasFocus);
 			SimpleDateFormat formatterDeb = new SimpleDateFormat("' Le 'dd/MM/yyyy' de 'HH'h '");
 			SimpleDateFormat formatterFin = new SimpleDateFormat("HH");
-			Date dateReservation = null;
-			int duree;
-			
-			dateReservation = reservations.getDate();
-			duree = reservations.getPlage();
+			Date dateReservation = reservations.getDate();
+			int duree = reservations.getPlage();
 			
 			String newText=(reservations.getSalle().getTypeSalle().getTypeSalle().equals("petite")?"Petite salle":(reservations.getSalle().getTypeSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee"))
 					+ (formatterDeb.format(dateReservation) 
 							+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h ");
 			
 			renderer.setText(newText);
+			renderer.setHorizontalAlignment(JLabel.CENTER);
 			if(reservations.getEstPaye()){
 				renderer.setBackground(isSelected ?  new Color(0, 200, 200) : Color.CYAN);
 			}else if(new Date().getTime() - reservations.getDateCreation().getTime() >= 7*24*60*60*1000){
@@ -360,21 +498,52 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		
 	}
 	
-	private class RendererJListForfait implements ListCellRenderer<ForfaitClient> {
+	private class RendererJListForfaitClient implements ListCellRenderer<ForfaitClient> {
 		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 		
-		public RendererJListForfait() {
+		public RendererJListForfaitClient() {
 			
 		}
 		public Component getListCellRendererComponent(JList<? extends ForfaitClient> jlist, ForfaitClient forfaitClient,
 				int index, boolean isSelected, boolean cellHasFocus) {
 			JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(jlist, forfaitClient, index, isSelected, cellHasFocus);
-			
 			String newText="Forfait "+forfaitClient.getTypeSalle().getTypeSalle()+" salle - "+forfaitClient.getTempsRestant()+"h restante"+(forfaitClient.getTempsRestant()>1?"s":"");
 			renderer.setText(newText);
+			renderer.setHorizontalAlignment(JLabel.CENTER);
+			renderer.setBackground(Color.WHITE);
+			renderer.setBorder(null);
 			return renderer;
 		}
 		
 	}
+	
+	private class RendererJListForfait implements ListCellRenderer<Forfait> {
+		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+		
+		public RendererJListForfait() {
+			
+		}
+		public Component getListCellRendererComponent(JList<? extends Forfait> jlist, Forfait forfait,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(jlist, forfait, index, isSelected, cellHasFocus);
+			String newText="Forfait "+forfait.getTypeForfait()+" Petite salle "+forfait.getPrixPetitesSalles()+" Gde salle "+forfait.getPrixGrandesSalles() + " Valide "+forfait.getValidite()+" mois";
+			renderer.setText(newText);
+			renderer.setHorizontalAlignment(JLabel.CENTER);
 
+			return renderer;
+		}
+		
+	}
+	
+	private class RendererCBForfait extends BasicComboBoxRenderer {
+		
+		public RendererCBForfait() {
+			
+		}
+		@Override public Component getListCellRendererComponent(JList list, Object value,    int index,    boolean isSelected,    boolean cellHasFocus){
+		        JLabel ret=(JLabel)super.getListCellRendererComponent(list,value,index,isSelected,cellHasFocus);
+		        ret.setText("Forfait "+((Forfait)value).getTypeForfait());
+		        return ret;
+		}
+	}
 }

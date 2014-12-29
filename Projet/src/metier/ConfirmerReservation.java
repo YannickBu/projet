@@ -29,7 +29,7 @@ public class ConfirmerReservation {
 			}
 		}
 		
-		// a revoir 
+		//TODO a revoir 
 		// Cette methode a utiliser si le client veut utiliser ses points de fidelite et/ou son forfait
 		/**
 		 * payer une reservation avec les points de fidelite et/ou forfait

@@ -51,13 +51,13 @@ public class FabForfaitClient {
 			pst.setInt(1, idClient);
 			pst.setInt(2, idTypeSalle);
 			pst.setString(3,typeForfait);
-			pst.setTimestamp(4, new Timestamp(dateCourante.getTime()));
 			if (typeForfait.equals("12h")){
-				tpsRestant = 2160;// 30 jours * 24h * 3mois
+				tpsRestant = 12;
 			} 
 			else {
-				tpsRestant = 4320; // 30jours * 24h *6 mois
+				tpsRestant = 24;
 			}
+			pst.setTimestamp(5, new Timestamp(dateCourante.getTime()));
 			pst.setInt(4, tpsRestant); 
 			
 			pst.execute();
@@ -66,9 +66,9 @@ public class FabForfaitClient {
 			rs = pst.getGeneratedKeys();
 			if(rs.next()){
 				fc.setIdForfaitClient(rs.getInt(1));
-				fc.setClient(FabClient.getInstance().rechercher(rs.getInt(2)));
-				fc.setTypeSalle(FabTypeSalle.getInstance().rechercher(rs.getInt(3)));
-				fc.setForfait(FabForfait.getInstance().rechercherForfait(rs.getString(4)));
+				fc.setClient(FabClient.getInstance().rechercher(idClient));
+				fc.setTypeSalle(FabTypeSalle.getInstance().rechercher(idTypeSalle));
+				fc.setForfait(FabForfait.getInstance().rechercherForfait(typeForfait));
 				fc.setTempsRestant(tpsRestant);
 				fc.setDateCreation(dateCourante);
 			}
@@ -168,6 +168,10 @@ public class FabForfaitClient {
 		return listeForfaitClient;
 	}
 	
+	/**
+	 * Liste tous les forfaitClients
+	 * @return
+	 */
 	public List<ForfaitClient> lister(){
 		List<ForfaitClient> listeFC = new ArrayList<ForfaitClient>();
 		ForfaitClient fc = null;
@@ -182,6 +186,39 @@ public class FabForfaitClient {
 				fc = new ForfaitClient();
 				fc.setIdForfaitClient(rs.getInt("idforfaitclient"));
 				fc.setClient(FabClient.getInstance().rechercher(rs.getInt("idclient")));
+				fc.setForfait(FabForfait.getInstance().rechercherForfait(rs.getString("typeforfait")));
+				fc.setTypeSalle(FabTypeSalle.getInstance().rechercher(rs.getInt("idtypesalle")));
+				fc.setDateCreation(new Date(rs.getTimestamp("datecreation").getTime()));
+				fc.setTempsRestant(rs.getInt("tempsrestant"));
+				listeFC.add(fc);
+			}
+		} catch (SQLException e) {
+			System.out.println("Erreur lors de la recuperation des forfaitclient" + e.getMessage());
+		}
+		
+		return listeFC;
+	}
+	
+	/**
+	 * Liste les forfaitClient pour le client en parametre
+	 * @param idClt
+	 * @return
+	 */
+	public List<ForfaitClient> listerPourUnClient(int idClt){
+		List<ForfaitClient> listeFC = new ArrayList<ForfaitClient>();
+		ForfaitClient fc = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		
+		try {
+			st = FabConnexion.getConnexion().prepareStatement("SELECT idforfaitclient, idtypesalle, typeforfait, tempsrestant, datecreation FROM forfait_client where idclient = ?");
+			st.setInt(1, idClt);
+			rs=st.executeQuery();
+			
+			while(rs.next()){
+				fc = new ForfaitClient();
+				fc.setIdForfaitClient(rs.getInt("idforfaitclient"));
+				fc.setClient(FabClient.getInstance().rechercher(idClt));
 				fc.setForfait(FabForfait.getInstance().rechercherForfait(rs.getString("typeforfait")));
 				fc.setTypeSalle(FabTypeSalle.getInstance().rechercher(rs.getInt("idtypesalle")));
 				fc.setDateCreation(new Date(rs.getTimestamp("datecreation").getTime()));
