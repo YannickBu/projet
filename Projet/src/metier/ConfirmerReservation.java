@@ -43,8 +43,8 @@ public class ConfirmerReservation {
 		 * @return le prix, les pts fid. restant(null si utiliserFidelite false) 
 		 * et le tps restant sur le forfait(null si idForfaitClient null)
 		 */
-		public Double[] getInfosApresPaiement(Reservation res, Integer idForfaitClient, boolean utiliserFidelite){
-			Client client = res.getClient()!=null?FabClient.getInstance().rechercher(res.getClient().getId()):null;
+		public Double[] getInfosApresPaiement(Reservation res, Integer idClient, Integer idForfaitClient, boolean utiliserFidelite){
+			Client client = idClient!=null?FabClient.getInstance().rechercher(idClient):null;
 			ForfaitClient fc = idForfaitClient!=null?FabForfaitClient.getInstance().rechercher(idForfaitClient):null;
 
 			GregorianCalendar calendar = new GregorianCalendar();
@@ -62,7 +62,7 @@ public class ConfirmerReservation {
 					+ (nbHeureSoiree/2)*res.getSalle().getPrixPlage2h()*1.2 + (nbHeureSoiree % 2)*res.getSalle().getPrixPlage1h()*1.2);*/
 			
 			
-			if(utiliserFidelite){
+			if(utiliserFidelite && idClient!=null){
 				ptsFid = new Double(client.getPointsFidelite());
 				while(ptsFid >= 150 && plage >= 2){
 					prix -= res.getSalle().getPrixPlage2h();

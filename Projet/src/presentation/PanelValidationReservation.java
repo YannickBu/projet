@@ -6,10 +6,10 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +29,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import metier.ConfirmerReservation;
@@ -36,17 +38,15 @@ import metier.CreerClient;
 import metier.CreerReservation;
 import metier.RechercheClient;
 import donnee.Client;
-import donnee.Forfait;
 import donnee.ForfaitClient;
 import donnee.Reservation;
 import exception.ObjetInconnuException;
-import fabrique.FabClient;
 import fabrique.FabForfaitClient;
 
 /**
  * Panel permettant la saisie/selection du client pour valider une reservation
  */
-public class PanelValidationReservation extends JPanel implements ActionListener, FocusListener {
+public class PanelValidationReservation extends JPanel implements ActionListener, DocumentListener {
 
 	private JFrame frame;
 	private Reservation reservation;
@@ -57,16 +57,18 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 	
 	private JPanel panelCENTER;
 	private JPanel panelCenterRight;
+	private JPanel panelOptionsPaiement;
 	
-	private Container cNom;
-	private Container cPrenom;
-	private Container cNumTel;
-	private Container cResume;
-	private Container cSOUTH;
+	private JPanel cNom;
+	private JPanel cPrenom;
+	private JPanel cNumTel;
+	private JPanel cResume;
+	private JPanel cSOUTH;
 	
 	private JButton bSendInfos;
 	private JButton bEnregistrer;
 	private JButton bRetour;
+	private JButton bOptionsPaiement;
 	
 	private JTextField tfNom;
 	private JTextField tfPrenom;
@@ -91,12 +93,13 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 		
 		cbForfait = new JComboBox();
 		cbForfait.setRenderer(new RendererCBForfait());
-		cbForfait.setMinimumSize(new Dimension(150, 20));
-		cbForfait.setMaximumSize(new Dimension(150, 20));
-		cbForfait.setPreferredSize(new Dimension(150, 20));
+		cbForfait.setMinimumSize(new Dimension(120, 20));
+		cbForfait.setMaximumSize(new Dimension(120, 20));
+		cbForfait.setPreferredSize(new Dimension(120, 20));
 		cbForfait.addItem(null);
 		
 		checkFidelite = new JCheckBox();
+		checkFidelite.setBackground(Color.LIGHT_GRAY);
 		
 		this.frame = frame;
 		this.reservation = reservation;
@@ -109,27 +112,39 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 		panelCenterRight.setLayout(new BoxLayout(panelCenterRight, BoxLayout.Y_AXIS));
 		panelCenterRight.setBackground(Color.LIGHT_GRAY);
 		
-		cNom = new Container();
-		cPrenom = new Container();
-		cNumTel = new Container();
-		cResume = new Container();
-		cSOUTH = new Container();
+		panelOptionsPaiement = new JPanel();
+		panelOptionsPaiement.setLayout(new FlowLayout(FlowLayout.CENTER));
+		panelOptionsPaiement.setBackground(Color.LIGHT_GRAY);	
 		
-		cNom.setLayout(new FlowLayout());
-		cPrenom.setLayout(new FlowLayout());
-		cNumTel.setLayout(new FlowLayout());
+		cNom = new JPanel();
+		cPrenom = new JPanel();
+		cNumTel = new JPanel();
+		cResume = new JPanel();
+		cSOUTH = new JPanel();
+		
+		cNom.setLayout(new BoxLayout(cNom, BoxLayout.Y_AXIS));
+		cPrenom.setLayout(new BoxLayout(cPrenom, BoxLayout.Y_AXIS));
+		cNumTel.setLayout(new BoxLayout(cNumTel, BoxLayout.Y_AXIS));
 		cResume.setLayout(new FlowLayout());
 		cSOUTH.setLayout(new FlowLayout());
+		cNom.setBackground(Color.LIGHT_GRAY);
+		cPrenom.setBackground(Color.LIGHT_GRAY);
+		cNumTel.setBackground(Color.LIGHT_GRAY);
 		
 		bSendInfos = new JButton(" >> ");
+		bSendInfos.setBackground(Color.WHITE);
 		bEnregistrer = new JButton("Valider");
+		bEnregistrer.setBackground(Color.WHITE);
 		bEnregistrer.setMinimumSize(new Dimension(150, 20));
 		bEnregistrer.setMaximumSize(new Dimension(150, 20));
 		bEnregistrer.setPreferredSize(new Dimension(150, 20));
 		bRetour = new JButton("Retour");
+		bRetour.setBackground(Color.WHITE);
 		bRetour.setMinimumSize(new Dimension(150, 20));
 		bRetour.setMaximumSize(new Dimension(150, 20));
 		bRetour.setPreferredSize(new Dimension(150, 20));
+		bOptionsPaiement = new JButton("Forfaits et pts fidelite");
+		bOptionsPaiement.setBackground(Color.WHITE);
 		
 		tfNom = new JTextField();
 		tfNom.setMinimumSize(new Dimension(150, 20));
@@ -160,16 +175,16 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 		dateReservation = reservation.getDate();
 		duree = reservation.getPlage();
 
-		infosPaiement = new ConfirmerReservation().getInfosApresPaiement(reservation, null, false);
+		infosPaiement = new ConfirmerReservation().getInfosApresPaiement(reservation, null, null, false);
 		lResume = new JLabel("<html>Type : " + (reservation.getSalle().getTypeSalle().getTypeSalle().equals("petite")?"Petite salle":(reservation.getSalle().getTypeSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee")) + "<br/>"
 				+ (formatterDeb.format(dateReservation) 
 				+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h<br/>"
 				+ "Prix : " + infosPaiement[0] + " euros")
 				+ "</html>");
+		lResume.setOpaque(true);
+		lResume.setBackground(Color.LIGHT_GRAY);
 		
 		cResume.add(lResume);
-		cResume.add(new JLabel());
-		cResume.add(new JLabel( ));
 		
 		
 		cNom.add(lNom);
@@ -198,9 +213,11 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 		scrollpane.setMaximumSize(new Dimension(15, 300));
 		scrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
+		panelOptionsPaiement.add(bOptionsPaiement);
+		
 		panelCenterRight.setMaximumSize(new Dimension(200, 300));
 		panelCenterRight.add(cResume);
-		panelCenterRight.add(cbForfait);
+		panelCenterRight.add(panelOptionsPaiement);
 		panelCenterRight.add(cNom);
 		panelCenterRight.add(cPrenom);
 		panelCenterRight.add(cNumTel);
@@ -223,11 +240,12 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 		bSendInfos.addActionListener(this);
 		bEnregistrer.addActionListener(this);
 		bRetour.addActionListener(this);
-		tfNom.addFocusListener(this);
-		tfPrenom.addFocusListener(this);
-		tfNumTel.addFocusListener(this);
+		bOptionsPaiement.addActionListener(this);
 		cbForfait.addActionListener(this);
 		checkFidelite.addActionListener(this);
+		tfNom.getDocument().addDocumentListener(this);
+		tfPrenom.getDocument().addDocumentListener(this);
+		tfNumTel.getDocument().addDocumentListener(this);
 	}
 
 	/**
@@ -302,15 +320,14 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 				tfPrenom.setText(jlClient.getSelectedValue().getPrenom());
 				tfNumTel.setText(jlClient.getSelectedValue().getNumTel());
 			}
+			
+			checkFidelite.setSelected(false);
+			
 			Client c = null;
 			List<ForfaitClient> listeFC = null;
-			try{
-				c = new RechercheClient().rechercheClient(tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
-			} catch(ObjetInconnuException oie){
-				cbForfait.removeAllItems();
-				cbForfait.addItem(null);
-				return;
-			}
+
+			c = new RechercheClient().rechercheClient(tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
+			
 			listeFC = FabForfaitClient.getInstance().rechercherForfaitClient(c.getId(), reservation.getSalle().getTypeSalle().getIdTypeSalle());
 			
 			cbForfait.removeAllItems();
@@ -318,66 +335,134 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 			for(ForfaitClient fc : listeFC){
 				cbForfait.addItem(fc);
 			}
+			
+			panelOptionsPaiement.removeAll();
+			panelOptionsPaiement.setLayout(new GridBagLayout());
+			GridBagConstraints GBC = new GridBagConstraints();
+			GBC.fill = GridBagConstraints.BOTH; 
+			GBC.anchor = GridBagConstraints.NORTH;
+			GBC.gridy = 0;
+			GBC.gridx = 0;
+			GBC.gridheight = 1;
+			GBC.gridwidth = 2;
+			GBC.weightx = 1;
+			GBC.weighty = 1;
+			panelOptionsPaiement.add(cbForfait,GBC);
+			GBC.gridy=1;
+			GBC.gridwidth = 1;
+			panelOptionsPaiement.add(new JLabel("Pts fidelite ("+c.getPointsFidelite()+")"),GBC);
+			GBC.gridx=1;
+			panelOptionsPaiement.add(checkFidelite,GBC);
+			panelOptionsPaiement.validate();
+			panelOptionsPaiement.repaint();
+			
+			tfNom.getDocument().addDocumentListener(this);
+			tfPrenom.getDocument().addDocumentListener(this);
+			tfNumTel.getDocument().addDocumentListener(this);
 		} else if(o.equals(bEnregistrer)){
 			enregistrerReservation();
 		} else if(o.equals(bRetour)){
 			frame.getContentPane().removeAll();
 			frame.getContentPane().add(new PanelReservationAuto(frame));
 			frame.validate();
-		} else if(o.equals(checkFidelite)){
-			
-		} else if(o.equals(cbForfait)){
+		} else if(o.equals(cbForfait) || o.equals(checkFidelite)){
 			SimpleDateFormat formatterDeb = new SimpleDateFormat("'Le 'dd/MM/yyyy' de 'HH'h '");
 			SimpleDateFormat formatterFin = new SimpleDateFormat("HH");
 			Double[] infosPaiement = null;
 			Date dateReservation = reservation.getDate();
 			int duree = reservation.getPlage();
-			if(cbForfait.getSelectedItem()!=null){
-				infosPaiement = new ConfirmerReservation().getInfosApresPaiement(reservation, ((ForfaitClient)cbForfait.getSelectedItem()).getIdForfaitClient(), false);
-				lResume.setText("<html>Type : " + (reservation.getSalle().getTypeSalle().getTypeSalle().equals("petite")?"Petite salle":(reservation.getSalle().getTypeSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee")) + "<br/>"
-						+ (formatterDeb.format(dateReservation) 
-						+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h<br/>"
-						+ "Prix : " + infosPaiement[0] + " euros")
-						+ "</html>");
-			}else{
-				infosPaiement = new ConfirmerReservation().getInfosApresPaiement(reservation, null, false);
-				lResume.setText("<html>Type : " + (reservation.getSalle().getTypeSalle().getTypeSalle().equals("petite")?"Petite salle":(reservation.getSalle().getTypeSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee")) + "<br/>"
-						+ (formatterDeb.format(dateReservation) 
-						+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h<br/>"
-						+ "Prix : " + infosPaiement[0] + " euros")
-						+ "</html>");
-			}
-		}
-	}
-	
-	
-	public void focusGained(FocusEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void focusLost(FocusEvent e) {
-		Object o = e.getSource();
-		if(o.equals(tfNom) || o.equals(tfNumTel) || o.equals(tfPrenom)){
 			Client c = null;
 			List<ForfaitClient> listeFC = null;
 			try{
 				c = new RechercheClient().rechercheClient(tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
-			} catch(ObjetInconnuException oie){
+			} catch(ObjetInconnuException oie){}
+			infosPaiement = new ConfirmerReservation().getInfosApresPaiement(reservation, c!=null?c.getId():null,cbForfait.getSelectedItem()!=null?((ForfaitClient)cbForfait.getSelectedItem()).getIdForfaitClient():null, checkFidelite.isSelected()?true:false);
+			lResume.setText("<html>Type : " + (reservation.getSalle().getTypeSalle().getTypeSalle().equals("petite")?"Petite salle":(reservation.getSalle().getTypeSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee")) + "<br/>"
+					+ (formatterDeb.format(dateReservation) 
+					+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h<br/>"
+					+ "Prix : " + infosPaiement[0] + " euros")
+					+ "</html>");
+		} else if(o.equals(bOptionsPaiement)){
+			if(!"".equals(tfNom.getText()) && !"".equals(tfPrenom.getText()) && !"".equals(tfNumTel.getText())){
+				Client c = null;
+				List<ForfaitClient> listeFC = null;
+				try{
+					c = new RechercheClient().rechercheClient(tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
+				} catch(ObjetInconnuException oie){
+					cbForfait.removeAllItems();
+					cbForfait.addItem(null);
+					panelOptionsPaiement.removeAll();
+					panelOptionsPaiement.setLayout(new FlowLayout());
+					panelOptionsPaiement.add(bOptionsPaiement);
+					panelOptionsPaiement.validate();
+					panelOptionsPaiement.repaint();
+					JOptionPane.showMessageDialog(this, "Client inexistant");
+					return;
+				}
+				listeFC = FabForfaitClient.getInstance().rechercherForfaitClient(c.getId(), reservation.getSalle().getTypeSalle().getIdTypeSalle());
+				
 				cbForfait.removeAllItems();
 				cbForfait.addItem(null);
-				return;
-			}
-			listeFC = FabForfaitClient.getInstance().rechercherForfaitClient(c.getId(), reservation.getSalle().getTypeSalle().getIdTypeSalle());
-			
-			cbForfait.removeAllItems();
-			cbForfait.addItem(null);
-			for(ForfaitClient fc : listeFC){
-				cbForfait.addItem(fc);
+				for(ForfaitClient fc : listeFC){
+					cbForfait.addItem(fc);
+				}
+				panelOptionsPaiement.removeAll();
+				panelOptionsPaiement.setLayout(new GridBagLayout());
+				GridBagConstraints GBC = new GridBagConstraints();
+				GBC.fill = GridBagConstraints.BOTH; 
+				GBC.anchor = GridBagConstraints.NORTH;
+				GBC.gridy = 0;
+				GBC.gridx = 0;
+				GBC.gridheight = 1;
+				GBC.gridwidth = 2;
+				GBC.weightx = 0.1;
+				GBC.weighty = 0.1;
+				panelOptionsPaiement.add(cbForfait,GBC);
+				GBC.gridy=1;
+				GBC.gridwidth = 1;
+				panelOptionsPaiement.add(new JLabel("Pts fidelite ("+c.getPointsFidelite()+")"),GBC);
+				GBC.gridx=1;
+				panelOptionsPaiement.add(checkFidelite,GBC);
+				panelOptionsPaiement.validate();
+				panelOptionsPaiement.repaint();
+				
+				tfNom.getDocument().addDocumentListener(this);
+				tfPrenom.getDocument().addDocumentListener(this);
+				tfNumTel.getDocument().addDocumentListener(this);
+			} else {
+				JOptionPane.showMessageDialog(this, "Les 3 champs doivent etre remplis !");
 			}
 		}
 	}
-	
+
+
+	public void insertUpdate(DocumentEvent e) {
+		cbForfait.removeAllItems();
+		cbForfait.addItem(null);
+		panelOptionsPaiement.removeAll();
+		panelOptionsPaiement.setLayout(new FlowLayout());
+		panelOptionsPaiement.add(bOptionsPaiement);
+		panelOptionsPaiement.validate();
+		panelOptionsPaiement.repaint();
+		tfNom.getDocument().removeDocumentListener(this);
+		tfPrenom.getDocument().removeDocumentListener(this);
+		tfNumTel.getDocument().removeDocumentListener(this);
+	}
+
+	public void removeUpdate(DocumentEvent e) {
+		cbForfait.removeAllItems();
+		cbForfait.addItem(null);
+		panelOptionsPaiement.removeAll();
+		panelOptionsPaiement.setLayout(new FlowLayout());
+		panelOptionsPaiement.add(bOptionsPaiement);
+		panelOptionsPaiement.validate();
+		panelOptionsPaiement.repaint();
+		tfNom.getDocument().removeDocumentListener(this);
+		tfPrenom.getDocument().removeDocumentListener(this);
+		tfNumTel.getDocument().removeDocumentListener(this);
+	}
+
+	public void changedUpdate(DocumentEvent e) {}
 	
 	
 	private class RendererJListClient implements ListCellRenderer<Client> {
