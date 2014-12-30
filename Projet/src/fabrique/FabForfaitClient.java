@@ -119,13 +119,12 @@ public class FabForfaitClient {
 	}
 
 	/**
-	 * Recherche le ForfaitClient via le type du forfait, lid du client et lid du typesalle
-	 * @param typeForfait
+	 * Recherche le ForfaitClient via lid du client et lid du typesalle
 	 * @param idClient
 	 * @param idTypeSalle
 	 * @return liste des forfait Client
 	 */
-	public List<ForfaitClient> rechercherForfaitClient(String typeForfait, int idClient, int idTypeSalle){
+	public List<ForfaitClient> rechercherForfaitClient(int idClient, int idTypeSalle){
 		List<ForfaitClient> listeForfaitClient = new ArrayList<ForfaitClient>();
 		Forfait forfait = null;
 		Client client = null;
@@ -135,22 +134,21 @@ public class FabForfaitClient {
 		
 		try {
 			st = FabConnexion.getConnexion()
-					.prepareStatement("select idforfaitclient, tempsrestant, datecreation "
-							+ "from forfait_client where typeForfait = ? and idclient = ? and idsalle = ?");
+					.prepareStatement("select idforfaitclient, typeforfait, tempsrestant, datecreation "
+							+ "from forfait_client where idclient = ? and idtypesalle = ?");
 		
 			st.clearParameters();
 			
-			st.setString(1, typeForfait);
-			st.setInt(2, idClient);
-			st.setInt(3, idTypeSalle);
+			st.setInt(1, idClient);
+			st.setInt(2, idTypeSalle);
 			
 			rs = st.executeQuery();
 			
-			forfait = FabForfait.getInstance().rechercherForfait(typeForfait);
 			client = FabClient.getInstance().rechercher(idClient);
 			typeSalle = FabTypeSalle.getInstance().rechercher(idTypeSalle);
 			
 			while(rs.next()){
+				forfait = FabForfait.getInstance().rechercherForfait(rs.getString("typeforfait"));
 				listeForfaitClient.add(
 						new ForfaitClient(
 								rs.getInt("idforfaitclient"), client, forfait, typeSalle, rs.getInt("tempsrestant"), rs.getTimestamp("datecreation")
@@ -159,13 +157,40 @@ public class FabForfaitClient {
 			}
 		} catch (SQLException e) {
 			System.out.println("Erreur lors de la recuperation de forfaitclient");
-			System.out.println("Type du forfait : "+typeForfait);
 			System.out.println("IdClient : " + idClient);
 			System.out.println("IdTypeSalle : " + idTypeSalle);
 			System.out.println(e.getMessage());
 		}
 		
 		return listeForfaitClient;
+	}
+	
+
+	/**
+	 * Modifie le forfaitClient ayant comme id celui du forfaitClient fc
+	 * et la modifie avec les donness contenus dans fc
+	 * @param clt
+	 */
+	public void modifierForfaitClient(ForfaitClient fc){
+		PreparedStatement pst = null;
+		Connection connection = FabConnexion.getConnexion();
+		
+		String query = "update forfait_client set idclient = ?, idtypesalle = ?, typeforfait = ?, tempsrestant = ?, datecreation = ? "
+				+ " where idforfaitclient = ?";
+		try {
+			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			pst.clearParameters();
+
+			pst.setInt(1, fc.getClient().getId());
+			pst.setInt(2, fc.getTypeSalle().getIdTypeSalle());
+			pst.setString(3, fc.getForfait().getTypeForfait());
+			pst.setInt(4, fc.getTempsRestant());
+			pst.setTimestamp(5, new Timestamp(fc.getDateCreation().getTime()));
+			pst.setInt(6, fc.getIdForfaitClient());
+			pst.execute();
+		} catch (SQLException se) {
+			System.out.println("Echec de la modification du forfaitClient "+fc.getIdForfaitClient()+" - "+se.getMessage());
+		}
 	}
 	
 	/**

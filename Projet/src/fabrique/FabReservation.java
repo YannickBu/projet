@@ -108,8 +108,8 @@ public class FabReservation {
 			res.setIdReserv(id);
 			res.setClient(FabClient.getInstance().rechercher(rs.getInt("idclient")));
 			res.setSalle(FabSalle.getInstance().rechercherParId(rs.getInt("idsalle")));
-			res.setDate(rs.getDate("datedebut"));
-			res.setDateCreation(rs.getDate("datecreation"));
+			res.setDate(rs.getTimestamp("datedebut"));
+			res.setDateCreation(rs.getTimestamp("datecreation"));
 			res.setEstPaye(rs.getBoolean("estpayee"));
 			res.setPlage(rs.getInt("plage"));
 

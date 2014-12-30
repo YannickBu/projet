@@ -8,6 +8,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +18,8 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -25,19 +29,24 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
+import metier.ConfirmerReservation;
 import metier.CreerClient;
 import metier.CreerReservation;
 import metier.RechercheClient;
-import metier.RechercheReservation;
 import donnee.Client;
+import donnee.Forfait;
+import donnee.ForfaitClient;
 import donnee.Reservation;
 import exception.ObjetInconnuException;
+import fabrique.FabClient;
+import fabrique.FabForfaitClient;
 
 /**
  * Panel permettant la saisie/selection du client pour valider une reservation
  */
-public class PanelValidationReservation extends JPanel implements ActionListener {
+public class PanelValidationReservation extends JPanel implements ActionListener, FocusListener {
 
 	private JFrame frame;
 	private Reservation reservation;
@@ -63,9 +72,15 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 	private JTextField tfPrenom;
 	private JTextField tfNumTel;
 	
+	private JComboBox cbForfait;
+	private JCheckBox checkFidelite;
+
+	private JLabel lResume;
+	
 	public PanelValidationReservation(JFrame frame, Reservation reservation) {
 		SimpleDateFormat formatterDeb = new SimpleDateFormat("'Le 'dd/MM/yyyy' de 'HH'h '");
 		SimpleDateFormat formatterFin = new SimpleDateFormat("HH");
+		Double[] infosPaiement = null;
 		Date dateReservation = null;
 		int duree;
 		
@@ -73,6 +88,15 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 		JLabel lNom = new JLabel("Nom");
 		JLabel lPrenom = new JLabel("Prenom");
 		JLabel lNumTel = new JLabel("Tel");
+		
+		cbForfait = new JComboBox();
+		cbForfait.setRenderer(new RendererCBForfait());
+		cbForfait.setMinimumSize(new Dimension(150, 20));
+		cbForfait.setMaximumSize(new Dimension(150, 20));
+		cbForfait.setPreferredSize(new Dimension(150, 20));
+		cbForfait.addItem(null);
+		
+		checkFidelite = new JCheckBox();
 		
 		this.frame = frame;
 		this.reservation = reservation;
@@ -136,12 +160,14 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 		dateReservation = reservation.getDate();
 		duree = reservation.getPlage();
 
-		
-		cResume.add(new JLabel("<html>Resume de la reservation <br/><br/>"
-				+ "Type : " + (reservation.getSalle().getTypeSalle().getTypeSalle().equals("petite")?"Petite salle":(reservation.getSalle().getTypeSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee")) + "<br/>"
+		infosPaiement = new ConfirmerReservation().getInfosApresPaiement(reservation, null, false);
+		lResume = new JLabel("<html>Type : " + (reservation.getSalle().getTypeSalle().getTypeSalle().equals("petite")?"Petite salle":(reservation.getSalle().getTypeSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee")) + "<br/>"
 				+ (formatterDeb.format(dateReservation) 
-						+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h ")
-				+ "</html>"));
+				+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h<br/>"
+				+ "Prix : " + infosPaiement[0] + " euros")
+				+ "</html>");
+		
+		cResume.add(lResume);
 		cResume.add(new JLabel());
 		cResume.add(new JLabel( ));
 		
@@ -174,6 +200,7 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 		
 		panelCenterRight.setMaximumSize(new Dimension(200, 300));
 		panelCenterRight.add(cResume);
+		panelCenterRight.add(cbForfait);
 		panelCenterRight.add(cNom);
 		panelCenterRight.add(cPrenom);
 		panelCenterRight.add(cNumTel);
@@ -196,6 +223,11 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 		bSendInfos.addActionListener(this);
 		bEnregistrer.addActionListener(this);
 		bRetour.addActionListener(this);
+		tfNom.addFocusListener(this);
+		tfPrenom.addFocusListener(this);
+		tfNumTel.addFocusListener(this);
+		cbForfait.addActionListener(this);
+		checkFidelite.addActionListener(this);
 	}
 
 	/**
@@ -270,14 +302,83 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 				tfPrenom.setText(jlClient.getSelectedValue().getPrenom());
 				tfNumTel.setText(jlClient.getSelectedValue().getNumTel());
 			}
+			Client c = null;
+			List<ForfaitClient> listeFC = null;
+			try{
+				c = new RechercheClient().rechercheClient(tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
+			} catch(ObjetInconnuException oie){
+				cbForfait.removeAllItems();
+				cbForfait.addItem(null);
+				return;
+			}
+			listeFC = FabForfaitClient.getInstance().rechercherForfaitClient(c.getId(), reservation.getSalle().getTypeSalle().getIdTypeSalle());
+			
+			cbForfait.removeAllItems();
+			cbForfait.addItem(null);
+			for(ForfaitClient fc : listeFC){
+				cbForfait.addItem(fc);
+			}
 		} else if(o.equals(bEnregistrer)){
 			enregistrerReservation();
 		} else if(o.equals(bRetour)){
 			frame.getContentPane().removeAll();
-			frame.getContentPane().add(new PanelMenu(frame));
+			frame.getContentPane().add(new PanelReservationAuto(frame));
 			frame.validate();
+		} else if(o.equals(checkFidelite)){
+			
+		} else if(o.equals(cbForfait)){
+			SimpleDateFormat formatterDeb = new SimpleDateFormat("'Le 'dd/MM/yyyy' de 'HH'h '");
+			SimpleDateFormat formatterFin = new SimpleDateFormat("HH");
+			Double[] infosPaiement = null;
+			Date dateReservation = reservation.getDate();
+			int duree = reservation.getPlage();
+			if(cbForfait.getSelectedItem()!=null){
+				infosPaiement = new ConfirmerReservation().getInfosApresPaiement(reservation, ((ForfaitClient)cbForfait.getSelectedItem()).getIdForfaitClient(), false);
+				lResume.setText("<html>Type : " + (reservation.getSalle().getTypeSalle().getTypeSalle().equals("petite")?"Petite salle":(reservation.getSalle().getTypeSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee")) + "<br/>"
+						+ (formatterDeb.format(dateReservation) 
+						+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h<br/>"
+						+ "Prix : " + infosPaiement[0] + " euros")
+						+ "</html>");
+			}else{
+				infosPaiement = new ConfirmerReservation().getInfosApresPaiement(reservation, null, false);
+				lResume.setText("<html>Type : " + (reservation.getSalle().getTypeSalle().getTypeSalle().equals("petite")?"Petite salle":(reservation.getSalle().getTypeSalle().getTypeSalle().equals("grande")?"Grande salle":"Salle equipee")) + "<br/>"
+						+ (formatterDeb.format(dateReservation) 
+						+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h<br/>"
+						+ "Prix : " + infosPaiement[0] + " euros")
+						+ "</html>");
+			}
 		}
 	}
+	
+	
+	public void focusGained(FocusEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void focusLost(FocusEvent e) {
+		Object o = e.getSource();
+		if(o.equals(tfNom) || o.equals(tfNumTel) || o.equals(tfPrenom)){
+			Client c = null;
+			List<ForfaitClient> listeFC = null;
+			try{
+				c = new RechercheClient().rechercheClient(tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
+			} catch(ObjetInconnuException oie){
+				cbForfait.removeAllItems();
+				cbForfait.addItem(null);
+				return;
+			}
+			listeFC = FabForfaitClient.getInstance().rechercherForfaitClient(c.getId(), reservation.getSalle().getTypeSalle().getIdTypeSalle());
+			
+			cbForfait.removeAllItems();
+			cbForfait.addItem(null);
+			for(ForfaitClient fc : listeFC){
+				cbForfait.addItem(fc);
+			}
+		}
+	}
+	
+	
 	
 	private class RendererJListClient implements ListCellRenderer<Client> {
 		private DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
@@ -295,5 +396,21 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 			return renderer;
 		}
 		
+	}
+	
+	private class RendererCBForfait extends BasicComboBoxRenderer {
+		
+		public RendererCBForfait() {
+			
+		}
+		@Override public Component getListCellRendererComponent(JList list, Object fc, int index, boolean isSelected, boolean cellHasFocus){
+		        JLabel ret=(JLabel)super.getListCellRendererComponent(list,fc,index,isSelected,cellHasFocus);
+		        if(fc != null){
+		        	ret.setText("Forfait "+((ForfaitClient)fc).getForfait().getTypeForfait()+" ("+((ForfaitClient)fc).getTempsRestant()+"h)");
+		        }else{
+		        	ret.setText("Aucun forfait");
+		        }
+		        return ret;
+		}
 	}
 }

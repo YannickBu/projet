@@ -5,10 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 import donnee.Client;
+import donnee.Reservation;
 import exception.ObjetExistantException;
 import exception.ObjetInconnuException;
 
@@ -144,6 +146,32 @@ public class FabClient {
 		return client;
 	}
 
+	/**
+	 * Modifie le client ayant comme id celui du client clt
+	 * et la modifie avec les donness contenus dans clt
+	 * @param clt
+	 */
+	public void modifierClient(Client clt){
+		PreparedStatement pst = null;
+		Connection connection = FabConnexion.getConnexion();
+		
+		String query = "update client set nom = ?, prenom = ?, tel = ?, fidelite = ? "
+				+ " where idclient = ?";
+		try {
+			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+			pst.clearParameters();
+
+			pst.setString(1, clt.getNom());
+			pst.setString(2, clt.getPrenom());
+			pst.setString(3, clt.getNumTel());
+			pst.setInt(4, clt.getPointsFidelite());
+			pst.setInt(5, clt.getId());
+			pst.execute();
+		} catch (SQLException se) {
+			System.out.println("Echec de la modification du client "+clt.getId()+" - "+se.getMessage());
+		}
+	}
+	
 	/**
 	 * Supprime un client par son id
 	 * @param id

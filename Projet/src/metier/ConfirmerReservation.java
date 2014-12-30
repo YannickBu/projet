@@ -1,17 +1,14 @@
 package metier;
 
-import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import donnee.Client;
 import donnee.ForfaitClient;
 import donnee.Reservation;
-import donnee.Salle;
-import donnee.TypeSalle;
 import fabrique.FabClient;
 import fabrique.FabForfaitClient;
 import fabrique.FabReservation;
-import fabrique.FabSalle;
-import fabrique.FabTypeSalle;
 
 
 public class ConfirmerReservation {
@@ -35,15 +32,72 @@ public class ConfirmerReservation {
 			}
 		}
 		
-		//TODO a verifier par toi Yannick :p 
-		// Cette methode a utiliser si le client veut utiliser ses points de fidelite et/ou son forfait
+		
 		/**
-		 * payer une reservation avec les points de fidelite et/ou forfait
+		 * Recupere dans lordre : le prix, les pts fid. restant(null si utiliserFidelite false) 
+		 * et le tps restant sur le forfait(null si idForfaitClient null)
 		 * @param idClient
-		 * @param idReservation
-		 * @param idForfaitClient
+		 * @param res
+		 * @param idForfaitClient lid du ForfaitClient, null si pas dutilisation de forfait
+		 * @param utiliserFidelite 
+		 * @return le prix, les pts fid. restant(null si utiliserFidelite false) 
+		 * et le tps restant sur le forfait(null si idForfaitClient null)
 		 */
-		public void payerReservationPointFideliteForfait(Integer idClient, Integer idReservation, Integer idForfaitClient) {
+		public Double[] getInfosApresPaiement(Reservation res, Integer idForfaitClient, boolean utiliserFidelite){
+			Client client = res.getClient()!=null?FabClient.getInstance().rechercher(res.getClient().getId()):null;
+			ForfaitClient fc = idForfaitClient!=null?FabForfaitClient.getInstance().rechercher(idForfaitClient):null;
+
+			GregorianCalendar calendar = new GregorianCalendar();
+			calendar.setTime(res.getDate());
+			Double ptsFid = null;
+			Double tpsRestantForfait = null;
+			int plage = res.getPlage();
+			int heure = calendar .get(Calendar.HOUR_OF_DAY);
+			Double prix = new Double((plage/2)*res.getSalle().getPrixPlage2h() + (plage % 2)*res.getSalle().getPrixPlage1h());
+			
+			//TODO suppr
+			/*int nbHeureHorsSoiree = heure>=20?0:(heure+plage<=20?plage:20-heure);
+			int nbHeureSoiree = heure>=20?plage:(heure+plage<=20?0:heure+plage-20);
+			Double prix = new Double((nbHeureHorsSoiree/2)*res.getSalle().getPrixPlage2h() + (nbHeureHorsSoiree % 2)*res.getSalle().getPrixPlage1h()
+					+ (nbHeureSoiree/2)*res.getSalle().getPrixPlage2h()*1.2 + (nbHeureSoiree % 2)*res.getSalle().getPrixPlage1h()*1.2);*/
+			
+			
+			if(utiliserFidelite){
+				ptsFid = new Double(client.getPointsFidelite());
+				while(ptsFid >= 150 && plage >= 2){
+					prix -= res.getSalle().getPrixPlage2h();
+					plage -= 2;
+					ptsFid -= 150;
+				}
+			}
+			
+			
+			if(idForfaitClient != null){
+				tpsRestantForfait = new Double(fc.getTempsRestant());
+				while(plage >= 2 && tpsRestantForfait >= 2){
+					prix -= res.getSalle().getPrixPlage2h();
+					tpsRestantForfait-=2;
+					plage-=2;
+				}
+				if(plage >= 1 && tpsRestantForfait >= 1){
+					prix -= res.getSalle().getPrixPlage1h();
+					tpsRestantForfait--;
+					plage--;
+				}
+			}
+
+			
+			if(heure >= 20){
+				prix = prix * 1.2;
+			}
+			
+			return new Double[]{prix,ptsFid,tpsRestantForfait};
+			
+			
+			//TODO suppr?
+			/*
+			 
+			 
 			FabReservation reservation = FabReservation.getInstance();
 			FabClient client = FabClient.getInstance();
 			FabForfaitClient forfaitClient = FabForfaitClient.getInstance();
@@ -176,7 +230,33 @@ public class ConfirmerReservation {
 					}
 				}
 			}
-		}	
-
+			 
+			 
+			 
+			 * */
+		}
 		
+		public void payerReservation(Integer idReservation, Integer idForfaitClient, Double ptsFid, Double tpsRestantForfait){
+			Reservation res = FabReservation.getInstance().rechercher(idReservation);
+			Client client = FabClient.getInstance().rechercher(res.getClient().getId());
+			ForfaitClient fc = idForfaitClient!=null?FabForfaitClient.getInstance().rechercher(idForfaitClient):null;
+			
+			res.setEstPaye(true);
+			FabReservation.getInstance().modifierReservation(res);
+			
+			if(ptsFid != null){
+				client.setPointsFidelite(ptsFid.intValue());
+				FabClient.getInstance().modifierClient(client);
+			}
+			
+			if(tpsRestantForfait != null){
+				fc.setTempsRestant(tpsRestantForfait.intValue());
+				FabForfaitClient.getInstance().modifierForfaitClient(fc);
+			}
+		}
+
+		public static void main(String[] args) {
+			ConfirmerReservation m = new ConfirmerReservation();
+			m.payerReservation(19, 2, 10.0, 5.0);
+		}
 }

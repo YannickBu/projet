@@ -65,8 +65,8 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 	private JButton bFiltreHorsDelais;
 	private JButton bAcheterForfait;
 	
-	private JComboBox<Forfait> cbForfait;
-	private JComboBox<String> cbTypeSalle;
+	private JComboBox cbForfait;
+	private JComboBox cbTypeSalle;
 	
 	private JList<Reservation> jListeReservations;
 	private JList<ForfaitClient> jListeForfaitClient;
@@ -87,10 +87,10 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		lFor = new JLabel("Vos forfaits", JLabel.CENTER);
 		JLabel lFiltre = new JLabel("Filtre", JLabel.CENTER);
 		
-		cbForfait = new JComboBox<Forfait>();
-		cbForfait.setRenderer(new RendererCBForfait());
+		cbForfait = new JComboBox();
+		cbForfait.setRenderer(new RendererCBForfaitClient());
 		
-		cbTypeSalle = new JComboBox<String>();
+		cbTypeSalle = new JComboBox();
 		cbTypeSalle.addItem("Petite salle");
 		cbTypeSalle.addItem("Grande salle");
 		
@@ -535,14 +535,14 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		
 	}
 	
-	private class RendererCBForfait extends BasicComboBoxRenderer {
+	private class RendererCBForfaitClient extends BasicComboBoxRenderer {
 		
-		public RendererCBForfait() {
+		public RendererCBForfaitClient() {
 			
 		}
 		@Override public Component getListCellRendererComponent(JList list, Object value,    int index,    boolean isSelected,    boolean cellHasFocus){
 		        JLabel ret=(JLabel)super.getListCellRendererComponent(list,value,index,isSelected,cellHasFocus);
-		        ret.setText("Forfait "+((Forfait)value).getTypeForfait());
+		        ret.setText("Forfait "+((ForfaitClient)value).getForfait().getTypeForfait());
 		        return ret;
 		}
 	}

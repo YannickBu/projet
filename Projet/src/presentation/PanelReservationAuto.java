@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import metier.ConfirmerReservation;
 import metier.RechercheReservation;
 
 import com.toedter.calendar.JDateChooser;
@@ -192,7 +193,7 @@ public class PanelReservationAuto extends JPanel implements ActionListener {
 			duree = creneauPropose.getPlage();
 			panelCENTERInterneResultat.add(new JLabel("Proposition : " 
 					+ formatterDeb.format(dateReservation) 
-					+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h " ));
+					+ "a " + (Integer.parseInt(formatterFin.format(dateReservation))+duree) + "h"));
 			panelCENTERInterneResultat.add(bAccepter);
 			bRechercher.setAlignmentX(Component.CENTER_ALIGNMENT);
 		} else {
