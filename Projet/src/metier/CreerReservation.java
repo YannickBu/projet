@@ -1,8 +1,9 @@
 package metier;
 
-//import java.util.ArrayList;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-//import java.util.List;
+import java.util.List;
 
 import donnee.Client;
 import donnee.ForfaitClient;
@@ -70,7 +71,17 @@ public class CreerReservation {
 		FabReservation.getInstance().creer(clt.getId(), res.getSalle().getIdSalle(), res.getDate(), res.getPlage(), res.getDateCreation(), res.getEstPaye());
 	}
 	
-	/*
+	/**
+	 * Methode qui permet de creer une reservation un meme jour de semaine pendant une periode donnee 
+	 * @param idClient
+	 * @param idSalle
+	 * @param dateDebut
+	 * @param plage
+	 * @param dateCreation
+	 * @param estPayee
+	 * @param nbSemaine
+	 * @return liste de reservation
+	 */
 	public List<Reservation> creerReservation(Integer idClient, Integer idSalle,Date dateDebut, int plage,Date dateCreation , boolean estPayee,int nbSemaine) {
 		FabClient fabClient = FabClient.getInstance();
 		FabReservation fabReservation = FabReservation.getInstance();
@@ -80,13 +91,26 @@ public class CreerReservation {
 		
 		if (client != null) {
 			int cpt = 0;
+			int i = 0;
 			while ( cpt < nbSemaine) {
-				
+				res = fabReservation.creer(idClient,idSalle,ajouterJour(dateDebut,i),plage,dateCreation,estPayee);
+				listRes.add(res);
+				i = i + 7;
 			}
-			
 		} 
-		
-		
-		
-	} */
+		return listRes;
+	} 
+	
+	/**
+	 * Methode qui permet d'ajouter des jours a une date
+	 * @param date
+	 * @param nbJour
+	 * @return date
+	 */
+	public Date ajouterJour(Date date, int nbJour) { 
+		  Calendar cal = Calendar.getInstance(); 
+		  cal.setTime(date);
+		  cal.add(Calendar.DATE, nbJour);
+		  return cal.getTime();
+		}
 }
