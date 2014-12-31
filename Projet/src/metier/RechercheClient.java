@@ -19,6 +19,10 @@ public class RechercheClient {
 		return FabClient.getInstance().rechercher(nom,prenom,tel);
 	}
 	
+	/**
+	 * Methode qui permet de lister les clients 
+	 * @return Liste Client
+	 */
 	public List<Client> listerClients(){
 		return FabClient.getInstance().lister();
 	}

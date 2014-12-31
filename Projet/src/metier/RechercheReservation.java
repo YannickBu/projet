@@ -69,7 +69,7 @@ public class RechercheReservation {
 		
 		String[] etatsSalle  = null;
 		
-		//Pour chaque salle du type typeSalle, on recupere letat de cette salle
+		//Pour chaque salle du type typeSalle, on recupere l'etat de cette salle
 		//et on essaie de 'caser' la reservation dans la bonne tranche
 		//on stoppe la boucle des que lon a une liste des reservartions (par plage d1 et 2h) de creee
 		for(Salle salleCourante : listeSalle){
@@ -79,7 +79,7 @@ public class RechercheReservation {
 			etatsSalle = etatsSalle(date, salleCourante.getIdSalle());
 			
 			//On parcourt les creneaux
-			//On stoppe lorsque lon a genere une liste de creneaux libres
+			//On stoppe lorsque l'on a genere une liste de creneaux libres
 			//ou que tous les creneaux sont parcourus
 			while(leCreneauAvecPlage1h.isEmpty() 
 					&& creneauCourant < creaneauFin 
@@ -101,7 +101,7 @@ public class RechercheReservation {
 						reservationCourante.setPlage(1);
 						leCreneauAvecPlage1h.add(reservationCourante);
 					} else {
-						//on vide des quun creneau nest PAS libre
+						//on vide des qu'un creneau n'est PAS libre
 						leCreneauAvecPlage1h.clear();
 						break;
 					}
@@ -110,7 +110,7 @@ public class RechercheReservation {
 				creneauCourant++;
 			}
 			
-			//Si la liste des creneaux nest pas vide
+			//Si la liste des creneaux n'est pas vide
 			//On a trouve une reservation possible
 			if(leCreneauAvecPlage1h != null && !leCreneauAvecPlage1h.isEmpty()){
 				reservationsPossibles.add(leCreneauAvecPlage1h);
@@ -194,10 +194,11 @@ public class RechercheReservation {
 	}
 
 	/**
+	 * Methode permet de lister les reservations pour un client
 	 * @param idClt
 	 * @param etat etat de la reservation - constantes possibles dans lobjet reservation<br/>
 	 * Peut prendre la valeur null pour recuperation de tous les etats
-	 * @return
+	 * @return liste reservation
 	 */
 	public List<Reservation> listerReservationsPourUnClient(int idClt, Integer etat){
 		List<Reservation> listeRes = FabReservation.getInstance().listerParClient(idClt);
@@ -234,4 +235,6 @@ public class RechercheReservation {
 		
 		return listeRes;
 	}
+	
+	//public 
 }
