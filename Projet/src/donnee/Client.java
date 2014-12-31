@@ -138,6 +138,13 @@ public class Client {
 	}
 	
 	/**
+	 * Methode qui permet le rajout des 30 points de fidelite bonus pour ceux qui reservent 4 seances consecutives et plus
+	 */
+	public void ajoutPointFideliteBonus() {
+		this.pointsFidelite = this.pointsFidelite + 30;
+	}
+	
+	/**
 	 * Methode qui permet d'ajouter un forfait
 	 * @param f
 	 */
