@@ -32,6 +32,25 @@ public class ConfirmerReservation {
 			}
 		}
 		
+		// Cette methode a utiliser aussi si le client reserve au moins  4 seances consecutives
+		/**
+		 * Methode qui permet de confirmer un payement (sans forfait ou points de fidelite) des reservations
+		 * en ajoutant les points de fidelite et le bonus
+		 * @param idClient
+		 * @param idReservation
+		 */
+		public void payerReservationPlusBonus(Integer idClient , Integer idReservation) {
+			FabReservation reservation = FabReservation.getInstance();
+			FabClient client = FabClient.getInstance();
+			Client c = client.rechercher(idClient);
+			Reservation res = reservation.rechercher(idReservation);
+		
+			if(c != null && res != null ) {
+				res.setEstPaye(true);
+				c.ajoutPointFidelite(res.getPlage());
+				c.ajoutPointFideliteBonus();
+			}
+		}
 		
 		/**
 		 * Recupere dans lordre : le prix, les pts fid. restant(null si utiliserFidelite false) 
