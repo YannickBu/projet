@@ -30,7 +30,7 @@ public class FabSalle {
 	 * @param typeSalle
 	 * @param prix1h
 	 * @param prix2h
-	 * @return
+	 * @return Salle
 	 * @throws ObjetExistantException
 	 */
 	public Salle creer(int idTypeSalle, int prix1h, int prix2h) throws ObjetExistantException {
@@ -68,7 +68,7 @@ public class FabSalle {
 	/**
 	 * Recherche une salle par son id
 	 * @param id
-	 * @return
+	 * @return Salle
 	 * @throws ObjetInconnuException
 	 */
 	public Salle rechercherParId(int id) throws ObjetInconnuException{
@@ -142,7 +142,7 @@ public class FabSalle {
 	/**
 	 * Recupere lensemble des salles selon le type de la salle
 	 * @param typeSalle
-	 * @return
+	 * @return liste de salle
 	 * @throws ObjetInconnuException
 	 */
 	public List<Salle> rechercher(String typeSalle) throws ObjetInconnuException{
@@ -203,7 +203,7 @@ public class FabSalle {
 
 	/**
 	 * Recupere lensemble des salles
-	 * @return
+	 * @return liste de salle
 	 */
 	public List<Salle> lister() {
 		Connection connection = FabConnexion.getConnexion();

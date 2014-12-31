@@ -82,7 +82,6 @@ public class FabReservation {
 	/**
 	 * Recupere une reservation a partir de son idReservation
 	 * @param id
-	 * @return
 	 * @throws ObjetInconnuException
 	 * @return reservation
 	 */
@@ -250,7 +249,7 @@ public class FabReservation {
 	 * Recupere toutes les reservations dun client par ordre chronologique 
 	 * de debut de reservation et par ordre des idsalle
 	 * @param id
-	 * @return
+	 * @return liste des reservation 
 	 */
 	public List<Reservation> listerParClient(int id){
 		Connection connection = FabConnexion.getConnexion();

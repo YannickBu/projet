@@ -195,7 +195,7 @@ public class FabForfaitClient {
 	
 	/**
 	 * Liste tous les forfaitClients
-	 * @return
+	 * @return liste des forfaits
 	 */
 	public List<ForfaitClient> lister(){
 		List<ForfaitClient> listeFC = new ArrayList<ForfaitClient>();
@@ -227,7 +227,7 @@ public class FabForfaitClient {
 	/**
 	 * Liste les forfaitClient pour le client en parametre
 	 * @param idClt
-	 * @return
+	 * @return liste des forfaitClient
 	 */
 	public List<ForfaitClient> listerPourUnClient(int idClt){
 		List<ForfaitClient> listeFC = new ArrayList<ForfaitClient>();

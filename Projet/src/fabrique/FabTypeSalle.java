@@ -20,6 +20,11 @@ public class FabTypeSalle {
 		return singleton;
 	}
 
+	/**
+	 * Methode qui permet de rechercher le type d'une salle par son identifiant
+	 * @param idTypeSalle
+	 * @return TypeSalle
+	 */
 	public TypeSalle rechercher(int idTypeSalle){
 		TypeSalle typeSalle = null;
 		PreparedStatement pst = null;
@@ -47,6 +52,11 @@ public class FabTypeSalle {
 		return typeSalle;
 	}
 	
+	/**
+	 * Methode qui permet de rechercher une salle par son type
+	 * @param libTypeSalle
+	 * @return typeSalle
+	 */
 	public TypeSalle rechercher(String libTypeSalle){
 		TypeSalle typeSalle = null;
 		PreparedStatement pst = null;
