@@ -8,8 +8,8 @@ public class ModifierReservation {
 	public ModifierReservation() {}
 
 	/**
-	 * Passe la reservation dont lid est celui de lobjet res
-	 * a letat payee
+	 * Passe la reservation dont l'id est celui de l'objet res
+	 * a l'etat payee
 	 * @param res
 	 */
 	public void payer(Reservation res){
