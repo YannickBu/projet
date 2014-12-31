@@ -256,4 +256,26 @@ public class FabForfaitClient {
 		
 		return listeFC;
 	}
+	
+	/**
+	 * Supprime un forfaitclient par son id
+	 * @param id
+	 */
+	public void supprimer(int id){
+		PreparedStatement pst = null;
+		Connection connection = FabConnexion.getConnexion();
+		String query = "DELETE FROM forfait_client WHERE idforfaitclient = ?";
+		try {
+			pst = connection.prepareStatement(query);
+			pst.clearParameters();
+			
+			pst.setInt(1, id);
+			
+			pst.execute();
+			
+		} catch (SQLException e) {
+			System.out.println("Echec de la suppression du forfaitclient pour l'id "+id
+					+" - "+e.getMessage());
+		}
+	}
 }

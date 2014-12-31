@@ -78,6 +78,8 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 	private List<ForfaitClient> listeForfaitClient;
 	private List<Forfait> listeForfait;
 	
+	private boolean tousSelected = true;
+	
 	public PanelEditionClient(JFrame frame, Client client) {
 		
 		panelForfait = new JPanel();
@@ -88,7 +90,7 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		JLabel lFiltre = new JLabel("Filtre", JLabel.CENTER);
 		
 		cbForfait = new JComboBox();
-		cbForfait.setRenderer(new RendererCBForfaitClient());
+		cbForfait.setRenderer(new RendererCBForfait());
 		
 		cbTypeSalle = new JComboBox();
 		cbTypeSalle.addItem("Petite salle");
@@ -356,6 +358,7 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 			frame.getContentPane().add(new PanelSaisieClient(frame));
 			frame.validate();
 		} else if(o.equals(bFiltreTous)){
+			tousSelected=true;
 			listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), null);
 			modelReservation.removeAllElements();
 			for(Reservation res : listeReservations){
@@ -366,6 +369,7 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 			bFiltreNonConfirme.setBorder(null);
 			bFiltreHorsDelais.setBorder(null);
 		} else if(o.equals(bFiltreConfirme)){
+			tousSelected=false;
 			listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), Reservation.ETAT_CONFIRME);
 			modelReservation.removeAllElements();
 			for(Reservation res : listeReservations){
@@ -376,6 +380,7 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 			bFiltreNonConfirme.setBorder(null);
 			bFiltreHorsDelais.setBorder(null);
 		} else if(o.equals(bFiltreNonConfirme)){
+			tousSelected=false;
 			listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), Reservation.ETAT_NON_CONFIRME);
 			modelReservation.removeAllElements();
 			for(Reservation res : listeReservations){
@@ -386,6 +391,7 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 			bFiltreNonConfirme.setBorder(BorderFactory.createLoweredBevelBorder());
 			bFiltreHorsDelais.setBorder(null);
 		} else if(o.equals(bFiltreHorsDelais)){
+			tousSelected=false;
 			listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), Reservation.ETAT_HORS_DELAIS);
 			modelReservation.removeAllElements();
 			for(Reservation res : listeReservations){
@@ -412,7 +418,15 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 				resNewDonnees.setPlage(jListeReservations.getSelectedValue().getPlage());
 				resNewDonnees.setSalle(jListeReservations.getSelectedValue().getSalle());
 				metierModifRes.payer(resNewDonnees);
-				modelReservation.remove(jListeReservations.getSelectedIndex());
+				if(tousSelected){
+					listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), Reservation.ETAT_CONFIRME);
+					modelReservation.removeAllElements();
+					for(Reservation res : listeReservations){
+						modelReservation.addElement(res);
+					}
+				} else {
+					modelReservation.remove(jListeReservations.getSelectedIndex());
+				}
 			}
 		} else if(o.equals(bActionFor)){
 			if(bActionFor.getText().equals("Acheter un forfait")){
@@ -535,14 +549,14 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		
 	}
 	
-	private class RendererCBForfaitClient extends BasicComboBoxRenderer {
+	private class RendererCBForfait extends BasicComboBoxRenderer {
 		
-		public RendererCBForfaitClient() {
+		public RendererCBForfait() {
 			
 		}
 		@Override public Component getListCellRendererComponent(JList list, Object value,    int index,    boolean isSelected,    boolean cellHasFocus){
 		        JLabel ret=(JLabel)super.getListCellRendererComponent(list,value,index,isSelected,cellHasFocus);
-		        ret.setText("Forfait "+((ForfaitClient)value).getForfait().getTypeForfait());
+		        ret.setText("Forfait "+((Forfait)value).getTypeForfait());
 		        return ret;
 		}
 	}
