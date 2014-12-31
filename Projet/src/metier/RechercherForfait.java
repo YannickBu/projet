@@ -11,7 +11,7 @@ public class RechercherForfait {
 
 	/**
 	 * Recupere les forfaits existant
-	 * @return
+	 * @return liste Forfait
 	 */
 	public List<Forfait> lister(){
 		return FabForfait.getInstance().lister();
