@@ -90,6 +90,13 @@ public class ConfirmerReservation {
 			
 			}
 		
+		/**
+		 * Methode qui permet de payer une reservation
+		 * @param idReservation
+		 * @param idForfaitClient
+		 * @param ptsFid
+		 * @param tpsRestantForfait
+		 */
 		public void payerReservation(Integer idReservation, Integer idForfaitClient, Double ptsFid, Double tpsRestantForfait){
 			Reservation res = FabReservation.getInstance().rechercher(idReservation);
 			Client client = FabClient.getInstance().rechercher(res.getClient().getId());
@@ -109,6 +116,7 @@ public class ConfirmerReservation {
 			}
 		}
 
+		//TODO c'est a garder ou supprimer ??? n'oublie pas que y'a pas daffichage dans le metier 
 		public static void main(String[] args) {
 			ConfirmerReservation m = new ConfirmerReservation();
 			m.payerReservation(19, 2, 10.0, 5.0);
