@@ -48,6 +48,11 @@ public class RechercheReservation {
 		return FabReservation.getInstance().rechercherParDateEtTypeSalle(date, idSalle);
 	}
 	
+	/**
+	 * Methode qui permet de rechercher Salle par son type
+	 * @param typeSalle
+	 * @return liste Salle
+	 */
 	public List<Salle> rechercherSallesParType(String typeSalle){
 		return FabSalle.getInstance().rechercher(typeSalle);
 	}
@@ -236,5 +241,5 @@ public class RechercheReservation {
 		return listeRes;
 	}
 	
-	//public 
+	
 }
