@@ -26,7 +26,7 @@ public class FabForfait {
 	/**
 	 * Recupere un forfait a partir du type de forfait (12h, 24h...)
 	 * @param typeForfait
-	 * @return
+	 * @return Forfait
 	 */
 	public Forfait rechercherForfait(String typeForfait){
 		Forfait forfait = null;
@@ -59,7 +59,7 @@ public class FabForfait {
 
 	/**
 	 * Liste tous les forfaits
-	 * @return
+	 * @return liste des forfaits
 	 */
 	public List<Forfait> lister(){
 		List<Forfait> listeForfait = new ArrayList<Forfait>();
