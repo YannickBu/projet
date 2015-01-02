@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 public class Client {
 
+	public static final int POINTS_FIDELITE_PAR_HEURE = 5;
+	public static final int POINTS_FIDELITE_POUR_UN_MOIS = 30;
+	
 	private int id;
 	private String nom;
 	private String prenom;
@@ -133,15 +136,15 @@ public class Client {
 	 * Methode qui permet d'ajouter les points de fidelite 
 	 * @param h
 	 */
-	public void ajoutPointFidelite (int h) {
-		this.pointsFidelite = this.pointsFidelite + (5*h);
+	public void ajoutPointsFidelite (int h) {
+		this.pointsFidelite += (POINTS_FIDELITE_PAR_HEURE*h);
 	}
 	
 	/**
 	 * Methode qui permet le rajout des 30 points de fidelite bonus pour ceux qui reservent 4 seances consecutives et plus
 	 */
-	public void ajoutPointFideliteBonus() {
-		this.pointsFidelite = this.pointsFidelite + 30;
+	public void ajoutPointsFideliteBonus() {
+		this.pointsFidelite += POINTS_FIDELITE_POUR_UN_MOIS;
 	}
 	
 	/**

@@ -15,8 +15,6 @@ import fabrique.FabSalle;
 
 public class RechercheReservation {
 	
-	private int DELAIS_DE_PAIEMENT_EN_JOURS = 7;
-
 	/**
 	 * Methode qui permet de rechercher une reservation
 	 * @param idres
@@ -59,7 +57,7 @@ public class RechercheReservation {
 	
 	/**
 	 * Recherche un creneau libre pour une reservation
-	 * @param date
+	 * @param date Date au format dd-MM-yyyy
 	 * @param duree
 	 * @param tranche
 	 * @param typeSalle
@@ -142,6 +140,43 @@ public class RechercheReservation {
 	}
 	
 	/**
+	 * Recherche un creneau libre sur plusieurs semaines pour une reservation
+	 * @param date Date au format <i>"dd-MM-yyyy"</i>
+	 * @param duree
+	 * @param tranche
+	 * @param typeSalle
+	 * @param nbSemaines
+	 * @return reservation
+	 */
+	public List<Reservation> rechercheCreneauLibre(String date, int duree, String tranche, String typeSalle, int nbSemaines){
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		Date dateEncours = null;
+		List<Reservation> listeRes = new ArrayList<Reservation>();
+		Reservation reservationEnCours = null;
+		Calendar cal = Calendar.getInstance(); 
+		
+		  
+		for(int i=0; i<nbSemaines; i++){
+			try {
+				dateEncours = formatter.parse(date);
+			} catch (ParseException e) {
+				System.out.println(e.getMessage());
+				return null;
+			}
+			cal.setTime(dateEncours);
+			cal.add(Calendar.DAY_OF_MONTH, 7*i);
+			reservationEnCours = rechercheCreneauLibre(formatter.format(cal.getTime()), duree, tranche, typeSalle);
+			if(reservationEnCours==null){
+				return null;
+			}
+			listeRes.add(reservationEnCours);
+			
+		}
+		
+		return listeRes;
+	}
+	
+	/**
 	 * Methode qui permet retourner une liste de reservation en plage de plusieurs heures
 	 * @param liste1h
 	 * @return reservation
@@ -186,7 +221,7 @@ public class RechercheReservation {
 				for(int i=0; i<reservationEnCours.getPlage();i++)
 					etatsSalle[calendarDebut.get(Calendar.HOUR_OF_DAY)-9+i] = "Confirmee";
 			}
-			else if(new Date().getTime() - calendarCreation.getTimeInMillis() > (DELAIS_DE_PAIEMENT_EN_JOURS*24*60*60*1000)){
+			else if(new Date().getTime() - calendarCreation.getTimeInMillis() > (Reservation.DELAIS_DE_PAIEMENT_EN_JOURS*24*60*60*1000)){
 				for(int i=0; i<reservationEnCours.getPlage();i++)
 					etatsSalle[calendarDebut.get(Calendar.HOUR_OF_DAY)-9+i] = "Hors delais";
 			} else {
@@ -241,5 +276,8 @@ public class RechercheReservation {
 		return listeRes;
 	}
 	
-	
+	public static void main(String[] args) {
+		List<Reservation> l = new RechercheReservation().rechercheCreneauLibre("01-01-2015", 3, "matin", "petite", 5);
+		System.out.println(l.size());
+	}
 }

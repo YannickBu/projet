@@ -1,8 +1,6 @@
 package metier;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import donnee.Client;
@@ -14,6 +12,8 @@ import fabrique.FabForfaitClient;
 import fabrique.FabReservation;
 
 public class CreerReservation {
+	
+	//TODO inutile?
 	/**
 	 * Methode qui permet de creer une nouvelle reservation
 	 * @param idClient
@@ -24,7 +24,7 @@ public class CreerReservation {
 	 * @param estPayee
 	 * @return reservation
 	 */
-	public Reservation creerReservation (Integer idClient, Integer idSalle ,Date dateDebut,int plage,Date dateCreation, Boolean estPayee) {
+	/*public Reservation creerReservation (Integer idClient, Integer idSalle ,Date dateDebut,int plage,Date dateCreation, Boolean estPayee) {
 		FabClient fabClient = FabClient.getInstance();
 		FabReservation fabReservation = FabReservation.getInstance();
 		Reservation res = null;
@@ -37,11 +37,11 @@ public class CreerReservation {
 		
 		return res;	
 		
-	}
+	}*/
 	
 	/**
-	 * Cree une nouvelle reservation
-	 * Met a jour le forfait client avec le temps restant
+	 * Cree une nouvelle reservation<br/>
+	 * Met a jour le forfait client avec le temps restant<br/>
 	 * Met a jour les pts fidelite du client
 	 * @param res
 	 * @param nomClt
@@ -65,52 +65,57 @@ public class CreerReservation {
 		
 		if(ptsFidRestant!=null){
 			clt.setPointsFidelite(ptsFidRestant);
-			FabClient.getInstance().modifierClient(clt);
 		}
+		clt.ajoutPointsFidelite(res.getPlage());
+		FabClient.getInstance().modifierClient(clt);
 		
 		FabReservation.getInstance().creer(clt.getId(), res.getSalle().getIdSalle(), res.getDate(), res.getPlage(), res.getDateCreation(), res.getEstPaye());
 	}
 	
+
 	/**
 	 * Methode qui permet de creer une reservation un meme jour de semaine pendant une periode donnee 
-	 * @param idClient
-	 * @param idSalle
-	 * @param dateDebut
-	 * @param plage
-	 * @param dateCreation
-	 * @param estPayee
-	 * @param nbSemaine
-	 * @return liste de reservation
+	 * @param res
+	 * @param nomClt
+	 * @param prenomClt
+	 * @param telClt
+	 * @param fc
+	 * @param ptsFidRestant
+	 * @param nbSemaines
+	 * @return
 	 */
-	public List<Reservation> creerReservation(Integer idClient, Integer idSalle,Date dateDebut, int plage,Date dateCreation , boolean estPayee,int nbSemaine) {
-		FabClient fabClient = FabClient.getInstance();
-		FabReservation fabReservation = FabReservation.getInstance();
-		List<Reservation> listRes = new ArrayList<Reservation>();
-		Reservation res = null;
-		Client client = fabClient.rechercher(idClient);
+	public List<Reservation> creerReservation(List<Reservation> listeRes, String nomClt, String prenomClt, String telClt, ForfaitClient fc, Integer ptsFidRestant) {
+		List<Reservation> listeReservationsCrees = new ArrayList<Reservation>();
+		Reservation reservationCree = null;
+		Client client = FabClient.getInstance().rechercher(nomClt, prenomClt, telClt);
+		
+		if(fc!=null){
+			if(fc.getTempsRestant()==0){
+				FabForfaitClient.getInstance().supprimer(fc.getIdForfaitClient());
+			} else{
+				FabForfaitClient.getInstance().modifierForfaitClient(fc);
+			}
+		}
+		
+		if(ptsFidRestant!=null){
+			client.setPointsFidelite(ptsFidRestant);
+		}
+		//on ajoute les 30 pts si reservation sur au moins 4 semaines
+		if(listeRes.size()>3){
+			client.ajoutPointsFideliteBonus();
+		}
+		if(ptsFidRestant!=null || listeRes.size()>3){
+			FabClient.getInstance().modifierClient(client);
+		}
 		
 		if (client != null) {
-			int cpt = 0;
-			int i = 0;
-			while ( cpt < nbSemaine) {
-				res = fabReservation.creer(idClient,idSalle,ajouterJour(dateDebut,i),plage,dateCreation,estPayee);
-				listRes.add(res);
-				i = i + 7;
+			for(int i=0; i<listeRes.size(); i++){
+				reservationCree = FabReservation.getInstance().creer(client.getId(), listeRes.get(i).getSalle().getIdSalle(), 
+						listeRes.get(i).getDate(), listeRes.get(i).getPlage(), listeRes.get(i).getDateCreation(), listeRes.get(i).getEstPaye());
 			}
+			listeReservationsCrees.add(reservationCree);
 		} 
-		return listRes;
+		return listeReservationsCrees;
 	} 
 	
-	/**
-	 * Methode qui permet d'ajouter des jours a une date
-	 * @param date
-	 * @param nbJour
-	 * @return date
-	 */
-	public Date ajouterJour(Date date, int nbJour) { 
-		  Calendar cal = Calendar.getInstance(); 
-		  cal.setTime(date);
-		  cal.add(Calendar.DATE, nbJour);
-		  return cal.getTime();
-		}
 }
