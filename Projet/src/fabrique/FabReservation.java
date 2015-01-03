@@ -194,7 +194,7 @@ public class FabReservation {
 	}
 	
 	/**
-	 * Supprime une reservation a partir de lid de la salle et de la date
+	 * Supprime une reservation a partir de lid de la salle et de la date de debut de la reservation
 	 * @param idSalle
 	 */
 	public void supprimer(Date date, int idSalle){
@@ -205,10 +205,30 @@ public class FabReservation {
 			pst = connection.prepareStatement(query);
 			pst.clearParameters();
 			pst.setInt(1, idSalle);
-			pst.setDate(2, new java.sql.Date(date.getTime()));
+			pst.setTimestamp(2, new Timestamp(date.getTime()));
 			pst.execute();
 		} catch (SQLException e) {
-			System.out.println("Echec de la suppression de la reservation pour l'id "+idSalle
+			System.out.println("Echec de la suppression de la reservation pour l'id salle "+idSalle
+					+" - "+e.getMessage());
+		}
+	}
+	
+	/**
+	 * Supprime une reservation a partir de lid de la salle et de la date de debut de la reservation
+	 * @param idSalle
+	 */
+	public void supprimerParDateCreation(Date dateCreation, int idClt){
+		PreparedStatement pst = null;
+		Connection connection = FabConnexion.getConnexion();
+		String query = "DELETE FROM reservation WHERE idclient = ? and datecreation = ?";
+		try {
+			pst = connection.prepareStatement(query);
+			pst.clearParameters();
+			pst.setInt(1, idClt);
+			pst.setTimestamp(2, new Timestamp(dateCreation.getTime()));
+			pst.execute();
+		} catch (SQLException e) {
+			System.out.println("Echec de la suppression de la reservation pour l'id client "+idClt
 					+" - "+e.getMessage());
 		}
 	}

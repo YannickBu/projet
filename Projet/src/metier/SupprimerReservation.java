@@ -23,5 +23,13 @@ public class SupprimerReservation {
 	public void supprimerReservation (Date date, Integer idSalle){
 		FabReservation.getInstance().supprimer(date, idSalle);
 	}
-
+	
+	/**
+	 * Methode qui permet de supprimer une reservation par date et salle
+	 * @param date
+	 * @param idSalle
+	 */
+	public void supprimerReservationParDateCreation (Date dateCreation, Integer idClient){
+		FabReservation.getInstance().supprimerParDateCreation(dateCreation, idClient);
+	}
 }

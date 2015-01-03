@@ -404,7 +404,7 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		} else if(o.equals(bActionRes)){
 			if(bActionRes.getText().equals("Supprimer")){
 				SupprimerReservation metierSupprRes = new SupprimerReservation();
-				metierSupprRes.supprimerReservation(jListeReservations.getSelectedValue().getIdReserv());
+				metierSupprRes.supprimerReservationParDateCreation(jListeReservations.getSelectedValue().getDateCreation(), jListeReservations.getSelectedValue().getClient().getId());
 				modelReservation.remove(jListeReservations.getSelectedIndex());
 				JOptionPane.showMessageDialog(this, "Reservation hors delais supprimee");
 			} else {

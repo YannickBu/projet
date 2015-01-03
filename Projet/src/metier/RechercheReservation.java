@@ -154,7 +154,7 @@ public class RechercheReservation {
 		List<Reservation> listeRes = new ArrayList<Reservation>();
 		Reservation reservationEnCours = null;
 		Calendar cal = Calendar.getInstance(); 
-		
+		Date dateCreation = new Date();//Pour faire en sorte que ttes les reservations aient une meme date de creation
 		  
 		for(int i=0; i<nbSemaines; i++){
 			try {
@@ -169,6 +169,7 @@ public class RechercheReservation {
 			if(reservationEnCours==null){
 				return null;
 			}
+			reservationEnCours.setDateCreation(dateCreation);
 			listeRes.add(reservationEnCours);
 			
 		}
