@@ -1,6 +1,7 @@
 package metier;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import donnee.Client;
@@ -81,13 +82,13 @@ public class CreerReservation {
 	 * @param telClt
 	 * @param fc
 	 * @param ptsFidRestant
-	 * @param nbSemaines
 	 * @return
 	 */
 	public List<Reservation> creerReservation(List<Reservation> listeRes, String nomClt, String prenomClt, String telClt, ForfaitClient fc, Integer ptsFidRestant) {
 		List<Reservation> listeReservationsCrees = new ArrayList<Reservation>();
 		Reservation reservationCree = null;
 		Client client = FabClient.getInstance().rechercher(nomClt, prenomClt, telClt);
+		Calendar cal = Calendar.getInstance(); 
 		
 		if(fc!=null){
 			if(fc.getTempsRestant()==0){
@@ -109,6 +110,14 @@ public class CreerReservation {
 		}
 		
 		if (client != null) {
+			//on supprime les reservations sur les creneaux des semaines a reserver
+			for(int i=0; i<listeRes.size(); i++){
+				cal.setTime(listeRes.get(i).getDate());
+				cal.add(Calendar.HOUR_OF_DAY, listeRes.get(i).getPlage());
+				FabReservation.getInstance().supprimer(listeRes.get(i).getDate(), cal.getTime());
+			}
+			
+			//on cree une reservation par semaine
 			for(int i=0; i<listeRes.size(); i++){
 				reservationCree = FabReservation.getInstance().creer(client.getId(), listeRes.get(i).getSalle().getIdSalle(), 
 						listeRes.get(i).getDate(), listeRes.get(i).getPlage(), listeRes.get(i).getDateCreation(), listeRes.get(i).getEstPaye());

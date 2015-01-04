@@ -8,8 +8,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import donnee.Client;
 import donnee.Reservation;
 import donnee.Salle;
+import fabrique.FabClient;
 import fabrique.FabReservation;
 import fabrique.FabSalle;
 
@@ -61,9 +63,10 @@ public class RechercheReservation {
 	 * @param duree
 	 * @param tranche
 	 * @param typeSalle
+	 * @param autoriseEcrasementHorsDelais
 	 * @return reservation
 	 */
-	public Reservation rechercheCreneauLibre(String date, int duree, String tranche, String typeSalle){
+	public Reservation rechercheCreneauLibre(String date, int duree, String tranche, String typeSalle, boolean autoriseEcrasementHorsDelais){
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH-mm-ss");
 		Reservation reservationCourante = null;
 		List<Reservation> leCreneauAvecPlage1h = new ArrayList<Reservation>();
@@ -90,7 +93,8 @@ public class RechercheReservation {
 				
 				//On essaie de generer la liste des reservations
 				for(int i=creneauCourant; i<creneauCourant + duree; i++){
-					if("Libre".equals(etatsSalle[i-9])){
+					if("Libre".equals(etatsSalle[i-9]) 
+							|| (autoriseEcrasementHorsDelais && "Hors delais".equals(etatsSalle[i-9]))){
 						reservationCourante = new Reservation();
 						reservationCourante.setClient(null);
 						reservationCourante.setSalle(salleCourante);
@@ -121,6 +125,9 @@ public class RechercheReservation {
 			}
 		}
 		
+		if(reservationsPossibles==null || reservationsPossibles.isEmpty()){
+			return null;
+		}
 		
 		leCreneauAvecPlage1h = new ArrayList<Reservation>();
 		leCreneauAvecPlage1h.add(new Reservation());
@@ -165,7 +172,7 @@ public class RechercheReservation {
 			}
 			cal.setTime(dateEncours);
 			cal.add(Calendar.DAY_OF_MONTH, 7*i);
-			reservationEnCours = rechercheCreneauLibre(formatter.format(cal.getTime()), duree, tranche, typeSalle);
+			reservationEnCours = rechercheCreneauLibre(formatter.format(cal.getTime()), duree, tranche, typeSalle, true);
 			if(reservationEnCours==null){
 				return null;
 			}
@@ -235,6 +242,31 @@ public class RechercheReservation {
 	}
 
 	/**
+	 * Pour une date et une salle données, on retourne un tableau representant 
+	 * les 15 creneaux dune journee, avec pour chaque creneau la reservation,
+	 * null si non reserve
+	 * @param dateDuJour
+	 * @param idSalle
+	 * @return
+	 */
+	public Reservation[] reservationParHeure(String dateDuJour, int idSalle){
+		GregorianCalendar calendar = new GregorianCalendar();
+		Reservation[] tabRes = new Reservation[15];
+		List<Reservation> listeReservationsExistantes = FabReservation.getInstance().rechercherParDateEtTypeSalle(dateDuJour, idSalle);
+		
+		for(Reservation res : listeReservationsExistantes){
+			calendar.setTime(res.getDateCreation());
+			calendar.setTime(res.getDate());
+			for(int i=0; i<res.getPlage(); i++){
+				tabRes[calendar.get(Calendar.HOUR_OF_DAY)+i-9] = res;
+			}
+		}
+		
+		
+		return tabRes;
+	}
+	
+	/**
 	 * Methode permet de lister les reservations pour un client
 	 * @param idClt
 	 * @param etat etat de la reservation - constantes possibles dans lobjet reservation<br/>
@@ -276,6 +308,96 @@ public class RechercheReservation {
 		
 		return listeRes;
 	}
+	
+	/**
+	 * Genere un objet Reservation sans id
+	 * @param idClient
+	 * @param idSalle
+	 * @param date
+	 * @param plage
+	 * @param estPayee
+	 * @return
+	 */
+	public Reservation genererReservation(Integer idClient, Integer idSalle, Date date, Integer plage, boolean estPayee){
+		Reservation laReservation = new Reservation();
+		Client c = null;
+		Salle s = null;
+		
+		if(idClient!=null){
+			c = FabClient.getInstance().rechercher(idClient);
+		}
+		if(idSalle!=null){
+			s = FabSalle.getInstance().rechercherParId(idSalle);
+		}
+		
+		laReservation.setClient(c);
+		laReservation.setSalle(s);
+		laReservation.setDate(date);
+		laReservation.setDateCreation(new Date());
+		laReservation.setEstPaye(estPayee);
+		laReservation.setPlage(plage);
+		
+		return laReservation;
+	}
+	
+	public boolean estLibre(Reservation reservation){
+		Calendar calendar = new GregorianCalendar();
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		String[] etatSalles = etatsSalle(formatter.format(reservation.getDate()), reservation.getSalle().getIdSalle());
+		
+		calendar.setTime(reservation.getDate());
+		for(int i=0; i<reservation.getPlage(); i++){
+			if(!"Libre".equals(etatSalles[calendar.get(Calendar.HOUR_OF_DAY)+i-9])
+					&& !"Hors delais".equals(etatSalles[calendar.get(Calendar.HOUR_OF_DAY)+i-9])){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	//TODO suppr?
+	/**
+	 * Methode permet de lister les reservations pour une salle
+	 * @param idSalle
+	 * @param etat etat de la reservation - constantes possibles dans lobjet reservation<br/>
+	 * Peut prendre la valeur null pour recuperation de tous les etats
+	 * @return liste reservation
+	 */
+	/*public List<Reservation> listerReservationsPourUneSalle(int idSalle, Integer etat){
+		List<Reservation> listeRes = FabReservation.getInstance().listerParSalle(idSalle);
+		List<Reservation> listeResModif = new ArrayList<Reservation>();
+		
+		if(etat != null){
+			switch(etat){
+			case Reservation.ETAT_HORS_DELAIS :
+				for(Reservation res : listeRes){
+					if(new Date().getTime() - res.getDateCreation().getTime() >= 7*24*60*60*1000 && !res.getEstPaye()){
+						listeResModif.add(res);
+					}
+				}
+				break;
+			case Reservation.ETAT_CONFIRME :
+				for(Reservation res : listeRes){
+					if(res.getEstPaye()){
+						listeResModif.add(res);
+					}
+				}
+				break;
+			case Reservation.ETAT_NON_CONFIRME :
+				for(Reservation res : listeRes){
+					if(!res.getEstPaye() 
+							&& new Date().getTime() - res.getDateCreation().getTime() < 7*24*60*60*1000
+							){
+						listeResModif.add(res);
+					}
+				}
+				break;
+			}
+			return listeResModif;
+		}
+		
+		return listeRes;
+	}*/
 	
 	public static void main(String[] args) {
 		List<Reservation> l = new RechercheReservation().rechercheCreneauLibre("01-01-2015", 3, "matin", "petite", 5);

@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
@@ -21,7 +22,8 @@ public class PanelMenu extends JPanel implements ActionListener {
 	JFrame frame;
 	
 	JButton bVisu;
-	JButton bReserv;
+	JButton bReservAuto;
+	JButton bReserbManu;
 	JButton bEdit;
 	
 	/**
@@ -38,36 +40,48 @@ public class PanelMenu extends JPanel implements ActionListener {
 		Container c = new Container();
 		this.add(c, new GridBagConstraints());
 		
+		JLabel lTitre = new JLabel("Menu principal",JLabel.CENTER);
+		JLabel lab = new JLabel(" ");
 
 		GroupLayout layout = new GroupLayout(c);
 		c.setLayout(layout);
 		
 		bVisu = new JButton("Visualiser une reservation");
 		bVisu.setBackground(Color.LIGHT_GRAY);
-		bReserv = new JButton("Reservation automatique");
-		bReserv.setBackground(Color.LIGHT_GRAY);
+		bReservAuto = new JButton("Reservation automatique");
+		bReservAuto.setBackground(Color.LIGHT_GRAY);
+		bReserbManu = new JButton("Reservation manuelle");
+		bReserbManu.setBackground(Color.LIGHT_GRAY);
 		bEdit = new JButton("Editer infos client");
 		bEdit.setBackground(Color.LIGHT_GRAY);
 		
 		bVisu.addActionListener(this);
-		bReserv.addActionListener(this);
+		bReservAuto.addActionListener(this);
+		bReserbManu.addActionListener(this);
 		bEdit.addActionListener(this);
 		
 		bVisu.setMinimumSize(new Dimension(250,23));
-		bReserv.setMinimumSize(new Dimension(250,23));
+		bReservAuto.setMinimumSize(new Dimension(250,23));
+		bReserbManu.setMinimumSize(new Dimension(250,23));
 		bEdit.setMinimumSize(new Dimension(250,23));
 		
 		layout.setHorizontalGroup(
                 layout.createParallelGroup()
-                    .addComponent(bVisu)
-                    .addComponent(bReserv)
-                    .addComponent(bEdit)
+                	.addComponent(lTitre, GroupLayout.Alignment.CENTER)
+                    .addComponent(lab, GroupLayout.Alignment.CENTER)
+        			.addComponent(bVisu, GroupLayout.Alignment.CENTER)
+                    .addComponent(bReservAuto, GroupLayout.Alignment.CENTER)
+                    .addComponent(bReserbManu, GroupLayout.Alignment.CENTER)
+                    .addComponent(bEdit, GroupLayout.Alignment.CENTER)
                 );
 		
 		layout.setVerticalGroup(
 			layout.createSequentialGroup()
+			.addComponent(lTitre)
+			.addComponent(lab)
 			.addComponent(bVisu)
-			.addComponent(bReserv)
+			.addComponent(bReservAuto)
+			.addComponent(bReserbManu)
 			.addComponent(bEdit)
 		);
 
@@ -80,9 +94,13 @@ public class PanelMenu extends JPanel implements ActionListener {
 			frame.getContentPane().removeAll();
 			frame.getContentPane().add(new PanelVisualiser(frame));
 			frame.validate();
-		} else if (o.equals(bReserv)){
+		} else if (o.equals(bReservAuto)){
 			frame.getContentPane().removeAll();
 			frame.getContentPane().add(new PanelReservationAuto(frame));
+			frame.validate();
+		} else if (o.equals(bReserbManu)){
+			frame.getContentPane().removeAll();
+			frame.getContentPane().add(new PanelReservationManu(frame));
 			frame.validate();
 		} else if (o.equals(bEdit)){
 			frame.getContentPane().removeAll();

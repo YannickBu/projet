@@ -251,7 +251,8 @@ public class PanelReservationAuto extends JPanel implements ActionListener {
 				formatterDateSaisie.format(jdDateChooser.getDate()), 
 				Integer.parseInt(((String)cbDuree.getSelectedItem()).substring(0, 1)), 
 				rbMatin.isSelected()?"matin":(rbApresMidi.isSelected()?"apres-midi":"soir"), 
-				rbPetiteSalle.isSelected()?"petite":(rbGrandeSalle.isSelected()?"grande":"equipee"));
+				rbPetiteSalle.isSelected()?"petite":(rbGrandeSalle.isSelected()?"grande":"equipee"),
+				false);
 		panelCENTERInterneResultat.removeAll();
 		
 		//sil existe une proposition repondant aux criteres

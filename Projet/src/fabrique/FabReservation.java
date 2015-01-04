@@ -193,11 +193,12 @@ public class FabReservation {
 		}
 	}
 	
+	//TODO suppr?
 	/**
 	 * Supprime une reservation a partir de lid de la salle et de la date de debut de la reservation
 	 * @param idSalle
 	 */
-	public void supprimer(Date date, int idSalle){
+	/*public void supprimerParDateDebutEtSalle(Date date, int idSalle){
 		PreparedStatement pst = null;
 		Connection connection = FabConnexion.getConnexion();
 		String query = "DELETE FROM reservation WHERE idsalle = ? and datedebut = ?";
@@ -211,13 +212,14 @@ public class FabReservation {
 			System.out.println("Echec de la suppression de la reservation pour l'id salle "+idSalle
 					+" - "+e.getMessage());
 		}
-	}
+	}*/
 	
 	/**
 	 * Supprime une reservation a partir de lid de la salle et de la date de debut de la reservation
-	 * @param idSalle
+	 * @param dateCreation
+	 * @param idClt
 	 */
-	public void supprimerParDateCreation(Date dateCreation, int idClt){
+	public void supprimerParDateCreationEtClient(Date dateCreation, int idClt){
 		PreparedStatement pst = null;
 		Connection connection = FabConnexion.getConnexion();
 		String query = "DELETE FROM reservation WHERE idclient = ? and datecreation = ?";
@@ -229,6 +231,28 @@ public class FabReservation {
 			pst.execute();
 		} catch (SQLException e) {
 			System.out.println("Echec de la suppression de la reservation pour l'id client "+idClt
+					+" - "+e.getMessage());
+		}
+	}
+	
+	/**
+	 * Supprime les reservations ayant une date de debut comprise entre les 2 
+	 * dates en parametre
+	 * @param dateDebut
+	 * @param dateFin
+	 */
+	public void supprimer(Date dateDebut, Date dateFin){
+		PreparedStatement pst = null;
+		Connection connection = FabConnexion.getConnexion();
+		String query = "DELETE FROM reservation WHERE datedebut between ? and ?";
+		try {
+			pst = connection.prepareStatement(query);
+			pst.clearParameters();
+			pst.setTimestamp(1, new Timestamp(dateDebut.getTime()));
+			pst.setTimestamp(2, new Timestamp(dateFin.getTime()));
+			pst.execute();
+		} catch (SQLException e) {
+			System.out.println("Echec de la suppression de la reservation "
 					+" - "+e.getMessage());
 		}
 	}
@@ -267,7 +291,7 @@ public class FabReservation {
 	
 	/**
 	 * Recupere toutes les reservations dun client par ordre chronologique 
-	 * de debut de reservation et par ordre des idsalle
+	 * de debut de reservation et par ordre des idclient
 	 * @param id
 	 * @return liste des reservation 
 	 */
@@ -299,6 +323,43 @@ public class FabReservation {
 		}
 		return listReservation;
 	}
+	
+	
+	//TODO suppr?
+	/**
+	 * Recupere toutes les reservations dune salle par ordre chronologique 
+	 * de debut de reservation et par ordre des idsalle
+	 * @param id
+	 * @return liste des reservation 
+	 */
+	/*public List<Reservation> listerParSalle(int id){
+		Connection connection = FabConnexion.getConnexion();
+		String query = "SELECT idreservation, idclient, datedebut, plage, datecreation, estpayee "
+				+ "FROM Reservation where idsalle = ? order by idsalle, datedebut";
+		PreparedStatement st = null;
+		List<Reservation> listReservation = new ArrayList<Reservation>();
+		try{
+			st = connection.prepareStatement(query);
+			st.setInt(1, id);
+			ResultSet rs = st.executeQuery();
+
+			while(rs.next()){
+				Reservation res = new Reservation();
+				res.setIdReserv(rs.getInt("idreservation"));
+				res.setSalle(FabSalle.getInstance().rechercherParId(id));
+				res.setClient(FabClient.getInstance().rechercher(rs.getInt("idclient")));
+				res.setDate(rs.getTimestamp("datedebut"));
+				res.setPlage(rs.getInt("plage"));
+				res.setDateCreation(rs.getTimestamp("datecreation"));
+				res.setEstPaye(rs.getBoolean("estpayee"));
+				listReservation.add(res);
+			}
+		}catch(SQLException e){
+			System.out.println("Erreur dacces aux listes des reservations en base de donnees pour le client "+id
+					+" - "+e.getMessage());
+		}
+		return listReservation;
+	}*/
 	
 	/**
 	 * Modifie la reservation ayant comme id celui du parametre res
