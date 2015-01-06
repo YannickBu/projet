@@ -32,6 +32,7 @@ import javax.swing.JRadioButton;
 
 import metier.RechercheReservation;
 import metier.SupprimerReservation;
+import metier.util.GestionJoursFeries;
 
 import com.toedter.calendar.JDateChooser;
 
@@ -273,6 +274,22 @@ public class PanelReservationManu extends JPanel implements ActionListener {
 			frame.getContentPane().add(new PanelMenu(frame));
 			frame.validate();
 		} else if(o.equals(bRechercher)) {
+			GregorianCalendar laDate = new GregorianCalendar();
+			GregorianCalendar leJourFerie = new GregorianCalendar();
+			laDate.setTime(jdDateChooser.getDate());
+			List<Date> joursFeriers = new GestionJoursFeries().getJourFeries(laDate.get(Calendar.YEAR));
+			if(laDate.get(Calendar.DAY_OF_WEEK)==Calendar.MONDAY){
+				JOptionPane.showMessageDialog(this, "Reservation impossible le Lundi !");
+				return;
+			}
+			for(Date dateEnCours : joursFeriers){
+				leJourFerie.setTime(dateEnCours);
+				if(leJourFerie.get(Calendar.DAY_OF_MONTH)==laDate.get(Calendar.DAY_OF_MONTH)
+						&& leJourFerie.get(Calendar.MONTH)==laDate.get(Calendar.MONTH)){
+					JOptionPane.showMessageDialog(this, "Reservation impossible les jours feries !");
+					return;
+				}
+			}
 			alimenterContainerCENTER();
 		} else if(o.equals(rbPetiteSalle) || o.equals(rbGrandeSalle) || o.equals(rbSalleEquipee)){
 			alimenterChoixSalle();

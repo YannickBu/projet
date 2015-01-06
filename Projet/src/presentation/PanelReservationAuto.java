@@ -10,7 +10,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
@@ -29,6 +31,7 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 
 import metier.RechercheReservation;
+import metier.util.GestionJoursFeries;
 
 import com.toedter.calendar.JDateChooser;
 
@@ -376,6 +379,22 @@ public class PanelReservationAuto extends JPanel implements ActionListener {
 			if(jdDateChooser.getDate()==null){
 				JOptionPane.showMessageDialog(this, "Date non valide !");
 				return;
+			}
+			GregorianCalendar laDate = new GregorianCalendar();
+			GregorianCalendar leJourFerie = new GregorianCalendar();
+			laDate.setTime(jdDateChooser.getDate());
+			List<Date> joursFeriers = new GestionJoursFeries().getJourFeries(laDate.get(Calendar.YEAR));
+			if(laDate.get(Calendar.DAY_OF_WEEK)==Calendar.MONDAY){
+				JOptionPane.showMessageDialog(this, "Impossible de reserver un Lundi !");
+				return;
+			}
+			for(Date dateEnCours : joursFeriers){
+				leJourFerie.setTime(dateEnCours);
+				if(leJourFerie.get(Calendar.DAY_OF_MONTH)==laDate.get(Calendar.DAY_OF_MONTH)
+						&& leJourFerie.get(Calendar.MONTH)==laDate.get(Calendar.MONTH)){
+					JOptionPane.showMessageDialog(this, "Impossible de reserver un jour ferie !");
+					return;
+				}
 			}
 			try{
 				int nbSemaines = Integer.parseInt(tfNbSemaines.getText());
