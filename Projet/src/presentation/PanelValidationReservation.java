@@ -52,7 +52,6 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 	
 	private List<Client> listeClient;
 	
-	private Reservation creneauPropose;
 	private List<Reservation> listeReservations;
 	private JList<Reservation> jListeReservations;
 	private DefaultListModel<Reservation> modelReservation;
@@ -559,11 +558,7 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 			}
 			panelOptionsPaiement.setVisible(true);
 		} else if(o.equals(cbForfait) || o.equals(checkFidelite)){
-			SimpleDateFormat formatterDeb = new SimpleDateFormat("'Le 'dd/MM/yyyy' de 'HH'h '");
-			SimpleDateFormat formatterFin = new SimpleDateFormat("HH");
 			infosPaiement = null;
-			Date dateReservation = listeReservations.get(0).getDate();
-			int duree = listeReservations.get(0).getPlage();
 			Client c = null;
 			try{
 				c = new RechercheClient().rechercheClient(tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());

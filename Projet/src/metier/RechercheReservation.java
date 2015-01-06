@@ -18,37 +18,6 @@ import fabrique.FabSalle;
 public class RechercheReservation {
 	
 	/**
-	 * Methode qui permet de rechercher une reservation
-	 * @param idres
-	 * @param date
-	 * @param s
-	 * @return reservation si trouvee , null sinon
-	 */
-	public Reservation rechercheReservation(Integer idres, Date date , Salle s) {
-		FabReservation reservation = FabReservation.getInstance();
-		
-		if(reservation.rechercher(idres) != null) {
-			Reservation res = reservation.rechercher(idres);
-			if (res.getDate().equals(date) && res.getSalle().equals(s)) {
-				return res;
-			}
-		}
-		
-		return null;	
-		
-	}
-	
-	/**
-	 * Methode qui permet de rechercher une reservation par date et type de salle
-	 * @param date
-	 * @param idSalle
-	 * @return reservation
-	 */
-	public List<Reservation> rechercheReservationParDateEtTypeSalle(String date, int idSalle){
-		return FabReservation.getInstance().rechercherParDateEtTypeSalle(date, idSalle);
-	}
-	
-	/**
 	 * Methode qui permet de rechercher Salle par son type
 	 * @param typeSalle
 	 * @return liste Salle
@@ -353,54 +322,5 @@ public class RechercheReservation {
 			}
 		}
 		return true;
-	}
-	
-	//TODO suppr?
-	/**
-	 * Methode permet de lister les reservations pour une salle
-	 * @param idSalle
-	 * @param etat etat de la reservation - constantes possibles dans lobjet reservation<br/>
-	 * Peut prendre la valeur null pour recuperation de tous les etats
-	 * @return liste reservation
-	 */
-	/*public List<Reservation> listerReservationsPourUneSalle(int idSalle, Integer etat){
-		List<Reservation> listeRes = FabReservation.getInstance().listerParSalle(idSalle);
-		List<Reservation> listeResModif = new ArrayList<Reservation>();
-		
-		if(etat != null){
-			switch(etat){
-			case Reservation.ETAT_HORS_DELAIS :
-				for(Reservation res : listeRes){
-					if(new Date().getTime() - res.getDateCreation().getTime() >= 7*24*60*60*1000 && !res.getEstPaye()){
-						listeResModif.add(res);
-					}
-				}
-				break;
-			case Reservation.ETAT_CONFIRME :
-				for(Reservation res : listeRes){
-					if(res.getEstPaye()){
-						listeResModif.add(res);
-					}
-				}
-				break;
-			case Reservation.ETAT_NON_CONFIRME :
-				for(Reservation res : listeRes){
-					if(!res.getEstPaye() 
-							&& new Date().getTime() - res.getDateCreation().getTime() < 7*24*60*60*1000
-							){
-						listeResModif.add(res);
-					}
-				}
-				break;
-			}
-			return listeResModif;
-		}
-		
-		return listeRes;
-	}*/
-	
-	public static void main(String[] args) {
-		List<Reservation> l = new RechercheReservation().rechercheCreneauLibre("01-01-2015", 3, "matin", "petite", 5);
-		System.out.println(l.size());
 	}
 }

@@ -7,18 +7,12 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -28,7 +22,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 import metier.RechercheReservation;
-import metier.SupprimerReservation;
 
 import com.toedter.calendar.JDateChooser;
 
@@ -44,21 +37,6 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	private JFrame frame;
 	
 	private JLabel[] tabEtat;
-	/*private JLabel lEtat9h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat10h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat11h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat12h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat13h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat14h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat15h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat16h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat17h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat18h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat19h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat20h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat21h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat22h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat23h = new JLabel("Libre",JLabel.CENTER);*/
 	
 	private ButtonGroup bgChoixTypeSalle;
 	private JRadioButton rbPetiteSalle;
@@ -103,12 +81,6 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		bRechercher.setBackground(Color.WHITE);
 		bRetour = new JButton("Retour");
 		bRetour.setBackground(Color.WHITE);
-		
-		//tfDateMois.setMinimumSize(new Dimension(23, 20));
-		//tfDateMois.setPreferredSize(new Dimension(23, 20));
-		
-		//tfDateAnnee.setMinimumSize(new Dimension(45, 20));
-		//tfDateAnnee.setPreferredSize(new Dimension(45, 20));
 		
 		bgChoixTypeSalle = new ButtonGroup();
 		rbPetiteSalle = new JRadioButton("Petite salle");
@@ -167,8 +139,6 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 		JLabel horaire;
 		int horaireCourant=9;
 		int etatCourant=0;
-		/*tabEtat = new JLabel[]{lEtat9h,lEtat10h,lEtat11h,lEtat12h,lEtat13h,lEtat14h,lEtat15h,lEtat16h,lEtat17h,
-				lEtat18h,lEtat19h,lEtat20h,lEtat21h,lEtat22h,lEtat23h};*/
 		tabEtat=new JLabel[15];
 		//on initialise le tableau detat a 'Libre'
 		for(int i=0; i<15; i++){
@@ -194,11 +164,7 @@ public class PanelVisualiser extends JPanel implements ActionListener {
 	 */
 	public void alimenterContainerCENTER(){
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
-		SimpleDateFormat formatter2 = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		RechercheReservation metierPlanning = new RechercheReservation();
-		JPanel panelHorsDelais;
-		Icon iCroix = new ImageIcon("src/img/redcross.png");
-		JButton bCroix;
 		JLabel horaire;
 		int horaireCourant=9;
 		int etatCourant=0;

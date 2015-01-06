@@ -8,8 +8,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -26,13 +24,14 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 
-import metier.CreerClient;
-import metier.CreerReservation;
 import metier.RechercheClient;
 import donnee.Client;
-import donnee.Reservation;
 import exception.ObjetInconnuException;
 
+/**
+ * Panel de choix du client
+ *
+ */
 public class PanelSaisieClient extends JPanel implements ActionListener{
 
 	private JFrame frame;
@@ -174,10 +173,6 @@ public class PanelSaisieClient extends JPanel implements ActionListener{
 	 * On recherche le client saisi et on envoie sur le panel suivant
 	 */
 	public void selectionClient(){
-		CreerReservation metierCreerReservation = new CreerReservation();
-		CreerClient metierCreerClient = new CreerClient();
-		RechercheClient metierRechClt = new RechercheClient();
-		int rep;
 		
 		if(tfNom.getText().equals("") || tfPrenom.equals("") || tfNumTel.equals("")){
 			JOptionPane.showMessageDialog(frame, "Tous les champs ne sont pas remplis !");
@@ -186,7 +181,7 @@ public class PanelSaisieClient extends JPanel implements ActionListener{
 		
 		try{
 			//on recherche le client
-			Client clt = metierRechClt.rechercheClient(tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
+			Client clt = new RechercheClient().rechercheClient(tfNom.getText(), tfPrenom.getText(), tfNumTel.getText());
 
 			frame.getContentPane().removeAll();
 			frame.getContentPane().add(new PanelEditionClient(frame, clt));

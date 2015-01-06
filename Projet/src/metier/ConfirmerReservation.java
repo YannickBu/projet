@@ -10,49 +10,9 @@ import donnee.ForfaitClient;
 import donnee.Reservation;
 import fabrique.FabClient;
 import fabrique.FabForfaitClient;
-import fabrique.FabReservation;
 
 
 public class ConfirmerReservation {
-	
-	// Cette methode a utiliser aussi si le client veut cumuler ses points de fidelité ou ses heures de forfait 
-		/**
-		 * Methode qui sert a confimer un payement (sans forfait ou points de fidelite) d'une reservation
-		 * en ajouter les points de fidelite
-		 * @param idClient
-		 * @param idReservation
-		 */
-		public void payerReservation(Integer idClient , Integer idReservation) {
-			FabReservation reservation = FabReservation.getInstance();
-			FabClient client = FabClient.getInstance();
-			Client c = client.rechercher(idClient);
-			Reservation res = reservation.rechercher(idReservation);
-		
-			if(c != null && res != null ) {
-				res.setEstPaye(true);
-				c.ajoutPointsFidelite(res.getPlage());
-			}
-		}
-		
-		// Cette methode a utiliser aussi si le client reserve au moins  4 seances consecutives
-		/**
-		 * Methode qui permet de confirmer un payement (sans forfait ou points de fidelite) des reservations
-		 * en ajoutant les points de fidelite et le bonus
-		 * @param idClient
-		 * @param idReservation
-		 */
-		public void payerReservationPlusBonus(Integer idClient , Integer idReservation) {
-			FabReservation reservation = FabReservation.getInstance();
-			FabClient client = FabClient.getInstance();
-			Client c = client.rechercher(idClient);
-			Reservation res = reservation.rechercher(idReservation);
-		
-			if(c != null && res != null ) {
-				res.setEstPaye(true);
-				c.ajoutPointsFidelite(res.getPlage());
-				c.ajoutPointsFideliteBonus();
-			}
-		}
 		
 		/**
 		 * Recupere dans lordre : le prix, les pts fid. restant(null si utiliserFidelite false) 
@@ -180,37 +140,5 @@ public class ConfirmerReservation {
 			return new Double[]{prix,ptsFid,tpsRestantForfait};
 			
 			
-		}
-		
-		/**
-		 * Methode qui permet de payer une reservation
-		 * @param idReservation
-		 * @param idForfaitClient
-		 * @param ptsFid
-		 * @param tpsRestantForfait
-		 */
-		public void payerReservation(Integer idReservation, Integer idForfaitClient, Double ptsFid, Double tpsRestantForfait){
-			Reservation res = FabReservation.getInstance().rechercher(idReservation);
-			Client client = FabClient.getInstance().rechercher(res.getClient().getId());
-			ForfaitClient fc = idForfaitClient!=null?FabForfaitClient.getInstance().rechercher(idForfaitClient):null;
-			
-			res.setEstPaye(true);
-			FabReservation.getInstance().modifierReservation(res);
-			
-			if(ptsFid != null){
-				client.setPointsFidelite(ptsFid.intValue());
-				FabClient.getInstance().modifierClient(client);
-			}
-			
-			if(tpsRestantForfait != null){
-				fc.setTempsRestant(tpsRestantForfait.intValue());
-				FabForfaitClient.getInstance().modifierForfaitClient(fc);
-			}
-		}
-
-		//TODO c'est a garder ou supprimer ??? n'oublie pas que y'a pas daffichage dans le metier 
-		public static void main(String[] args) {
-			ConfirmerReservation m = new ConfirmerReservation();
-			m.payerReservation(19, 2, 10.0, 5.0);
 		}
 }

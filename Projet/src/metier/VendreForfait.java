@@ -23,4 +23,3 @@ public class VendreForfait {
 		
 	}
 }
-// si le client n'existe pas on le creer on fera appel a la classe CreerClient

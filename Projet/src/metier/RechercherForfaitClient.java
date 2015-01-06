@@ -8,14 +8,6 @@ import fabrique.FabForfaitClient;
 public class RechercherForfaitClient {
 
 	public RechercherForfaitClient() {}
-
-	/**
-	 * Methode qui permet de lister les ForfaitClient
-	 * @return list ForfaitClient
-	 */
-	public List<ForfaitClient> lister(){
-		return FabForfaitClient.getInstance().lister();
-	}
 	
 	/**
 	 * Methode qui permet de lister les forfaitClient pour un client

@@ -1,7 +1,6 @@
 package fabrique;
 
 import java.sql.Connection;
-import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +10,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -18,7 +18,6 @@ import donnee.Client;
 import donnee.Reservation;
 import donnee.Salle;
 import exception.ObjetExistantException;
-import exception.ObjetInconnuException;
 
 public class FabReservation {
 
@@ -77,47 +76,6 @@ public class FabReservation {
 		}
 		return reserv;
 	}
-	
-
-	/**
-	 * Recupere une reservation a partir de son idReservation
-	 * @param id
-	 * @throws ObjetInconnuException
-	 * @return reservation
-	 */
-	public Reservation rechercher(int id) throws ObjetInconnuException{
-		Reservation res = null;
-		PreparedStatement pst = null;
-		ResultSet rs = null;
-		Connection connection = FabConnexion.getConnexion();
-		String query = "SELECT idsalle, idclient, datedebut, plage, datecreation, estpayee "
-				+ "from reservation where idreservation = ?";
-		try {
-			pst = connection.prepareStatement(query);
-			pst.clearParameters();
-			pst.setInt(1, id);
-			
-			rs = pst.executeQuery();
-			
-			if(!rs.next()) {
-				throw new ObjetInconnuException(Reservation.class.toString(), "Aucune Reservation a ete trouve pour l'identifiant "+id);
-			}
-
-			res = new Reservation();
-			res.setIdReserv(id);
-			res.setClient(FabClient.getInstance().rechercher(rs.getInt("idclient")));
-			res.setSalle(FabSalle.getInstance().rechercherParId(rs.getInt("idsalle")));
-			res.setDate(rs.getTimestamp("datedebut"));
-			res.setDateCreation(rs.getTimestamp("datecreation"));
-			res.setEstPaye(rs.getBoolean("estpayee"));
-			res.setPlage(rs.getInt("plage"));
-
-		} catch (SQLException e) {
-			System.out.println("Echec de la recuperation de la reservation pour l'id "+id
-					+" - "+e.getMessage());
-		}
-		return res;
-	}
 
 	
 	/** Recherche de reservation par date et type de salle
@@ -175,46 +133,6 @@ public class FabReservation {
 	}
 	
 	/**
-	 * Supprime une reservation a partir de son idReservation
-	 * @param id
-	 */
-	public void supprimer(int id){
-		PreparedStatement pst = null;
-		Connection connection = FabConnexion.getConnexion();
-		String query = "DELETE FROM reservation WHERE idreservation = ?";
-		try {
-			pst = connection.prepareStatement(query);
-			pst.clearParameters();
-			pst.setInt(1, id);
-			pst.execute();
-		} catch (SQLException e) {
-			System.out.println("Echec de la suppression de la reservation pour l'id "+id
-					+" - "+e.getMessage());
-		}
-	}
-	
-	//TODO suppr?
-	/**
-	 * Supprime une reservation a partir de lid de la salle et de la date de debut de la reservation
-	 * @param idSalle
-	 */
-	/*public void supprimerParDateDebutEtSalle(Date date, int idSalle){
-		PreparedStatement pst = null;
-		Connection connection = FabConnexion.getConnexion();
-		String query = "DELETE FROM reservation WHERE idsalle = ? and datedebut = ?";
-		try {
-			pst = connection.prepareStatement(query);
-			pst.clearParameters();
-			pst.setInt(1, idSalle);
-			pst.setTimestamp(2, new Timestamp(date.getTime()));
-			pst.execute();
-		} catch (SQLException e) {
-			System.out.println("Echec de la suppression de la reservation pour l'id salle "+idSalle
-					+" - "+e.getMessage());
-		}
-	}*/
-	
-	/**
 	 * Supprime une reservation a partir de lid de la salle et de la date de debut de la reservation
 	 * @param dateCreation
 	 * @param idClt
@@ -257,37 +175,6 @@ public class FabReservation {
 		}
 	}
 	
-	/**
-	 * Recupere l'ensemble des reservations
-	 * @return liste de reservation
-	 */
-	public List<Reservation> lister() {
-		Connection connection = FabConnexion.getConnexion();
-		String query = "SELECT idreservation, idsalle, idclient, datedebut,"
-				+ "plage, datecreation, estpayee FROM Reservation";
-		Statement st = null;
-		List<Reservation> listReservation = new ArrayList<Reservation>();
-		try{
-			st = connection.createStatement();
-			ResultSet rs = st.executeQuery(query);
-
-			while(rs.next()){
-				Reservation res = new Reservation();
-				res.setIdReserv(rs.getInt("idreservation"));
-				res.setClient(FabClient.getInstance().rechercher(rs.getInt("idclient")));
-				res.setSalle(FabSalle.getInstance().rechercherParId(rs.getInt("idsalle")));
-				res.setDate(rs.getDate("datedebut"));
-				res.setPlage(rs.getInt("plage"));
-				res.setDateCreation(rs.getDate("datecreation"));
-				res.setEstPaye(rs.getBoolean("estpayee"));
-				listReservation.add(res);
-			}
-		}catch(SQLException e){
-			System.out.println("Erreur d'acces aux listes des reservations en base de donnees "
-					+e.getMessage());
-		}
-		return listReservation;
-	}
 	
 	/**
 	 * Recupere toutes les reservations dun client par ordre chronologique 
@@ -323,43 +210,6 @@ public class FabReservation {
 		}
 		return listReservation;
 	}
-	
-	
-	//TODO suppr?
-	/**
-	 * Recupere toutes les reservations dune salle par ordre chronologique 
-	 * de debut de reservation et par ordre des idsalle
-	 * @param id
-	 * @return liste des reservation 
-	 */
-	/*public List<Reservation> listerParSalle(int id){
-		Connection connection = FabConnexion.getConnexion();
-		String query = "SELECT idreservation, idclient, datedebut, plage, datecreation, estpayee "
-				+ "FROM Reservation where idsalle = ? order by idsalle, datedebut";
-		PreparedStatement st = null;
-		List<Reservation> listReservation = new ArrayList<Reservation>();
-		try{
-			st = connection.prepareStatement(query);
-			st.setInt(1, id);
-			ResultSet rs = st.executeQuery();
-
-			while(rs.next()){
-				Reservation res = new Reservation();
-				res.setIdReserv(rs.getInt("idreservation"));
-				res.setSalle(FabSalle.getInstance().rechercherParId(id));
-				res.setClient(FabClient.getInstance().rechercher(rs.getInt("idclient")));
-				res.setDate(rs.getTimestamp("datedebut"));
-				res.setPlage(rs.getInt("plage"));
-				res.setDateCreation(rs.getTimestamp("datecreation"));
-				res.setEstPaye(rs.getBoolean("estpayee"));
-				listReservation.add(res);
-			}
-		}catch(SQLException e){
-			System.out.println("Erreur dacces aux listes des reservations en base de donnees pour le client "+id
-					+" - "+e.getMessage());
-		}
-		return listReservation;
-	}*/
 	
 	/**
 	 * Modifie la reservation ayant comme id celui du parametre res

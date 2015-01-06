@@ -148,7 +148,7 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 		GridBagConstraints GBC = null;
 		this.setLayout(GBL);
 		
-		lClientTitre = new JLabel(client.getNom()+" "+client.getPrenom()+" ("+client.getPointsFidelite()+" point"+(client.getPointsFidelite()>1?"s":"")+")", JLabel.CENTER);//TODO pt fid
+		lClientTitre = new JLabel(client.getNom()+" "+client.getPrenom()+" ("+client.getPointsFidelite()+" point"+(client.getPointsFidelite()>1?"s":"")+")", JLabel.CENTER);
 		
 		GBC = new GridBagConstraints();
 		GBC.fill = GridBagConstraints.BOTH; 

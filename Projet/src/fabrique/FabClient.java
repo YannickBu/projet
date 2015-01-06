@@ -170,27 +170,6 @@ public class FabClient {
 		}
 	}
 	
-	/**
-	 * Supprime un client par son id
-	 * @param id
-	 */
-	public void supprimer(int id){
-		PreparedStatement pst = null;
-		Connection connection = FabConnexion.getConnexion();
-		String query = "DELETE FROM Client WHERE idclient = ?";
-		try {
-			pst = connection.prepareStatement(query);
-			pst.clearParameters();
-			
-			pst.setInt(1, id);
-			
-			pst.execute();
-			
-		} catch (SQLException e) {
-			System.out.println("Echec de la suppression du client pour l'id "+id
-					+" - "+e.getMessage());
-		}
-	}
 
 	/**
 	 * Recupere l'ensemble des clients

@@ -39,7 +39,6 @@ public class Application {
 		
 		frame.getContentPane().add(menu, BorderLayout.CENTER);
 		
-		//frame.pack();
 		frame.setVisible(true);
 	}
 

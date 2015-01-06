@@ -40,29 +40,13 @@ import donnee.Salle;
 
 
 /**
- * Panel permettant la visualisation de letat dune salle a une date donnee pour
- * les 15 creneaux de cette journee
+ * Panel permettant la reservation manuelle dune reservation
  */
 public class PanelReservationManu extends JPanel implements ActionListener {
 	
 	private JFrame frame;
 	
 	private JLabel[] tabEtat;
-	/*private JLabel lEtat9h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat10h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat11h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat12h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat13h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat14h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat15h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat16h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat17h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat18h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat19h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat20h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat21h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat22h = new JLabel("Libre",JLabel.CENTER);
-	private JLabel lEtat23h = new JLabel("Libre",JLabel.CENTER);*/
 	
 	private ButtonGroup bgChoixTypeSalle;
 	private JRadioButton rbPetiteSalle;
@@ -176,8 +160,6 @@ public class PanelReservationManu extends JPanel implements ActionListener {
 		JLabel horaire;
 		int horaireCourant=9;
 		int etatCourant=0;
-		/*tabEtat = new JLabel[]{lEtat9h,lEtat10h,lEtat11h,lEtat12h,lEtat13h,lEtat14h,lEtat15h,lEtat16h,lEtat17h,
-				lEtat18h,lEtat19h,lEtat20h,lEtat21h,lEtat22h,lEtat23h};*/
 		tabEtat=new JLabel[15];
 		//on initialise le tableau detat a 'Libre'
 		for(int i=0; i<15; i++){
@@ -234,9 +216,6 @@ public class PanelReservationManu extends JPanel implements ActionListener {
 			//etats
 			for(int j=0; j<5; j++){
 				if(etatsSalle[etatCourant].equals("Libre")){
-					/*panelCENTER.add(tabEtat[etatCourant]);
-					tabEtat[etatCourant].setForeground(Color.GREEN);
-					tabEtat[etatCourant].setText("Libre");*/
 					bCroixAdd = new JButton(igreencross);
 					bCroixAdd.setMaximumSize(new Dimension(18,18));
 					bCroixAdd.setMinimumSize(new Dimension(18,18));
