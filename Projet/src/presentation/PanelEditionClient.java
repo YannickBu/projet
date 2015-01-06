@@ -403,11 +403,21 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 			bFiltreHorsDelais.setBorder(BorderFactory.createLoweredBevelBorder());
 		} else if(o.equals(bActionRes)){
 			if(bActionRes.getText().equals("Supprimer")){
+				int rep = JOptionPane.showConfirmDialog(this, "Supprimer cette reservation ?");
+				if(!(rep == JOptionPane.OK_OPTION))
+					return;
 				SupprimerReservation metierSupprRes = new SupprimerReservation();
 				metierSupprRes.supprimerReservationParDateCreation(jListeReservations.getSelectedValue().getDateCreation(), jListeReservations.getSelectedValue().getClient().getId());
-				modelReservation.remove(jListeReservations.getSelectedIndex());
+				listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), null);
+				modelReservation.removeAllElements();
+				for(Reservation res : listeReservations){
+					modelReservation.addElement(res);
+				}
 				JOptionPane.showMessageDialog(this, "Reservation hors delais supprimee");
 			} else {
+				int rep = JOptionPane.showConfirmDialog(this, "Valider le paiement de cette reservation ?");
+				if(!(rep == JOptionPane.OK_OPTION))
+					return;
 				ModifierReservation metierModifRes = new ModifierReservation();
 				Reservation resNewDonnees = new Reservation();
 				resNewDonnees.setClient(jListeReservations.getSelectedValue().getClient());
@@ -418,14 +428,10 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 				resNewDonnees.setPlage(jListeReservations.getSelectedValue().getPlage());
 				resNewDonnees.setSalle(jListeReservations.getSelectedValue().getSalle());
 				metierModifRes.payer(resNewDonnees);
-				if(tousSelected){
-					listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), Reservation.ETAT_CONFIRME);
-					modelReservation.removeAllElements();
-					for(Reservation res : listeReservations){
-						modelReservation.addElement(res);
-					}
-				} else {
-					modelReservation.remove(jListeReservations.getSelectedIndex());
+				listeReservations = metierRechercheReservation.listerReservationsPourUnClient(client.getId(), null);
+				modelReservation.removeAllElements();
+				for(Reservation res : listeReservations){
+					modelReservation.addElement(res);
 				}
 			}
 		} else if(o.equals(bActionFor)){
@@ -453,6 +459,7 @@ public class PanelEditionClient extends JPanel implements ActionListener, ListSe
 			new VendreForfait().vendreForfait(client.getId(), ("Petite salle".equals(cbTypeSalle.getSelectedItem())?0:1), ((Forfait)cbForfait.getSelectedItem()).getTypeForfait());
 			JOptionPane.showMessageDialog(this, "Achat valide");
 			listeForfaitClient = new RechercherForfaitClient().listerPourUnClient(client.getId());
+			modelForfaitClient.removeAllElements();
 			for(ForfaitClient forfaitClient : listeForfaitClient){
 				modelForfaitClient.addElement(forfaitClient);
 			}

@@ -317,6 +317,10 @@ public class PanelReservationManu extends JPanel implements ActionListener {
 			        tabChoixPlage, 
 			        tabChoixPlage[0]);
 		
+			if(choixPlage==null){
+				return;
+			}
+			
 			try{
 				choixSemaines = Integer.parseInt(JOptionPane.showInputDialog("Combien de semaines ?", 1));
 				if(choixSemaines==null || choixSemaines<1){
@@ -336,7 +340,7 @@ public class PanelReservationManu extends JPanel implements ActionListener {
 			if(choixSemaines>1){
 				calendar.setTime(mapBoutonAdd.get(o));
 				for(int i=1; i<choixSemaines; i++){
-					calendar.add(Calendar.DAY_OF_MONTH, i*7);
+					calendar.add(Calendar.DAY_OF_MONTH, 7);
 					laReservation = new RechercheReservation().genererReservation(null, tabIdSalle[cbChoixNumSalle.getSelectedIndex()], calendar.getTime(), choixPlage, false);
 					if(!(new RechercheReservation().estLibre(laReservation))){
 						JOptionPane.showMessageDialog(this, "Creneaux deja reserve le " + formatter.format(calendar.getTime()));

@@ -545,12 +545,14 @@ public class PanelValidationReservation extends JPanel implements ActionListener
 			enregistrerReservation();
 		} else if(o.equals(bRetour)){
 			frame.getContentPane().removeAll();
-			frame.getContentPane().add(new PanelReservationAuto(frame));
+			frame.getContentPane().add(new PanelMenu(frame));
 			frame.validate();
 		} else if(o.equals(rbDiffere)){
 			for(Reservation r : listeReservations){
 				r.setEstPaye(false);
 			}
+			checkFidelite.setSelected(false);
+			cbForfait.setSelectedIndex(0);
 			panelOptionsPaiement.setVisible(false);
 		} else if(o.equals(rbImmediat)){
 			for(Reservation r : listeReservations){

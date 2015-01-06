@@ -132,6 +132,7 @@ public class FabReservation {
 		return listeReservation;
 	}
 	
+	
 	/**
 	 * Supprime une reservation a partir de lid de la salle et de la date de debut de la reservation
 	 * @param dateCreation
@@ -222,7 +223,7 @@ public class FabReservation {
 		
 		String query = "update reservation set idsalle = ?, idclient = ?, "
 				+ " datedebut = ?, plage = ?, datecreation = ?, estpayee = ? "
-				+ " where idreservation = ?";
+				+ " where idclient = ? and datecreation = ?";
 		try {
 			pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
 			pst.clearParameters();
@@ -233,7 +234,8 @@ public class FabReservation {
 			pst.setInt(4,res.getPlage());
 			pst.setTimestamp(5, new Timestamp(res.getDateCreation().getTime()));
 			pst.setBoolean(6, res.getEstPaye());
-			pst.setInt(7, res.getIdReserv());
+			pst.setInt(7, res.getClient().getId());
+			pst.setTimestamp(8, new Timestamp(res.getDateCreation().getTime()));
 			pst.execute();
 		} catch (SQLException se) {
 			System.out.println("Echec de la creation de la reservation - "+se.getMessage());
